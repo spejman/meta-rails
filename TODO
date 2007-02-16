@@ -1,0 +1,44 @@
+Mega Scaffold
+-------------
+ * Estabilizar el código actual.
+ * Decidir si usamos los MagicModels del DrNic.
+ * Permitir que se puedan construir bd incrementales:
+ 	- Comprobar estado actual de la aplicación.
+ 	- Comparar con el nuevo estado deseado.
+ 	- Implementar cambios.
+ * Integrar el plugin "Acts As Authenticated" (http://technoweenie.stikipad.com/plugins/show/Acts+as+Authenticated),
+   y configurarlo automáticamente.
+ * Scaffold propio XHTML simple y muy configurable mediante CSS.
+ * Test.
+ * Documentación.
+
+Mega Querier
+-------------
+ * Acabar los filtros mediante formularios.
+ * Generar la query a la bd.
+ * Exportar: HTML, csv, excel.
+ * Hacer la query clicando en la imagen del modelo (mediante usemaps devueltos por graphviz).
+ * Definir zonas de la base de datos para bds muy grandes.
+ * Guardar queries: permitir a un usuario tener sus queries habituales.
+ * Test
+ * Documentación
+
+Mega WebService
+-------------
+ * Experimentar hasta donde se puede llegar.
+ * Definir los métodos a implementar.
+ * Documentación.
+
+meta-rails gem
+-------------
+ * Definir exactamente la funcionalidad y los parámetros del script.
+ * Crear el script.
+ * Hacer que la gem instale el script en el path del usuario.
+ * Documentación
+
+Web
+----
+ * Revisar versión inglesa.
+ * Hacer la versión en castellano.
+ * Crear noticia en rubyforge de inicio del proyecto.
+ 
