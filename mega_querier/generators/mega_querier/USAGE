@@ -1,0 +1,6 @@
+Description:
+
+Example:
+    ./script/generate mega_querier
+
+    This will copy all necessary files in your rail app.

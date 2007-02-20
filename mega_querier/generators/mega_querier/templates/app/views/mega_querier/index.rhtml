@@ -1,6 +1,15 @@
+<div style="float:left; width: 35%;">
+<%= image_tag "pro-mq.png" %>
+</div>
+<div style="float:left; width:60%;">
+<div id="query-builder-div">
+<%= render :partial => "make_query" %>
+</div>
+<!--
+<hr/><hr/>
 Tables:<br />
 <% @tables.each do |table| %>
-    <%= table %> --> <%= table.camelize %><br />
+    <%= table %> : <%= table.camelize %><br />
 <% end %>
 <br /><br />
 Clases:<br />
@@ -11,5 +20,5 @@ Clases:<br />
     <%= @activerecord_associations[ar_class].to_a.collect{|a| a.reverse.join(" ")}.join("<br/>") %><br />
     <hr />
 <% end %>
-
-<%= image_tag "pro-mq.png" %>
+-->
+</div>

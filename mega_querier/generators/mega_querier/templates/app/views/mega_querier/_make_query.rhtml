@@ -1,0 +1,19 @@
+<%= form_remote_tag :update => "query-builder-div", :url => {:controller => "mega_querier", :action => "make_query"} %>
+
+<% if @actual_query %>
+    <code>
+    <%= @actual_query.to_json %>
+    </code>
+    <br/>
+    <%= link_to_remote( "clear query", :update => "query-builder-div", :url => { :action => :clear_query } ) %><br />
+    <br />
+    <% @actual_query.each do |aq| %>
+        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :depth => 1, :wide => 0, :route => [] } %>
+    <% end %>
+    
+<% else %>
+    Where do you want to begin:<br />
+    <%= select :query, :model, @activerecord_classes %><br />
+    <%= submit_tag "Choose begin model" %>
+<% end %>
+<%= end_form_tag %>

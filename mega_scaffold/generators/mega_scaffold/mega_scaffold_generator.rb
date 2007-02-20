@@ -1,4 +1,12 @@
 require 'active_support'
+puts "aqui"
+puts RAILS_ROOT
+Dir["../../*"].each { |l| puts l }
+if require 'dtd_to_mscff_yaml.rb'
+puts "va" 
+else
+puts "noooo va"
+end
 
 class MegaScaffoldGenerator < Rails::Generator::Base
   attr_accessor :file_name, :scaffold_method
@@ -7,13 +15,20 @@ class MegaScaffoldGenerator < Rails::Generator::Base
      super(*runtime_args)
      @file_name = args[0]
      @scaffold_method = args[1]
-     @scaffold_method = "streamlined" unless @scaffold_method
+     @scaffold_method = "scaffold" unless @scaffold_method
+     puts "file: #{@file_name}"
+    #  puts "vaaaaaaaaaaaa"
+    #  classes = dtd_to_yaml(@file_name)
+
+     # puts "error" unless check_consitency(classes)
+
   end
 
   def manifest
     record do |m|
       #
-      # { class_name_1 => {"class_attr"=>{"attr_name_1"=>"attr_type_1", ...}, 
+      # { class_name_1 => {"class_attr"=>{"attr_name_1"=>"attr_type_1", ...},
+      #                   "class_ass" => [ {"ass_type_1" => "relation_1"}, {..}, ... ] }
       # 
       # Ej: { "lexical_entry" => { "class_attr" => {"created_on"=>"date", "name"=>"string"}, 
       #           "class_ass" => [ {"has_many"=>"senses"}, {"has_many"=>"syntactic_behaviours"},
@@ -21,7 +36,8 @@ class MegaScaffoldGenerator < Rails::Generator::Base
       #                          },
       #       ... }
       #
-      classes = YAML.load(File.open(@file_name))
+      classes = YAML.load(File.open(@file_name)) if @file_name[-4..-1] == ".yml"
+      classes = dtd_to_mscff_yaml(@file_name) if @file_name[-4..-1] == ".dtd"
       
       exit unless check_consitency(classes)
       
@@ -30,23 +46,23 @@ class MegaScaffoldGenerator < Rails::Generator::Base
         # add foreign keys
         fks = []
         class_def[1]["class_ass"].select { |ass| (ass.has_key? "belongs_to" or ass.has_key? "has_one") }.each do |v_cont|
-          fk_class_name = v_cont.values[0]#.singuralize
+          fk_class_name = v_cont.values[0].tableize
           fks << "#{fk_class_name}_id"
         end
 
         habtm = []
         class_def[1]["class_ass"].select { |ass| ass.has_key? "has_and_belongs_to_many" }.each do |v_cont|
-          fk_class_name = v_cont.values[0]#.singuralize
+          fk_class_name = v_cont.values[0].tableize
           habtm << fk_class_name if class_def[0] < fk_class_name          
         end
 
       
-        m.template 'migration.rb', File.join('db/migrate', "00#{index+1}_create_#{class_def[0]}.rb"),
-          :assigns => { :class_name => class_def[0],
-                        :class_attr => class_def[1]["class_attr"],
+        m.template 'migration.rb', File.join('db/migrate', "00#{index+1}_create_#{class_def[0].tableize}.rb"),
+          :assigns => { :class_name => class_def[0].tableize,
+                        :class_attr => class_def[1]["class_attr"] || [],
                         :fks => fks, :habtm => habtm }
-        m.template 'model.rb', File.join('app/models', "#{class_def[0]}.rb"),
-          :assigns => { :class_name => class_def[0],
+        m.template 'model.rb', File.join('app/models', "#{class_def[0].tableize.singularize}.rb"),
+          :assigns => { :class_name => class_def[0].tableize,
                         :class_ass => class_def[1]["class_ass"]}
 
       end
@@ -63,8 +79,8 @@ class MegaScaffoldGenerator < Rails::Generator::Base
 
       class_names = classes.collect {|class_name, class_def| class_name }
 
-      #class_names.each {|class_name| m.generate(["dry_scaffold", class_name]) }
-      m.generate([@scaffold_method, class_names].compact.flatten)
+      class_names.each {|class_name| m.generate([@scaffold_method, class_name]) }
+      #m.generate([@scaffold_method, class_names].compact.flatten)
       
       m.generate(["controller", "main", "index"])      
       m.template 'index.rhtml', File.join('app/views/main/index.rhtml'),
@@ -82,8 +98,18 @@ class MegaScaffoldGenerator < Rails::Generator::Base
     Rails::Generator::Scripts::Generate.new.run(args)
   end
   
-  def check_consitency(classes)
+  def check_consitency(klasses)
     puts "*** Data consitency not checked"
+    
+    klasses_eq_reserved_words = []    
+    klasses.keys.each do |klass_name|
+      klasses_eq_reserved_words << klass_name if Module.constants.include? klass_name.camelize \
+          or Module.constants.include? klass_name.singularize.camelize
+    end
+
+    raise "Models with names equals to reserved words: " + klasses_eq_reserved_words.join(", ") \
+      unless klasses_eq_reserved_words.empty?
+
     return true
   end
   

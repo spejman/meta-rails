@@ -24,7 +24,7 @@ digraph G {
       <% models.each do |model| %>
         <% if model.respond_to? :columns %>
           "<%= model %>" [
-            <% rows = model_columns(model).collect { |col| "<#{col}> #{col} (tipo)" } %>
+            <% rows = model_columns(model).collect { |name, type| "<#{name}> #{name} (#{type})" } %>
             label = "{ <%= model %> | <%= rows.join(' | ') %> }"
           ]
         <% else %>

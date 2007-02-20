@@ -1,0 +1,24 @@
+<% model = actual_query[:model]; route << model %>
+<div id="<%="model-#{model}-#{depth}-#{wide}"%>" class="mega-querier-model mega-querier-depth-<%= depth %> mega-querier-wide-<%= wide %>">
+Model: <%= model %><br/>
+<!--
+With what conditions?<br/>
+<br/>
+-->
+<% unless actual_query[:join].empty? %>
+Actual Joins:
+    <% actual_query[:join].each do |aq| %>
+        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :depth => depth+1, :wide => wide+1, :route => route.dup } %>
+    <% end %>
+<% end %>
+        <% 
+        join_posibilities = @activerecord_associations[model].keys.collect {|k| k.to_s.classify } if @activerecord_associations[model]
+        join_posibilities -= actual_query[:join].collect {|j| j[:model]} if join_posibilities
+        join_posibilities -= route
+        #@activerecord_classes - @actual_query.collect { |aq| aq[:model] } %>
+        <% if join_posibilities and !join_posibilities.empty? %>
+            Join with:<br />
+            <%= select :join, "#{model}_#{route.join(",")}", join_posibilities, { :include_blank => true }  %><br />
+            <%= submit_tag "Add join" %>
+        <% end %>
+</div>

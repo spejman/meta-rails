@@ -1,4 +1,4 @@
-require 'config/environment.rb'
+#require 'config/environment.rb'
 
 require 'erb'
 module MegaQuerier
