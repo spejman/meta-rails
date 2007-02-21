@@ -10,7 +10,8 @@ class MegaQuerierGenerator < Rails::Generator::Base
       files_to_copy.each do |app_file|
         m.file app_file, app_file
       end
-
+      m.puts "Remember to create a default layout in app/views/layouts/application.rhtml \n \
+              with <%= javascript_include_tag :defaults %> in <head></head>"
     end
   end
 end
