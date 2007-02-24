@@ -1,0 +1,82 @@
+
+<html>
+<head>
+    <title>MetaRails - DRY to the limit</title>
+	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+
+	<link rel="stylesheet" href="../css/master.css" type="text/css" media="screen" title="no title" charset="utf-8" />
+</head>
+
+<body>
+<div class="header-links">
+     castellano | <a href="../index.html">english</a>
+</div>
+<h1>MetaRails - DRY al limite</h1>
+
+<h2>¿Qué es MetaRails?</h2>
+    <p>
+    Una de las caracteristicas killer de Ruby on Rails es DRY (Don't Repeat Yourself). Esto es totalmente cierto pero,
+	cuando llevas un tiempo trabajando con RoR, empiezas a percibir que alguna cosa aún podria ser más DRY.
+	Esta es la motivación de MetaRails.
+    </p>
+    <p>
+    En esencia, MetaRails es un generador de simples aplicaciones web basadas en bases de datos. 
+	Dado un esquema de BD, genera automaticamente la BD, las paginas de vista-inserción-modficacion 
+	para cada tabla de la BD o modelo de la aplicacion y, además, infiere web-services capaces de manipular los datos.
+    </p>
+    <p>
+    Bien, pero no todas las aplicaciones web son asi, eso lo sabemos, por eso desarrollamos el proyecto de 
+	forma modular, usando <em>rails plugins</em> para permitir al desarrollador que use justo la magia DRY que necesite.
+	</p>
+    <p>
+    Actualmente, MetaRails esta en un estado muy preliminar de su desarrollo, pero avanzamos rápidamente y esperamos 
+	liberar pronto una versión beta.
+	</p>
+
+<h2>Arquitectura</h2>
+
+    <p>
+        MetaRails se divide en cuatro partes:
+    </p>
+    <ul>
+        <li><b>MetaRails gem</b>, Una <em>ruby gem</em> que simplifica la instalación y creación de nuevas aplicaciones MetaRails</li>
+        <li><b>Mega Scaffold</b>, Un <em>rails plugin</em> que crea la base de datos y las paginas de vista-inserción-modficacion (<em>scaffold</em>). </li>
+        <li><b>Mega Querier</b>, <em>rails plugin</em> que permite realizar cualquier consulta a la base de datos y exportarla a diversos formatos.</li>
+        <li><b>Mega WebServices</b>, <em>rails plugin</em> que infiere <em>webservices</em> sobre la base de datos.</li>
+    </ul>
+
+<h2>Más información</h2>
+    <p>
+        Puede encontrarse más información sobre MetaRails en su página de <a href="http://rubyforge.org/projects/meta-rails/">Rubyforge</a> y en los siguientes blogs:
+    </p>  
+    <ul>
+        <li>MetaRails Rubyforge: <a href="http://rubyforge.org/projects/meta-rails/">rubyforge.org/projects/meta-rails</a></li>
+        <li>English blog: <a href="http://spejman-on-rails.blogspot.com/">Spejman On Rails</a></li>
+		<li>blog Español: <a href="http://spejman.blogspot.com">Spejma's Blog</a></li>
+    </ul>
+
+<h2>Contribuir</h2>
+    <p>
+        Si has jugado un poco con Ruby nos creeras si te decimos que disfrutamos de lo lindo desarrollando
+        MetaRails. Este proyecto let us digg a lot into RoR and Ruby internals y aprender mucho.
+    </p>
+    <p>
+        Si quieres disfrutar y aprender con MetaRails, escribe a sergio.espeja+metarails [yasabesque] gmail.com para 
+        colaborar en el proyecto.
+    </p>
+
+<h2>Creditos</h2>
+    <p>
+        Este proyecto fue creado por <a href="http://www.upf.edu/pdi/iula/sergio.espeja">Sergio Espeja</a> 
+        como parte de su trabajo en <a href="http://www.iula.upf.es">Institut Universitari de Lingüística Aplicada 
+        of Universitat Pompeu Fabra</a> y en <a href="http://bee.com.es">bee.com.es</a>.
+    </p>
+    <p>
+        El desarrollo de este proyecto esta siendo realizado por Sergio Espeja con la colaboración de Jorge L. Cangas.
+    </p>
+    <p>
+        MetaRails  esta liberado bajo licencia GPL. Rails esta bajo <a href="http://www.opensource.org/licenses/mit-license.php">licencia MIT</a>.
+        Ruby esta bajo <a href="http://www.ruby-lang.org/en/LICENSE.txt">licencia Ruby</a>.
+    </p>
+</body>
+</html>
