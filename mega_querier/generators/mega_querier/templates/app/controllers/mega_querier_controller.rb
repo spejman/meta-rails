@@ -70,22 +70,61 @@ def make_query
   if params[:query] 
     @actual_query << add_new_model_for_query(params[:query][:model]) if params[:query][:model]
   end
+  # Get join conditions
   if params[:join]
     params[:join].each do |key, value|
       next if value.blank?
-      route = key.split("_")[1]
-      route = route.split(",") if route
-      route = [route] unless route.class == Array
+      route = get_route(key)
       join_position = search_model_in_query(@actual_query, route)
       join_position[:join] << add_new_model_for_query(value)
+    end
+  end
+
+  # Get conditions for each model
+  if params[:conditions_column] and  params[:conditions_op] and params[:conditions_value]
+    params[:conditions_column].each do |key, column_name|
+      # jump to next if op and value fields are empty
+      # TODO: show a message warning: ej. not op field choosen ...
+      next if column_name.blank? or !params[:conditions_op][key] or !params[:conditions_value][key]
+      next if params[:conditions_op][key].blank? or params[:conditions_value][key].blank?
+      route = get_route(key)
+      join_position = search_model_in_query(@actual_query, route)
+
+      # jump if there're more than one condition but there aren't any condition type (or, and, ... )
+      # TODO: show a message warning
+      #raise "aqui" if !join_position[:conditions].empty? and (!params[:conditions_cond_type][key] or params[:conditions_cond_type][key].blank?)
+
+      # add the condition
+      params_type = params[:conditions_cond_type][key] if params[:conditions_cond_type]
+      join_position[:conditions] << add_new_condition_for_query(column_name, params[:conditions_op][key],
+                                        params[:conditions_value][key],  params_type)
     end
   end
   init
   render :partial => "make_query"
 end
 
+def get_route(key)
+  route = key.split("_")[1]
+  route = route.split(",") if route
+  route = [route] unless route.class == Array
+  return route
+end
+
 def add_new_model_for_query(model)
-  {:model => model, :join => [] }
+  {:model => model, :join => [], :conditions => [] }
+end
+
+def add_new_condition_for_query(column_name, op, value, cond_type = nil)
+  { :column => column_name,
+    :op => op,
+    :value => value,
+    :cond_type => cond_type 
+  }
+end
+
+def get_sql_for_query(actual_query)
+
 end
 
 end
