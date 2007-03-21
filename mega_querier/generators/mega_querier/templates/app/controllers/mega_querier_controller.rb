@@ -1,3 +1,4 @@
+require "sqldsl"
 require "mega_querier_rav"
 include MegaQuerier
 include MegaQuerierHelper
@@ -21,6 +22,8 @@ end
 def index
   init
   @actual_query = session[:actual_query]
+  @q_sql = get_sql_for_query(@actual_query) if session[:actual_query]
+  
   rav = MegaQuerier::RailsApplicationVisualizer.new({ :model_names => @activerecord_classes, :class_columns => @activerecord_columns,
                                                       :models => true, :controllers => false })
   rav.output("#{RAILS_ROOT}/public/images/pro-mq.png")
@@ -100,6 +103,7 @@ def make_query
                                         params[:conditions_value][key],  params_type)
     end
   end
+  @q_sql = get_sql_for_query(@actual_query)
   init
   render :partial => "make_query"
 end
@@ -124,7 +128,29 @@ def add_new_condition_for_query(column_name, op, value, cond_type = nil)
 end
 
 def get_sql_for_query(actual_query)
+  st = Select.all.from[actual_query[0][:model]]
+  unless actual_query[0][:conditions].empty?
+    cond = actual_query[0][:conditions].dup
+    or_conds = cond.select { |c| c[:cond_type] == "OR" }.sort_by { |c| cond.index c }
 
+      conds_grouped_by_ors = []
+      or_conds.each do |or_cond|
+        conds_grouped_by_ors << cond.slice!(0..(cond.index(or_cond)-1))
+      end
+      conds_grouped_by_ors << cond
+
+
+    logger.debug conds_grouped_by_ors.to_json
+    
+    str_cond = conds_grouped_by_ors[0].collect { |cond| "#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
+    st.where { eval str_cond.join(";") }
+    conds_grouped_by_ors[1..-1].each do |cond_grouped|
+      str_cond = cond_grouped.collect { |cond| "#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
+      st.or { eval str_cond.join(";") }    
+    end
+
+  end
+  st.to_sql
 end
 
 end
