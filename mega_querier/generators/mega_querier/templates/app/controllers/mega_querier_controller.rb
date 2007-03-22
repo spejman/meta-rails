@@ -1,4 +1,5 @@
 require "sqldsl"
+require "sqldsl_improv_22mar07"
 require "mega_querier_rav"
 include MegaQuerier
 include MegaQuerierHelper
@@ -128,29 +129,64 @@ def add_new_condition_for_query(column_name, op, value, cond_type = nil)
 end
 
 def get_sql_for_query(actual_query)
-  st = Select.all.from[actual_query[0][:model]]
-  unless actual_query[0][:conditions].empty?
-    cond = actual_query[0][:conditions].dup
-    or_conds = cond.select { |c| c[:cond_type] == "OR" }.sort_by { |c| cond.index c }
-
-      conds_grouped_by_ors = []
-      or_conds.each do |or_cond|
-        conds_grouped_by_ors << cond.slice!(0..(cond.index(or_cond)-1))
-      end
-      conds_grouped_by_ors << cond
-
-
-    logger.debug conds_grouped_by_ors.to_json
-    
-    str_cond = conds_grouped_by_ors[0].collect { |cond| "#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
-    st.where { eval str_cond.join(";") }
-    conds_grouped_by_ors[1..-1].each do |cond_grouped|
-      str_cond = cond_grouped.collect { |cond| "#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
-      st.or { eval str_cond.join(";") }    
-    end
-
+  st = Select.all
+  logger.debug "get_sql_for_query 0"
+  tables = []
+  actual_query.each_with_index do |query, q_index|
+    tables << query[:model].to_sym.as("t_#{q_index}".to_sym)   
   end
+  st.from[tables]
+  add_inner_joins_to_sql_for_query(actual_query[0], 0, st)
+  add_where_to_sql_for_query(actual_query[0], 0, st, true)
   st.to_sql
+end
+
+def add_inner_joins_to_sql_for_query(query, parent_index, st)
+  logger.debug "add_inner_joins_to_sql_for_query 0 - #{parent_index}"
+  return if query[:join].empty?
+  logger.debug "add_inner_joins_to_sql_for_query 1 - #{parent_index}"
+  tables = []
+  query[:join].each_with_index do |query_n, q_index|
+    tables << query_n[:model].to_sym.as("t_#{parent_index}_#{q_index}".to_sym)   
+  end
+  logger.debug tables.to_json
+  st.inner_join[tables]
+  query[:join].each_with_index do |query_n, q_index|
+    add_inner_joins_to_sql_for_query(query_n, "#{parent_index}_#{q_index}", st)
+  end
+  
+end
+
+def add_where_to_sql_for_query(query, parent_index, st, is_first = false)
+    unless query[:conditions].empty?
+      cond = query[:conditions].dup
+      or_conds = cond.select { |c| c[:cond_type] == "OR" }.sort_by { |c| cond.index c }
+  
+        conds_grouped_by_ors = []
+        or_conds.each do |or_cond|
+          conds_grouped_by_ors << cond.slice!(0..(cond.index(or_cond)-1))
+        end
+        conds_grouped_by_ors << cond
+  
+  
+      logger.debug conds_grouped_by_ors.to_json
+      
+      str_cond = conds_grouped_by_ors[0].collect { |cond| "t_#{parent_index}.#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
+      if is_first
+        st.where { eval str_cond.join(";") }
+      else
+        st.and { eval str_cond.join(";") }
+      end
+      conds_grouped_by_ors[1..-1].each do |cond_grouped|
+        str_cond = cond_grouped.collect { |cond| "t_#{parent_index}.#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
+        st.or { eval str_cond.join(";") }    
+      end  
+  end
+  return if query[:join].empty?
+  query[:join].each_with_index do |query_n, q_index|
+    add_where_to_sql_for_query(query_n, "#{parent_index}_#{q_index}", st)
+  end    
+    
 end
 
 end
