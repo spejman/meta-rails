@@ -1,5 +1,5 @@
 <% model = actual_query[:model]; route << model %>
-<div id="<%="model-#{model}-#{depth}-#{wide}"%>" class="mega-querier-model mega-querier-depth-<%= depth %> mega-querier-wide-<%= wide %>">
+<div id="<%="model-#{model}-#{depth}-#{wide}"%>" class="meta-querier-model meta-querier-depth-<%= depth %> meta-querier-wide-<%= wide %>">
 Model: <%= model %><br/>
 
 With what conditions?<br/>
@@ -15,7 +15,7 @@ With what conditions?<br/>
 <% end %>
 
 <%= select :conditions_column, "#{model}_#{route.join(",")}", @activerecord_columns[model].keys, { :include_blank => true }  %>
-<% operations = ["==", "!=", ">", "<", ">=", "<=", "like"] %>
+<% operations = ["==", "<=>", ">", "<", ">=", "<=", "=~"] %>
 <%= select :conditions_op, "#{model}_#{route.join(",")}", operations, { :include_blank => true }  %>
 <%= text_field :conditions_value, "#{model}_#{route.join(",")}" %>
 <br />

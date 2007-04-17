@@ -1,13 +1,21 @@
 require "sqldsl"
-require "sqldsl_improv_22mar07"
-require "mega_querier_rav"
-include MegaQuerier
-include MegaQuerierHelper
+require "meta_querier_rav"
+require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_helper.rb"
+include MetaQuerier
+include MetaQuerierHelper
 
-class MegaQuerierController < ApplicationController
+class TmpArClass < ActiveRecord::Base
+end
+
+class MetaQuerierController < ActionController::Base
+
+self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/views/"
+layout "application"
+
 
 AR_DB_RESERVED_WORDS = ["schema_info", "engine_schema_info"]
 AR_DB_NO_RELEVANT_COLUMNS = ["id"]
+
 def init
   @tables = get_table_names
   @activerecord_classes = get_activerecord_classes(@tables)
@@ -25,7 +33,7 @@ def index
   @actual_query = session[:actual_query]
   @q_sql = get_sql_for_query(@actual_query) if session[:actual_query]
   
-  rav = MegaQuerier::RailsApplicationVisualizer.new({ :model_names => @activerecord_classes, :class_columns => @activerecord_columns,
+  rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @activerecord_classes, :class_columns => @activerecord_columns,
                                                       :models => true, :controllers => false })
   rav.output("#{RAILS_ROOT}/public/images/pro-mq.png")
 end
@@ -109,6 +117,14 @@ def make_query
   render :partial => "make_query"
 end
 
+def run_query
+  @actual_query = session[:actual_query]
+  if @actual_query
+    @ar_base = ActiveRecord::Base.connection.select_all(get_sql_for_query(@actual_query))
+  end
+  render :partial => "run_query"
+end
+
 def get_route(key)
   route = key.split("_")[1]
   route = route.split(",") if route
@@ -129,11 +145,12 @@ def add_new_condition_for_query(column_name, op, value, cond_type = nil)
 end
 
 def get_sql_for_query(actual_query)
+#  st = Select["t_0.name".to_sym, "t_0_0.name as name2".to_sym]
   st = Select.all
   logger.debug "get_sql_for_query 0"
   tables = []
   actual_query.each_with_index do |query, q_index|
-    tables << query[:model].to_sym.as("t_#{q_index}".to_sym)   
+    tables << query[:model].tableize.to_sym.as("t_#{q_index}".to_sym)   
   end
   st.from[tables]
   add_inner_joins_to_sql_for_query(actual_query[0], 0, st)
@@ -147,7 +164,7 @@ def add_inner_joins_to_sql_for_query(query, parent_index, st)
   logger.debug "add_inner_joins_to_sql_for_query 1 - #{parent_index}"
   tables = []
   query[:join].each_with_index do |query_n, q_index|
-    tables << query_n[:model].to_sym.as("t_#{parent_index}_#{q_index}".to_sym)   
+    tables << query_n[:model].tableize  .to_sym.as("t_#{parent_index}_#{q_index}".to_sym)   
   end
   logger.debug tables.to_json
   st.inner_join[tables]
@@ -156,6 +173,7 @@ def add_inner_joins_to_sql_for_query(query, parent_index, st)
   end
   
 end
+
 
 def add_where_to_sql_for_query(query, parent_index, st, is_first = false)
     unless query[:conditions].empty?

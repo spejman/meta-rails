@@ -1,4 +1,4 @@
-module MegaQuerierHelper
+module MetaQuerierHelper
 
 def search_model_in_query(query, route)
   route ||= []

@@ -1,7 +1,7 @@
 #require 'config/environment.rb'
 
 require 'erb'
-module MegaQuerier
+module MetaQuerier
   class RailsApplicationVisualizer
     DEFAULT_OPTIONS = {
       :models => true,
@@ -10,7 +10,7 @@ module MegaQuerier
   
     def initialize(options = {})
       @options  = DEFAULT_OPTIONS.merge(options)
-      template = File.read('vendor/plugins/mega_querier/mq_diagram.dot.erb')
+      template = File.read('vendor/plugins/meta_querier/mq_diagram.dot.erb')
   
       @dot = ERB.new(template).result(binding)
     end

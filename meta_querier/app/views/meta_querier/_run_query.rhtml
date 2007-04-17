@@ -1,0 +1,15 @@
+<%= link_to_remote( "Run query", :update => "run-query-div", :url => { :action => :run_query } ) %><br />
+
+<% if @ar_base %>
+<table>
+<tr>
+    <th><%= @ar_base[0].keys.join("</th><th>") %></th>
+</tr>
+    <% @ar_base.each do |row| %>
+        <tr>
+        <td><%= row.values.join("</td><td>") %></td>
+        </tr>
+    <% end %>
+
+</table>
+<% end %>
