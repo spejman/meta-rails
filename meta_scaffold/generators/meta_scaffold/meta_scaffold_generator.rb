@@ -8,7 +8,7 @@ else
 puts "noooo va"
 end
 
-class MegaScaffoldGenerator < Rails::Generator::Base
+class MetaScaffoldGenerator < Rails::Generator::Base
   attr_accessor :file_name, :scaffold_method
   
   def initialize(*runtime_args)
@@ -17,7 +17,6 @@ class MegaScaffoldGenerator < Rails::Generator::Base
      @scaffold_method = args[1]
      @scaffold_method = "scaffold" unless @scaffold_method
      puts "file: #{@file_name}"
-    #  puts "vaaaaaaaaaaaa"
     #  classes = dtd_to_yaml(@file_name)
 
      # puts "error" unless check_consitency(classes)
@@ -46,7 +45,7 @@ class MegaScaffoldGenerator < Rails::Generator::Base
         # add foreign keys
         fks = []
         class_def[1]["class_ass"].select { |ass| (ass.has_key? "belongs_to" or ass.has_key? "has_one") }.each do |v_cont|
-          fk_class_name = v_cont.values[0].tableize
+          fk_class_name = v_cont.values[0].tableize.singularize
           fks << "#{fk_class_name}_id"
         end
 
@@ -74,17 +73,27 @@ class MegaScaffoldGenerator < Rails::Generator::Base
       # Worker and test directories.
 #      m.directory File.join('lib/workers', class_path)
       #m.directory File.join('test/unit', class_path)
+      m.puts "Begin migration ******"
+      m.system("rake db:migrate") #TODO: Use rake directly not using system call.
+      m.puts "End migration ******"
 
-      m.system("rake migrate") #TODO: Use rake directly not using system call.
-
-      class_names = classes.collect {|class_name, class_def| class_name }
-
-      class_names.each {|class_name| m.generate([@scaffold_method, class_name]) }
-      #m.generate([@scaffold_method, class_names].compact.flatten)
-      
-      m.generate(["controller", "main", "index"])      
-      m.template 'index.rhtml', File.join('app/views/main/index.rhtml'),
-                    :assigns => { :class_names => class_names }
+      if @scaffold_method
+        class_names = classes.collect {|class_name, class_def| class_name }
+  
+        if @scaffold_method == "active_scaffold"
+          class_names.each do |class_name|
+            m.template 'active_scaffold_controller.rb', File.join('app/controllers', "#{class_name.tableize}_controller.rb"),
+            :assigns => { :class_name => class_name }                      
+          end
+          #TODO: copy layout_application_for_active_scaffold.rhtml to /app/views/layouts/application.rhtml
+        else
+          class_names.each {|class_name| m.generate([@scaffold_method, class_name]) }
+          #m.generate([@scaffold_method, class_names].compact.flatten)
+        end
+        m.generate(["controller", "main", "index"])      
+        m.template 'index.rhtml', File.join('app/views/main/index.rhtml'),
+                      :assigns => { :class_names => class_names }
+      end
       # Worker class and unit tests.
  #     m.template 'worker.rb',      File.join('lib/workers', class_path, "#{file_name}_worker.rb")
       #m.template 'unit_test.rb',  File.join('test/unit', class_path, "#{file_name}_worker_test.rb")

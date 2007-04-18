@@ -1,6 +1,6 @@
 Description:
 
 Example:
-    ./script/generate mega_scaffold fileName
+    ./script/generate meta_scaffold fileName
 
     This will create ...

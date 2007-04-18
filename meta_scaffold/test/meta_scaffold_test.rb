@@ -1,6 +1,6 @@
 require 'test/unit'
 
-class MegaScaffoldTest < Test::Unit::TestCase
+class MetaScaffoldTest < Test::Unit::TestCase
   # Replace this with your real tests.
   def test_this_plugin
     flunk
