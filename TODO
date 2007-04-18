@@ -22,7 +22,8 @@ Mega Querier
  * Definir zonas de la base de datos para bds muy grandes.
  * Guardar queries: permitir a un usuario tener sus queries habituales.
  * Test
- * Documentación
+ * Documentación:
+    - meta_querier/README
 
 Mega WebService
 -------------
@@ -39,7 +40,7 @@ meta-rails gem
 
 Web
 ----
- * Revisar versión inglesa.
- * Hacer la versión en castellano.
+ OK! Revisar versión inglesa.
+ OK! Hacer la versión en castellano.
  * Crear noticia en rubyforge de inicio del proyecto.
  
