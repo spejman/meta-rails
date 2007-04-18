@@ -1,4 +1,7 @@
 MetaQuerier
 ===========
 
+
 Description goes here
+
+Uses sqldsl (http://sqldsl.rubyforge.org)

@@ -1,5 +1,4 @@
-require "sqldsl"
-require "meta_querier_rav"
+require "meta_querier"
 require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_helper.rb"
 include MetaQuerier
 include MetaQuerierHelper
