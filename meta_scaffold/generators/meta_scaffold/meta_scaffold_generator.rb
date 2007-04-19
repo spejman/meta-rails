@@ -72,7 +72,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       m.puts "End migration ******"
 
       if @scaffold_method
-        m.file('../files/meta_scaffold.css', 'public/stylesheets/meta_scaffold.css')
+        m.file File.join('../files/', 'meta_scaffold.css'), File.join('public/stylesheets/','meta_scaffold.css')
         class_names = classes.collect {|class_name, class_def| class_name }
   
         if @scaffold_method == "active_scaffold"
@@ -85,7 +85,6 @@ class MetaScaffoldGenerator < Rails::Generator::Base
                      :assigns => { :class_names => class_names, :is_active_scaffold => true }
           m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "meta_scaffold_info.rhtml"),
                      :assigns => { :class_names => class_names, :is_active_scaffold => false }
-          #TODO: copy layout_application_for_active_scaffold.rhtml to /app/views/layouts/application.rhtml
         else
           class_names.each {|class_name| m.generate([@scaffold_method, class_name]) }
           m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "application.rhtml"),
