@@ -1,12 +1,6 @@
 require 'active_support'
-puts "aqui"
-puts RAILS_ROOT
-Dir["../../*"].each { |l| puts l }
-if require 'dtd_to_mscff_yaml.rb'
-puts "va" 
-else
-puts "noooo va"
-end
+require "fileutils"
+require 'dtd_to_mscff_yaml.rb'
 
 class MetaScaffoldGenerator < Rails::Generator::Base
   attr_accessor :file_name, :scaffold_method
@@ -78,21 +72,30 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       m.puts "End migration ******"
 
       if @scaffold_method
+        m.file('../files/meta_scaffold.css', 'public/stylesheets/meta_scaffold.css')
         class_names = classes.collect {|class_name, class_def| class_name }
   
         if @scaffold_method == "active_scaffold"
+          m.directory File.join('app/controllers/meta_scaffold_models')
           class_names.each do |class_name|
-            m.template 'active_scaffold_controller.rb', File.join('app/controllers', "#{class_name.tableize}_controller.rb"),
+            m.template 'active_scaffold_controller.rb', File.join('app/controllers/meta_scaffold_models', "#{class_name.tableize}_controller.rb"),
             :assigns => { :class_name => class_name }                      
           end
+          m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "meta_scaffold.rhtml"),
+                     :assigns => { :class_names => class_names, :is_active_scaffold => true }
+          m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "meta_scaffold_info.rhtml"),
+                     :assigns => { :class_names => class_names, :is_active_scaffold => false }
           #TODO: copy layout_application_for_active_scaffold.rhtml to /app/views/layouts/application.rhtml
         else
           class_names.each {|class_name| m.generate([@scaffold_method, class_name]) }
+          m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "application.rhtml"),
+                     :assigns => { :class_names => class_names, :is_active_scaffold => false }
+
           #m.generate([@scaffold_method, class_names].compact.flatten)
         end
-        m.generate(["controller", "main", "index"])      
-        m.template 'index.rhtml', File.join('app/views/main/index.rhtml'),
-                      :assigns => { :class_names => class_names }
+        m.generate(["controller", "meta_scaffold_info", "index"])      
+        m.template 'index.rhtml', File.join('app/views/meta_scaffold_info/index.rhtml'),
+                      :assigns => { :class_names => class_names }, :collision => :force
       end
       # Worker class and unit tests.
  #     m.template 'worker.rb',      File.join('lib/workers', class_path, "#{file_name}_worker.rb")

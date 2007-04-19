@@ -1,0 +1,27 @@
+<html>
+<head>
+  <title><%%= controller.controller_name.humanize %>: <%%= controller.action_name.humanize %></title>
+<%%= javascript_include_tag :defaults %>
+<% if is_active_scaffold -%> <%%= active_scaffold_includes %> <% end -%>
+<%%= stylesheet_link_tag "meta_scaffold" %>
+</head>
+<body>
+
+<p style="color: green"><%%= flash[:notice]%></p>
+
+<div class="meta-scaffold">
+<h2>Menu</h2>
+<%%= link_to "Querier", :controller => "/meta_querier" if defined?(MetaQuerierController)%> | 
+<%%= link_to "Scaffold info", :controller => "/meta_scaffold_info" %>
+<ul>
+<% class_names.each do |class_name| -%>
+    <li><a href="/meta_scaffold_models/<%= class_name.tableize.pluralize %>"><%= class_name.pluralize %></a></li>
+<% end -%>
+</ul>
+</div>
+<div>
+<%%= yield  %>
+</div>
+
+</body>
+</html>

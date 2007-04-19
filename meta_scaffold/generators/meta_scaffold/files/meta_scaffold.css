@@ -1,0 +1,29 @@
+.meta-scaffold {
+	padding-left: 15px;
+	color: #333;
+	font-family: Verdana, sans-serif;
+	font-size: 12px;
+	background-color: #E6F2FF;
+	border: solid 1px #C5DBF7;
+}
+.meta-scaffold h2 {
+	font: normal 17px verdana, sans-serif;
+	color: #333;
+}
+
+ul li {
+	list-style-type:none;
+	margin:0;
+	color:#858585;
+	padding:0.5em 1.5em;
+	border-bottom:1px solid #3D3D3D;
+	width: 20%;
+/*	background-color: #eee; #ff8;*/
+}
+.meta-scaffold a {
+	text-decoration: none;
+	color: #06c;
+}
+.meta-scaffold a:hover {
+	text-decoration: underline;
+}

@@ -1,5 +1,6 @@
+<div class="meta-scaffold">
+<h2>Meta Scaffold</h2>
 <ul>
-<% class_names.each do |class_name| -%>
-    <li><a href="/<%= class_name.tableize.pluralize %>"><%= class_name.pluralize %></a></li>
-<% end -%>
-</ul>
+<li><b>Detected classes:</b> <%= class_names.size %></li>
+<li><b>Class names:</b> <%= class_names.join(", ") %></li>
+</div>
