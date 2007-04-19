@@ -1,17 +1,24 @@
+<h2>Build Query</h2>
 <%= form_remote_tag :update => "query-builder-div", :url => {:controller => "meta_querier", :action => "make_query"} %>
-
 <% if @actual_query %>
-    <code>
-    <%= @actual_query.to_json %>
-    </code>
-    <% if @q_sql %>    
+
+    <pre style="background-color: #ccc; padding: 10px; margin: 10px; text-align: left;">
+<b>debug info:</b>
+<code><%= @actual_query.to_json %>
+<% if @q_sql -%>
+<%= @q_sql %>
+<% end -%>
+</code></pre>
+
+
     <br/>
-    <code>
-    <%= @q_sql %>
-    </code>
-    <% end %>
-    <br/>
-    <%= link_to_remote( "clear query", :update => "query-builder-div", :url => { :action => :clear_query } ) %><br />
+
+    <%= link_to_remote( "Clear query", :update => "query-builder-div", :url => { :action => :clear_query } ) %>
+    | <%= link_to_remote( "Run query", :update => "run-query-div", :url => { :action => :run_query } ) %>
+    | Save query <small>(not yet impl.)</small> 
+    | My queries  <small>(not yet impl.)</small> 
+    <br />
+
     <br />
     <% @actual_query.each do |aq| %>
         <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :depth => 1, :wide => 0, :route => [] } %>

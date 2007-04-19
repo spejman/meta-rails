@@ -1,6 +1,8 @@
-<%= link_to_remote( "Run query", :update => "run-query-div", :url => { :action => :run_query } ) %><br />
-
 <% if @ar_base %>
+<h2>Query Result</h2>
+<% if @ar_base.empty? %>
+    This query has no data [<%= Time.now %>]
+<% else @ar_base and !@ar_base.empty? %>
 <table>
 <tr>
     <th><%= @ar_base[0].keys.join("</th><th>") %></th>
@@ -12,4 +14,5 @@
     <% end %>
 
 </table>
+<% end %>
 <% end %>
