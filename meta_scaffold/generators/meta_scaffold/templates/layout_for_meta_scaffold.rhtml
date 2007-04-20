@@ -13,11 +13,12 @@
 <h2>Menu</h2>
 <%%= link_to "Querier", :controller => "/meta_querier" if defined?(MetaQuerierController)%> | 
 <%%= link_to "Scaffold info", :controller => "/meta_scaffold_info" %>
-<ul>
-<% class_names.each do |class_name| -%>
+<ul class="meta-scaffold-menu">
+<% class_names.sort.each do |class_name| -%>
     <li><a href="/meta_scaffold_models/<%= class_name.tableize.pluralize %>"><%= class_name.pluralize %></a></li>
 <% end -%>
 </ul>
+<br/><br/>
 </div>
 <div>
 <%%= yield  %>

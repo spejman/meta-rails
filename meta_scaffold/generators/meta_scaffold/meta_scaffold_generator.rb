@@ -9,8 +9,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
      super(*runtime_args)
      @file_name = args[0]
      @scaffold_method = args[1]
-     @scaffold_method = "scaffold" unless @scaffold_method
-     puts "file: #{@file_name}"
+     #@scaffold_method = "scaffold" unless @scaffold_method
     #  classes = dtd_to_yaml(@file_name)
 
      # puts "error" unless check_consitency(classes)
@@ -33,6 +32,9 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       classes = dtd_to_mscff_yaml(@file_name) if @file_name[-4..-1] == ".dtd"
       
       exit unless check_consitency(classes)
+
+      # Adding needed relations for building migrations and models
+      classes = add_relations_to_klasses(classes)
       
       m.directory  File.join('db/migrate')
       classes.each_with_index do |class_def, index|        
@@ -45,7 +47,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
 
         habtm = []
         class_def[1]["class_ass"].select { |ass| ass.has_key? "has_and_belongs_to_many" }.each do |v_cont|
-          fk_class_name = v_cont.values[0].tableize
+          fk_class_name = v_cont.values[0].tableize.singularize
           habtm << fk_class_name if class_def[0] < fk_class_name          
         end
 
@@ -79,7 +81,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
           m.directory File.join('app/controllers/meta_scaffold_models')
           class_names.each do |class_name|
             m.template 'active_scaffold_controller.rb', File.join('app/controllers/meta_scaffold_models', "#{class_name.tableize}_controller.rb"),
-            :assigns => { :class_name => class_name }                      
+            :assigns => { :class_name => class_name.tableize }                      
           end
           m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "meta_scaffold.rhtml"),
                      :assigns => { :class_names => class_names, :is_active_scaffold => true }
@@ -120,8 +122,18 @@ class MetaScaffoldGenerator < Rails::Generator::Base
 
     raise "Models with names equals to reserved words: " + klasses_eq_reserved_words.join(", ") \
       unless klasses_eq_reserved_words.empty?
+    
+    klasses_with_diff_sig_to_pl = []
+    klasses.keys.each do |klass_name|
+      klasses_with_diff_sig_to_pl << klass_name if \
+          klass_name.pluralize.singularize.pluralize != klass_name.singularize.pluralize \
+          || klass_name.pluralize.singularize != klass_name.singularize
+    end
+
+    raise "Models with incorrect Ruby on Rails inflection: " + klasses_with_diff_sig_to_pl.join(", ") \
+      unless klasses_with_diff_sig_to_pl.empty?
 
     return true
   end
-  
+    
 end

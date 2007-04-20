@@ -5,21 +5,32 @@
 	font-size: 12px;
 	background-color: #E6F2FF;
 	border: solid 1px #C5DBF7;
+    overflow: hidden;
+	width: 100%;	
 }
 .meta-scaffold h2 {
 	font: normal 17px verdana, sans-serif;
 	color: #333;
 }
 
-ul li {
+.meta-scaffold ul li {
 	list-style-type:none;
-	margin:0;
+	margin-right: 10px;
 	color:#858585;
 	padding:0.5em 1.5em;
 	border-bottom:1px solid #3D3D3D;
-	width: 20%;
+	width: 150px;
+
 /*	background-color: #eee; #ff8;*/
 }
+ul.meta-scaffold-menu li {
+	float: left;
+}
+
+.meta-scaffold ul {
+    margin-bottom: 10px;
+}
+
 .meta-scaffold a {
 	text-decoration: none;
 	color: #06c;

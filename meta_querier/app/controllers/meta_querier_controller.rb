@@ -29,10 +29,17 @@ class MetaQuerierController < ActionController::Base
     init
     @actual_query = session[:actual_query]
     @q_sql = get_sql_for_query(@actual_query) if session[:actual_query]
+  end
+  
+  def get_image
+    init
+    @actual_query = session[:actual_query]
+    @q_sql = get_sql_for_query(@actual_query) if session[:actual_query]
     
     rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @activerecord_classes, :class_columns => @activerecord_columns,
                                                         :models => true, :controllers => false })
     rav.output("#{RAILS_ROOT}/public/images/pro-mq.png")
+    redirect_to "/images/pro-mq.png"
   end
   
   def get_table_names
