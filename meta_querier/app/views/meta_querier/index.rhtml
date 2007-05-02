@@ -1,11 +1,8 @@
-<div style="float:left; width: 35%;">
-<img src="/meta_querier/get_image" />
-</div>
 <div style="float:left; width:60%;">
-<div id="query-builder-div" class="meta-scaffold">
+<div id="query-builder-div" class="meta-querier">
 <%= render :partial => "make_query" %>
 </div>
-<div id="run-query-div" class="meta-scaffold">
+<div id="run-query-div" class="meta-querier" style="overflow: auto;">
 <%= render :partial => "run_query" %>
 </div>
 <!--
@@ -24,4 +21,8 @@ Clases:<br />
     <hr />
 <% end %>
 -->
+</div>
+
+<div style="float:left; width: 35%;">
+<img src="/meta_querier/get_image" />
 </div>

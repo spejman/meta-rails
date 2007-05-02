@@ -15,6 +15,16 @@ module MetaQuerierHelper
     actual_node = route.shift  
     search_model_in_query(query.select {|aq| aq[:model] == actual_node }[0][:join], route)
   end
+
+  def delete_model_in_query(query, route)
+    route ||= []
+    # final case of recursive search
+    return query.delete_if {|aq| aq[:model] == route[0] } if route.size == 1
+
+    # recursive search
+    actual_node = route.shift  
+    delete_model_in_query(query.select {|aq| aq[:model] == actual_node }[0][:join], route)
+  end
   
   def add_new_model_for_query(model, join = [], conditions = [])
     {:model => model, :join => join, :conditions => conditions }

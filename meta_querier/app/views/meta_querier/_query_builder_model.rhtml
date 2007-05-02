@@ -1,33 +1,37 @@
 <% model = actual_query[:model]; route << model %>
 <div id="<%="model-#{model}-#{depth}-#{wide}"%>" class="meta-querier-model meta-querier-depth-<%= depth %> meta-querier-wide-<%= wide %>">
-Model: <%= model %><br/>
+<b>Model:</b> <%= model %> [<%= link_to_remote( "remove", :update => "query-builder-div",
+                                        :url => { :action => "remove_model",
+                                                :condition_model => "#{model}_#{route.join(",")}" } ) %>]<br/>
 
-With what conditions?<br/>
-
-<% unless actual_query[:conditions].empty? %>
+<em>With what conditions?</em><br/>
     <ul>
+<% unless actual_query[:conditions].empty? %>
+
     <% actual_query[:conditions].each_with_index do |ac, index| %>
         <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%> - 
         [<%= link_to_remote( "remove", :update => "query-builder-div",
                                         :url => { :action => "remove_condition",
                                                 :condition_model => "#{model}_#{route.join(",")}", :condition_index => index  } ) %>]</li>
     <% end %>
-    </ul>
-    <% cond_types = ["OR", "AND"] %>
-    <%= select :conditions_cond_type, "#{model}_#{route.join(",")}", cond_types, { :include_blank => true }  %>
+    <li>
+        <% cond_types = ["OR", "AND"] %>
+        <%= select :conditions_cond_type, "#{model}_#{route.join(",")}", cond_types, { :include_blank => true }  %>
+<% else %>
+    <li>
 <% end %>
 
-<%= select :conditions_column, "#{model}_#{route.join(",")}", @activerecord_columns[model].keys, { :include_blank => true }  %>
-<% operations = ["==", "<=>", ">", "<", ">=", "<=", "=~"] %>
-<%= select :conditions_op, "#{model}_#{route.join(",")}", operations, { :include_blank => true }  %>
-<%= text_field :conditions_value, "#{model}_#{route.join(",")}" %>
-<br />
-
-<%= submit_tag "Add condition" %>
+        <%= select :conditions_column, "#{model}_#{route.join(",")}", @activerecord_columns[model].keys, { :include_blank => true }  %>
+        <% operations = ["==", "<=>", ">", "<", ">=", "<=", "=~"] %>
+        <%= select :conditions_op, "#{model}_#{route.join(",")}", operations, { :include_blank => true }  %>
+        <%= text_field :conditions_value, "#{model}_#{route.join(",")}" %>
+        <%= submit_tag "Add condition" %>
+    </li>
+    </ul>
 <br/>
 
 <% unless actual_query[:join].empty? %>
-Actual Joins:
+<em>Actual Joins:</em>
     <% actual_query[:join].each do |aq| %>
         <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :depth => depth+1, :wide => wide+1, :route => route.dup } %>
     <% end %>
@@ -39,7 +43,7 @@ Actual Joins:
         #@activerecord_classes - @actual_query.collect { |aq| aq[:model] } %>
         <% if join_posibilities and !join_posibilities.empty? %>
             Join with:<br />
-            <%= select :join, "#{model}_#{route.join(",")}", join_posibilities, { :include_blank => true }  %><br />
+            <%= select :join, "#{model}_#{route.join(",")}", join_posibilities, { :include_blank => true }  %>
             <%= submit_tag "Add join" %>
         <% end %>
 </div>

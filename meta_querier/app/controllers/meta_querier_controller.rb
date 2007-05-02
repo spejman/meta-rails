@@ -150,4 +150,14 @@ class MetaQuerierController < ActionController::Base
 #    render :text => join_position.to_json
   end
 
+  def remove_model
+    @actual_query = session[:actual_query]
+    route = get_route(params[:condition_model])
+    delete_model_in_query(@actual_query, route)
+    init
+    @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
+
+    render :partial => "make_query"  
+  end
+
 end
