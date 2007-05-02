@@ -129,6 +129,18 @@ class MetaQuerierController < ActionController::Base
     render :partial => "run_query"
   end
   
+  def remove_condition
+    @actual_query = session[:actual_query]
+    route = get_route(params[:condition_model])
+    cond_position = search_model_in_query(@actual_query, route)
+    cond_position[:conditions].delete_at(params[:condition_index].to_i)
+    cond_position[:conditions][0][:cond_type] = nil unless cond_position[:conditions].empty?
+    @q_sql = get_sql_for_query(@actual_query)
+    init
+    render :partial => "make_query"
+#    render :text => join_position.to_json
+  end
+  
   def get_route(key)
     route = key.split("_")[1]
     route = route.split(",") if route

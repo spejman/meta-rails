@@ -6,8 +6,11 @@ With what conditions?<br/>
 
 <% unless actual_query[:conditions].empty? %>
     <ul>
-    <% actual_query[:conditions].each do |ac| %>
-        <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%> - [remove]</li>
+    <% actual_query[:conditions].each_with_index do |ac, index| %>
+        <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%> - 
+        [<%= link_to_remote( "remove", :update => "query-builder-div",
+                                        :url => { :action => "remove_condition",
+                                                :condition_model => "#{model}_#{route.join(",")}", :condition_index => index  } ) %>]</li>
     <% end %>
     </ul>
     <% cond_types = ["OR", "AND"] %>
