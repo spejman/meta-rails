@@ -1,5 +1,5 @@
 # Install hook code here
-RAILS_ROOT = "./"
+#RAILS_ROOT = "./"
 require "fileutils"
 
 destination = File.join(RAILS_ROOT, "public/stylesheets/meta_rails")
