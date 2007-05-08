@@ -1,0 +1,100 @@
+
+<html>
+<head>
+    <title>MetaQuerier | MetaRails - DRY to the limit</title>
+	<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+
+	<link rel="stylesheet" href="../css/master.css" type="text/css" media="screen" title="no title" charset="utf-8" />
+</head>
+
+<body>
+<div class="header-links">
+     castellano | <a href="../meta_querier.html">english</a><br/>
+    <a href="./">MetaRails Home</a>
+</div>
+<h1>MetaQuerier</h1>
+
+<h2>¿Qué es MetaQuerier?</h2>
+<p>
+    MetaQuerier es un plugin para RubyOnRails que forma parte de <a href="./">MetaRails</a>. 
+    Su objetivo es hacer cualquier tipo de consulta a un base de datos de una aplicación
+    RubyOnRails sin ningún tipo de configuración.
+</p>
+<p>
+    MetaQuerier detecta la estructura de los modelos de la aplicación. Muestra un diagrama
+    de la aplicación y ofrece un formulario para generar consultas y navegar por sus datos.
+</p>
+
+<h2>Instalar</h2>
+    <ol> <li>Desde el directorio raíz de la aplicación rails:
+    <pre><code>script/plugin install svn://rubyforge.org/var/svn/meta-rails/HEAD/meta_querier</code></pre></li>
+    <li>Recargar el servidor y acceder con el navegador al subdirectorio "/mega_querier" de la aplicación, por ejemplo:
+    <pre><code>http://localhost:3000/meta_querier</code></pre></li>
+    </ol>
+    <p>
+    MetaQuerier mira si tienes instalado el plugin <a href="http://technoweenie.stikipad.com/plugins/show/Acts+as+Authenticated">ActAsAuthenticated</a>,
+    en caso afirmativo llama automáticamente a su método login_required.<br/>
+    Si a pesar de tener el plugin <a href="http://technoweenie.stikipad.com/plugins/show/Acts+as+Authenticated">ActAsAuthenticated plugin</a> instalado
+    no deseas que MetaQuerier lo use, tienes que añadir la siguiente línea a config/environment.rb:
+    <pre><code>MetaQuerierUseActAsAuth = false</code></pre>    
+    </p>
+
+<h2>Precaución!</h2>
+<p>
+    MetaQuerier esta en versión alpha y todavía tiene problemas de seguridad
+    no lo uses en entornos de producción.
+</p>
+<p>
+    Estamos arreglando errores que pueden ser utilizados para realizar ataques de injección de código.
+</p>
+
+<h2>Futuras Características</h2>
+    <ul>
+        <li>My Queries: Gestión de consultas comunes para acceder a ellas rápidamente.</li>
+        <li>Database Regions: Dividir la base de datos en múltiples regiones para poder explorar mejor bases de datos grandes.</li>
+        <li>Exportar las consultas a CSV y XML.</li>
+        <li>Generar consultas clicando directamente en el diagrama de la base de datos en lugar de los formularios.</li>
+    </ul>
+
+<h2>Más información</h2>
+    <p>
+        Puede encontrarse más información sobre MetaRails en su página de <a href="http://rubyforge.org/projects/meta-rails/">Rubyforge</a> y en los siguientes blogs:
+    </p>  
+    <ul>
+        <li>MetaRails Rubyforge: <a href="http://rubyforge.org/projects/meta-rails/">rubyforge.org/projects/meta-rails</a></li>
+        <li>English blog: <a href="http://spejman-on-rails.blogspot.com/">Spejman On Rails</a></li>
+		<li>blog Español: <a href="http://spejman.blogspot.com">Spejman's Blog</a></li>
+    </ul>
+
+<h2>Contribuir</h2>
+    <p>
+        Si has jugado un poco con Ruby nos creerás si te decimos que disfrutamos de lo lindo desarrollando
+        MetaRails. Este proyecto nos permite adentrarnos en las entrañas de RoR y Ruby, aprendiendo mucho.
+    </p>
+    <p>
+        Si quieres disfrutar y aprender con MetaRails, escribe a sergio.espeja+metarails [yasabesque] gmail.com para 
+        colaborar en el proyecto.
+    </p>
+
+<h2>Créditos</h2>
+    <p>
+        Este proyecto fue creado por <a href="http://www.upf.edu/pdi/iula/sergio.espeja">Sergio Espeja</a> 
+        como parte de su trabajo en <a href="http://www.iula.upf.es">Institut Universitari de Lingüística Aplicada 
+        of Universitat Pompeu Fabra</a> y en <a href="http://bee.com.es">bee.com.es</a>.
+    </p>
+    <p>
+        El desarrollo de este proyecto esta siendo realizado por Sergio Espeja con la colaboración de Jorge L. Cangas.
+    </p>
+    <p>
+        MetaRails  esta liberado bajo licencia GPL. Rails esta bajo <a href="http://www.opensource.org/licenses/mit-license.php">licencia MIT</a>.
+        Ruby esta bajo <a href="http://www.ruby-lang.org/en/LICENSE.txt">licencia Ruby</a>.
+    </p>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-262540-14";
+urchinTracker();
+</script>
+</body>
+</html>
