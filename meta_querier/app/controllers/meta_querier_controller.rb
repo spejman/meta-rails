@@ -5,7 +5,6 @@ include MetaQuerier
 include MetaQuerierHelper
 
 class MetaQuerierController < ActionController::Base
-
   self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/views/"
   
   layout "application"
@@ -13,6 +12,14 @@ class MetaQuerierController < ActionController::Base
   AR_DB_RESERVED_WORDS = ["schema_info", "engine_schema_info"]
   AR_DB_NO_RELEVANT_COLUMNS = ["id"]
 
+  # ActAsAuthenticated hook
+  if File.exists? "#{RAILS_ROOT}/vendor/plugins/acts_as_authenticated"
+    include AuthenticatedSystem
+    before_filter :do_login_if_required
+    def do_login_if_required
+      login_required if !defined?(MetaQuerierUseActAsAuth) or MetaQuerierUseActAsAuth
+    end
+  end
 # INIT methods
 # 
   
@@ -87,6 +94,7 @@ class MetaQuerierController < ActionController::Base
   end
   
   def make_query
+    init
     session[:actual_query] ||= []
     @actual_query = session[:actual_query]
     if params[:query] 
@@ -103,12 +111,34 @@ class MetaQuerierController < ActionController::Base
     end
   
     # Get conditions for each model
-    if params[:conditions_column] and  params[:conditions_op] and params[:conditions_value]
+    if params[:conditions_column] and (params[:conditions_op_string] or params[:conditions_op_integer]) \
+        and params[:conditions_value] and params[:conditions_c_type]
+
       params[:conditions_column].each do |key, column_name|
+        column_type = params[:conditions_c_type][key]
+
+        if column_type == "string"
+          conditions_op = params[:conditions_op_string][key]
+        else
+          conditions_op = params[:conditions_op_integer][key]
+        end
+        
         # jump to next if op and value fields are empty
-        # TODO: show a message warning: ej. not op field choosen ...
-        next if column_name.blank? or !params[:conditions_op][key] or !params[:conditions_value][key]
-        next if params[:conditions_op][key].blank? or params[:conditions_value][key].blank?
+        if column_type == "date"
+          next unless params[:conditions_value_date]
+          year = params[:conditions_value_date][key +"(1i)"]
+          month = params[:conditions_value_date][key +"(2i)"]
+          day = params[:conditions_value_date][key +"(3i)"]                    
+          conditions_value = "\"#{month}-#{day}-#{year}\""
+        else
+          # TODO: show a message warning: ej. not op field choosen ...
+          next if column_name.blank? or !conditions_op or !params[:conditions_value][key]
+          next if conditions_op.blank? or params[:conditions_value][key].blank?
+          conditions_value = params[:conditions_value][key]
+          conditions_value = "%" + conditions_value + "%" if conditions_op == "=~"
+          conditions_value = "\"" + conditions_value + "\"" if column_type == "string"
+          
+        end
         route = get_route(key)
         join_position = search_model_in_query(@actual_query, route)
   
@@ -118,11 +148,12 @@ class MetaQuerierController < ActionController::Base
   
         # add the condition
         params_type = params[:conditions_cond_type][key] if params[:conditions_cond_type]
-        join_position[:conditions] << add_new_condition_for_query(column_name, params[:conditions_op][key],
-                                          params[:conditions_value][key],  params_type)
+        join_position[:conditions] << add_new_condition_for_query(column_name, conditions_op,
+                                          conditions_value,  params_type)
       end
+
     end
-    init
+
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
 
     render :partial => "make_query"
@@ -155,9 +186,22 @@ class MetaQuerierController < ActionController::Base
     route = get_route(params[:condition_model])
     delete_model_in_query(@actual_query, route)
     init
+    logger.debug @actual_query.to_json
+    @actual_query = nil and session[:actual_query] = nil if @actual_query.empty?
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
 
     render :partial => "make_query"  
   end
 
+  def show_model_column_condition
+    model = params[:model]
+    column = params[:column]
+    init
+    #logger.debug model
+    #logger.debug column
+    #logger.debug @activerecord_columns.to_json
+    #logger.debug @activerecord_columns[model].to_json
+    @c_type = @activerecord_columns[model][column]
+    @route = params[:route]
+  end
 end

@@ -21,11 +21,20 @@
     <li>
 <% end %>
 
-        <%= select :conditions_column, "#{model}_#{route.join(",")}", @activerecord_columns[model].keys, { :include_blank => true }  %>
+        <%= select :conditions_column, "#{model}_#{route.join(",")}", @activerecord_columns[model].keys, { :include_blank => true },
+                        :onchange => "new Ajax.Request('/meta_querier/show_model_column_condition?column='+this.value+'&amp;model=#{model}&amp;route=#{model}_#{route.join(",")}', {asynchronous:true, evalScripts:true})" %>
         <% operations = ["==", "<=>", ">", "<", ">=", "<=", "=~"] %>
-        <%= select :conditions_op, "#{model}_#{route.join(",")}", operations, { :include_blank => true }  %>
-        <%= text_field :conditions_value, "#{model}_#{route.join(",")}" %>
-        <%= submit_tag "Add condition" %>
+        <%= select :conditions_op_string, "#{model}_#{route.join(",")}", operations, { :include_blank => true },
+                    :id => "#{model}_#{route.join(",")}_op_string", :style => "display: none;"  %>
+        <% operations = ["==", "<=>", ">", "<", ">=", "<="] %>
+        <%= select :conditions_op_integer, "#{model}_#{route.join(",")}", operations, { :include_blank => true },
+                    :id => "#{model}_#{route.join(",")}_op_integer", :style => "display: none;"  %>
+        <%= text_field :conditions_value, "#{model}_#{route.join(",")}", :id => "#{model}_#{route.join(",")}_tf", :style => "display: none;" %>
+        <span id="<%= "#{model}_#{route.join(",")}_dt" %>" style="display: none;">
+            <%= date_select :conditions_value_date, "#{model}_#{route.join(",")}", :order => [:day, :month, :year], :start_year => 0 %>
+        </span>
+        <%= hidden_field :conditions_c_type, "#{model}_#{route.join(",")}" %>
+        <%= submit_tag "Add condition", :id => "#{model}_#{route.join(",")}_sb", :style => "display: none;" %>
     </li>
     </ul>
 <br/>

@@ -42,20 +42,19 @@ module MetaQuerierHelper
     fields = []
     logger.debug query.to_json
     query.each_with_index do |query_n, q_index|
-    logger.debug "query_n --> #{query_n.to_json}"
-    logger.debug "Entrando en #{query_n[:model]}"
+    #logger.debug "query_n --> #{query_n.to_json}"
       columns[query_n[:model]].each do |field|
         fields << "t#{parent_index}_#{q_index}.#{field[0]} as t#{parent_index}_#{q_index}__#{field[0]}".to_sym
       end
       fields << get_fields_for_select(query_n[:join], columns, "#{parent_index}_#{q_index}") unless query_n[:join].empty?
     end
-    logger.debug "Entrando en #{}"
 
     fields.flatten
   end
   
   def get_sql_for_query(actual_query, columns)
   #  st = Select["t_0.name".to_sym, "t_0_0.name as name2".to_sym]
+    return "" if actual_query.nil? or actual_query.empty?
     logger.debug "get_sql_for_query 0"
     fields = get_fields_for_select(actual_query, columns)
     st = Select[fields]
@@ -117,8 +116,13 @@ module MetaQuerierHelper
         end  
     end
     return if query[:join].empty?
-    query[:join].each_with_index do |query_n, q_index|
-      add_where_to_sql_for_query(query_n, "#{parent_index}_#{q_index}", st)
+
+    # Actualize is_first to know if is the first condition or
+    # not. This is necessary in order to put AND to the sql query.
+    is_first = is_first && query[:conditions].empty?
+    query[:join].each_with_index do |query_n, q_index|      
+      add_where_to_sql_for_query(query_n, "#{parent_index}_#{q_index}", st, is_first)
+      is_first = is_first && query_n[:conditions].empty?
     end    
       
   end

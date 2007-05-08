@@ -3,7 +3,9 @@
 <% if @ar_base.empty? %>
     This query has no data [<%= Time.now %>]
 <% else @ar_base and !@ar_base.empty? %>
-<table>
+Export to: CSV | XML
+
+<table class="meta-querier">
 <tr>
     <th><%= @ar_base[0].keys.join("</th><th>") %></th>
 </tr>
