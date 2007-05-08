@@ -15,8 +15,7 @@ Mega Scaffold
 
 Mega Querier
 -------------
- * Acabar los filtros mediante formularios.
- * Generar la query a la bd.
+ * Fix error de seguridad en meta_querier_helper.rb: 109, 111, 115 (eval conditions).
  * Exportar: HTML, csv, excel.
  * Hacer la query clicando en la imagen del modelo (mediante usemaps devueltos por graphviz).
  * Definir zonas de la base de datos para bds muy grandes.
