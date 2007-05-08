@@ -1,0 +1,99 @@
+<html>
+<head>
+    <title>MetaQuerier | MetaRails - DRY to the limit</title>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<link rel="stylesheet" href="css/master.css" type="text/css" media="screen" title="no title" charset="utf-8" />
+
+</head>
+<body>
+<div class="header-links">
+    english <!-- | <a href="es/meta_querier.html">castellano</a> --><br/>
+    <a href="./">MetaRails Home</a>
+</div>
+<h1>MetaQuerier</h1>
+
+<h2>What is MetaQuerier?</h2>
+<p>
+    MetaQuerier RubyOnRails plugin that is a part of <a href="./">MetaRails</a>. Its aim
+    is to make any kind of query to a database in a RubyOnRails application with zero
+    configuration.
+</p>
+<p>
+    MetaQuerier detects the structure of the application models.
+    Shows a diagram of the application and offers a custom form for building queries and
+    browsing its data.
+</p>
+
+<h2>Install</h2>
+    <ol> <li>From the rails application root directory:
+    <pre><code>script/plugin install svn://rubyforge.org/var/svn/meta-rails/HEAD/meta_querier</code></pre></li>
+    <li>Reload your server and point your browser to the "/mega_querier" folder of your application, for example:
+    <pre><code>http://localhost:3000/meta_querier</code></pre></li>
+    </ol>
+    <p>
+    MetaQuerier looks if you have <a href="http://technoweenie.stikipad.com/plugins/show/Acts+as+Authenticated">ActAsAuthenticated plugin</a> installed,
+    if so it calls automatically the function login_required acting as expected.<br/>
+    If you have <a href="http://technoweenie.stikipad.com/plugins/show/Acts+as+Authenticated">ActAsAuthenticated plugin</a> installed but you
+    don't want MetaQuerier to use ActAsAuthenticated you must add the next code to config/environment.rb:
+    <pre><code>MetaQuerierUseActAsAuth = false</code></pre>    
+    </p>
+
+<h2>Caution!</h2>
+<p>
+    MetaQuerier is in alpha version and still haves security issues
+    be carefull and not use it in production environments.
+</p>
+<p>
+    We are fixing a bug that can be a backdoor for code injection.
+</p>
+<h2>Future Features</h2>
+    <ul>
+        <li>My Queries: Manage common queries in order to access them fast.</li>
+        <li>Database Regions: Divide the database in multiple regions for better browsing of large databases.</li>
+        <li>Export query data to CSV and XML</li>
+        <li>Generate the queries clicking directily in the database diagram instead of using provided forms.</li>
+    </ul>
+
+<h2>More information</h2>
+    <p>
+        You can find more information about MetaRails in the rubyforge project page and the next blogs:
+    </p>
+    
+    <ul>
+        <li>MetaRails in Rubyforge: <a href="http://rubyforge.org/projects/meta-rails/">rubyforge.org/projects/meta-rails</a></li>
+        <li>English blog: <a href="http://spejman-on-rails.blogspot.com/">Spejman On Rails</a></li>
+        <li>Spanish blog: <a href="http://spejman.blogspot.com">Spejma's Blog</a></li>
+    </ul>
+
+<h2>Contributing</h2>
+    <p>
+        If you have played a bit with Ruby you will belive us when we say that we are enjoying a lot developing
+        MetaRails. This project let us dig a lot into RoR and Ruby internals and learn so much.
+    </p>
+    <p>
+        If you want to enjoy and learn with MetaRails email to sergio.espeja+metarails [youknowwhat] gmail.com in
+        order to contribute in any way with the project.
+    </p>
+
+<h2>Credits</h2>
+    <p>
+        This project is created by <a href="http://www.upf.edu/pdi/iula/sergio.espeja">Sergio Espeja</a> 
+        as part of his work in <a href="http://www.iula.upf.es">Institut Universitari de Lingüística Aplicada 
+        of Universitat Pompeu Fabra</a> and in <a href="http://bee.com.es">bee.com.es</a>.
+    </p>
+    <p>
+        The development of this project is being done by Sergio Espeja with the colaboration of Jorge L. Cangas.
+    </p>
+    <p>
+        MetaRails is released under GPL License. Rails is released under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a>.
+        Ruby under the <a href="http://www.ruby-lang.org/en/LICENSE.txt">Ruby License</a>.
+    </p>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-262540-14";
+urchinTracker();
+</script>
+</body>
+</html>
