@@ -8,12 +8,9 @@ class MetaScaffoldGenerator < Rails::Generator::Base
   def initialize(*runtime_args)
      super(*runtime_args)
      @file_name = args[0]
+     raise "Filename of database schema file not given." unless @file_name
      @scaffold_method = args[1]
-     #@scaffold_method = "scaffold" unless @scaffold_method
-    #  classes = dtd_to_yaml(@file_name)
-
-     # puts "error" unless check_consitency(classes)
-
+     @scaffold_method = "active_scaffold" unless @scaffold_method
   end
 
   def manifest
@@ -31,7 +28,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       classes = YAML.load(File.open(@file_name)) if @file_name[-4..-1] == ".yml"
       classes = dtd_to_mscff_yaml(@file_name) if @file_name[-4..-1] == ".dtd"
       
-      exit unless check_consitency(classes)
+      raise "Consistency error." unless check_consitency(classes)
 
       # Adding needed relations for building migrations and models
       classes = add_relations_to_klasses(classes)
@@ -42,7 +39,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         fks = []
         class_def[1]["class_ass"].select { |ass| (ass.has_key? "belongs_to" or ass.has_key? "has_one") }.each do |v_cont|
           fk_class_name = v_cont.values[0].tableize.singularize
-          fks << "#{fk_class_name}_id"
+          fks << fk_class_name
         end
 
         habtm = []
@@ -63,18 +60,16 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       end
 
       # Check for class naming collisions.
-#      m.class_collisions class_path, class_name, "#{class_name}WorkerTest"
+      #m.class_collisions class_path, class_name, "#{class_name}WorkerTest"
 
 
-      # Worker and test directories.
-#      m.directory File.join('lib/workers', class_path)
-      #m.directory File.join('test/unit', class_path)
       m.puts "Begin migration ******"
       m.system("rake db:migrate") #TODO: Use rake directly not using system call.
       m.puts "End migration ******"
 
       if @scaffold_method
-        m.file File.join('../files/', 'meta_scaffold.css'), File.join('public/stylesheets/','meta_scaffold.css')
+        #m.directory  File.join('public/stylesheets/meta_rails')
+        #m.file File.join('../files/', 'meta_scaffold.css'), File.join('public/stylesheets/meta_rails','meta_scaffold.css')
         class_names = classes.collect {|class_name, class_def| class_name }
   
         if @scaffold_method == "active_scaffold"
@@ -94,16 +89,12 @@ class MetaScaffoldGenerator < Rails::Generator::Base
 
           #m.generate([@scaffold_method, class_names].compact.flatten)
         end
-        m.generate(["controller", "meta_scaffold_info", "index"])      
+        # Generate meta_scaffold_info, that is the index or menu of meta_scaffold.
+        m.generate(["controller", "meta_scaffold_info", "index"])  
         m.template 'index.rhtml', File.join('app/views/meta_scaffold_info/index.rhtml'),
                       :assigns => { :class_names => class_names }, :collision => :force
       end
-      # Worker class and unit tests.
- #     m.template 'worker.rb',      File.join('lib/workers', class_path, "#{file_name}_worker.rb")
-      #m.template 'unit_test.rb',  File.join('test/unit', class_path, "#{file_name}_worker_test.rb")
-      #
-      #
-      # lexical_database lexical_entry lexicon sense syntactic_behaviour
+
     end
   end
   
@@ -112,8 +103,9 @@ class MetaScaffoldGenerator < Rails::Generator::Base
   end
   
   def check_consitency(klasses)
-    puts "*** Data consitency not checked"
+    return false if klasses.nil? or klasses.empty?
     
+    # Check for reserved words colisions
     klasses_eq_reserved_words = []    
     klasses.keys.each do |klass_name|
       klasses_eq_reserved_words << klass_name if Module.constants.include? klass_name.camelize \
@@ -123,6 +115,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
     raise "Models with names equals to reserved words: " + klasses_eq_reserved_words.join(", ") \
       unless klasses_eq_reserved_words.empty?
     
+    # Check for errors in Ruby on Rails inflection
     klasses_with_diff_sig_to_pl = []
     klasses.keys.each do |klass_name|
       klasses_with_diff_sig_to_pl << klass_name if \

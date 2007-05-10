@@ -3,7 +3,7 @@
   <title><%%= controller.controller_name.humanize %>: <%%= controller.action_name.humanize %></title>
 <%%= javascript_include_tag :defaults %>
 <% if is_active_scaffold -%> <%%= active_scaffold_includes %> <% end -%>
-<%%= stylesheet_link_tag "meta_scaffold" %>
+<%%= stylesheet_link_tag "meta_rails/meta_scaffold" %>
 </head>
 <body>
 
@@ -11,7 +11,7 @@
 
 <div class="meta-scaffold">
 <h2>Menu</h2>
-<%%= link_to "Querier", :controller => "/meta_querier" if defined?(MetaQuerierController)%> | 
+<%%= link_to "Querier", :controller => "/meta_querier" if File.exist?(File.join(RAILS_ROOT, "vendor/plugins/meta_querier")) %> | 
 <%%= link_to "Scaffold info", :controller => "/meta_scaffold_info" %>
 <ul class="meta-scaffold-menu">
 <% class_names.sort.each do |class_name| -%>
