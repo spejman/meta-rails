@@ -1,10 +1,9 @@
 require "meta_querier"
 require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_helper.rb"
 
-include MetaQuerier
 include MetaQuerierHelper
 
-class MetaQuerierController < ActionController::Base
+class MetaQuerierController < ApplicationController
   self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/views/"
   
   layout "application"
@@ -17,7 +16,7 @@ class MetaQuerierController < ActionController::Base
     include AuthenticatedSystem
     before_filter :do_login_if_required
     def do_login_if_required
-      login_required if !defined?(MetaQuerierUseActAsAuth) or MetaQuerierUseActAsAuth
+      login_required if (!defined?(MetaQuerierUseActAsAuth) or MetaQuerierUseActAsAuth) and !logged_in?
     end
   end
 # INIT methods
