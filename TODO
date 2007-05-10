@@ -1,14 +1,16 @@
 Mega Scaffold
 -------------
- * Estabilizar el código actual.
-	- Decidir que hacer al encontrarnos con objetos que son palabras, constantes o variables reservadas en RoR.
- * Decidir si usamos los MagicModels del DrNic.
+ * Guardar el estado de meta_scaffold actual (esquema de bd).
  * Permitir que se puedan construir bd incrementales:
  	- Comprobar estado actual de la aplicación.
  	- Comparar con el nuevo estado deseado.
  	- Implementar cambios.
- * Integrar el plugin "Acts As Authenticated" (http://technoweenie.stikipad.com/plugins/show/Acts+as+Authenticated),
-   y configurarlo automáticamente.
+ 		- new models
+ 		- delete models
+ 		- modify models
+ * Método simple para manejar las Inflections incorrectas.
+ * Inducir el estado de meta_scaffold actual (esquema de bd).
+ * Inducir modelos y controladores en lugar de usar generators de código (Decidir si usamos los MagicModels del DrNic).
  * Scaffold propio XHTML simple y muy configurable mediante CSS.
  * Test.
  * Documentación.
@@ -32,6 +34,8 @@ Mega WebService
 
 meta-rails gem
 -------------
+ * Integrar el plugin "Acts As Authenticated" (http://technoweenie.stikipad.com/plugins/show/Acts+as+Authenticated),
+   y configurarlo automáticamente.
  * Definir exactamente la funcionalidad y los parámetros del script.
  * Crear el script.
  * Hacer que la gem instale el script en el path del usuario.
