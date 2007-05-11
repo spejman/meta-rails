@@ -11,6 +11,7 @@ Mega Scaffold
  * Método simple para manejar las Inflections incorrectas.
  * Inducir el estado de meta_scaffold actual (esquema de bd).
  * Inducir modelos y controladores en lugar de usar generators de código (Decidir si usamos los MagicModels del DrNic).
+ * Generar código a partir de dbdesigner http://wiki.rubyonrails.org/rails/pages/DBModelGem
  * Scaffold propio XHTML simple y muy configurable mediante CSS.
  * Test.
  * Documentación.
@@ -28,6 +29,7 @@ Mega Querier
 
 Mega WebService
 -------------
+ * Mirar ActiveScaffold
  * Experimentar hasta donde se puede llegar.
  * Definir los métodos a implementar.
  * Documentación.
