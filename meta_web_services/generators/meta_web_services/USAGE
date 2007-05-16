@@ -1,0 +1,6 @@
+Description:
+
+Example:
+    ./script/generate meta_web_services fileName
+
+    This will create ...
