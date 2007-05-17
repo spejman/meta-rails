@@ -41,18 +41,34 @@ class MetaWebServicesGenerator < Rails::Generator::Base
         end
 
         habtm = []
-        class_def[1]["class_ass"].select { |ass| ass.has_key? "has_and_belongs_to_many" }.each do |v_cont|
+        class_def[1]["class_ass"].select { |ass| ass.has_key? "has_and_belongs_to_many" or ass.has_key? "has_many" }.each do |v_cont|
           fk_class_name = v_cont.values[0].tableize.singularize
-          habtm << fk_class_name if class_def[0] < fk_class_name          
+          habtm << fk_class_name #if class_def[0] < fk_class_name          
         end
 
-      
-        m.template 'api.rb', File.join('app/apis', "ws_#{class_def[0].tableize}_api.rb"),
-          :assigns => { :ws_name => "ws_" + class_def[0].tableize,
-                        :klass => class_def[0].classify }
+        attr_list = class_def[1]["class_attr"].keys.sort.join(", ")
+        attr_list += ", " + fks.collect {|fk| fk+"_id" }.join(", ") unless fks.empty?
+        attr_hash = attr_list.split(", ").collect {|a| ":#{a} => #{a}" }.join(", ")
+        attr_hash_with_type = attr_list.split(", ").collect do |a|
+            "{ :#{a} => :" + (class_def[1]["class_attr"][a] || "int") + " }"
+        end.join(", ")
         m.template 'webservice_controller.rb', File.join('app/controllers', "ws_#{class_def[0].tableize}_controller.rb"),
           :assigns => { :ws_name => "ws_" + class_def[0].tableize,
+                        :klass_attr => class_def[1]["class_attr"],
+                        :fks => fks,
+                        :attr_list => attr_list,
+                        :attr_hash => attr_hash,
+                        :habtm => habtm,
                         :klass => class_def[0].classify }
+        m.template 'api.rb', File.join('app/apis', "ws_#{class_def[0].tableize}_api.rb"),
+          :assigns => { :ws_name => "ws_" + class_def[0].tableize,
+                        :klass_attr => class_def[1]["class_attr"],
+                        :fks => fks,
+                        :attr_list => attr_list,
+                        :attr_hash => attr_hash,
+                        :attr_hash_with_type => attr_hash_with_type,
+                        :habtm => habtm,
+                        :klass => class_def[0].classify }      
 
       end
       end    

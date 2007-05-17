@@ -11,17 +11,51 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
 	<%= klass %>.find :all
   end
 
-  def new(name, otracosa, otro_id)
-	otro_id = nil if otro_id < 0
-	raise "otro_id invalid" unless otro_id.nil? or Otro.find(otro_id)
-	l = Lexicon.new(:name => name, :otracosa => otracosa, :otro_id => otro_id)
-	l.save
-	return l0
+  def new(<%= attr_list %>)
+    <% fks.each do |fk| -%>
+	<%= fk %>_id = nil if <%= fk %>_id < 0
+	raise "<%= fk %> invalid" unless <%= fk %>_id.nil? or <%= fk.classify %>.find(<%= fk %>_id)
+	<% end -%>
+	k = <%= klass %>.new(<%= attr_hash %>)
+	k.save
+	return k
   end
 
-  def update
+  def update(id, <%= attr_list %>)
+    k = <%= klass %>.find id
+    raise "<%= klass %> with id #{id} not found" unless k
+    k.attributes = {<%= attr_hash %>}
+    k.update
+    k
   end
 
-  def delete
+  def delete(id)
+    return <%= klass %>.delete id    
   end
+  
+  # Has and belongs to many management methods (view, add and remove)
+  <% habtm.each do |habtm_klass| %>
+  
+  def <%= habtm_klass.underscore.pluralize %>(id)
+    k = <%= klass %>.find id
+    k.<%= habtm_klass.underscore.pluralize %>
+  end
+
+  def add_<%= habtm_klass.underscore.singularize %>(id, habtm_id)
+    k = <%= klass %>.find id
+    habtm = <%= habtm_klass.classify %>.find habtm_id
+    k.<%= habtm_klass.underscore.pluralize %> << habtm
+    k.update
+    k.<%= habtm_klass.underscore.pluralize %>
+  end
+
+  def remove_<%= habtm_klass.underscore.singularize %>(id, habtm_id)
+    k = <%= klass %>.find id
+    habtm = <%= habtm_klass.classify %>.find habtm_id
+    k.<%= habtm_klass.underscore.pluralize %> -= [habtm]
+    k.update
+    k.<%= habtm_klass.underscore.pluralize %>
+  end
+  
+  <% end %>
 end
