@@ -1,6 +1,7 @@
 require 'active_support'
 require "fileutils"
 require 'dtd_to_mscff_yaml.rb'
+require 'check_consistency.rb'
 
 class MetaWebServicesGenerator < Rails::Generator::Base
   attr_accessor :file_name
@@ -82,22 +83,13 @@ class MetaWebServicesGenerator < Rails::Generator::Base
     return false if klasses.nil? or klasses.empty?
     
     # Check for reserved words colisions
-    klasses_eq_reserved_words = []    
-    klasses.keys.each do |klass_name|
-      klasses_eq_reserved_words << klass_name if Module.constants.include? klass_name.camelize \
-          or Module.constants.include? klass_name.singularize.camelize
-    end
+    klasses_eq_reserved_words = check_for_reserved_words(klasses.keys)
 
     raise "Models with names equals to reserved words: " + klasses_eq_reserved_words.join(", ") \
       unless klasses_eq_reserved_words.empty?
     
     # Check for errors in Ruby on Rails inflection
-    klasses_with_diff_sig_to_pl = []
-    klasses.keys.each do |klass_name|
-      klasses_with_diff_sig_to_pl << klass_name if \
-          klass_name.pluralize.singularize.pluralize != klass_name.singularize.pluralize \
-          || klass_name.pluralize.singularize != klass_name.singularize
-    end
+    klasses_with_diff_sig_to_pl = check_for_incorrect_inflection(klasses.keys)
 
     raise "Models with incorrect Ruby on Rails inflection: " + klasses_with_diff_sig_to_pl.join(", ") \
       unless klasses_with_diff_sig_to_pl.empty?
