@@ -70,8 +70,8 @@ Dir.chdir("#{app_name}")
   h.say "<%= color('Installing #{plugin} plugin ...', :green) %>"
   system("ruby #{File.join("script","plugin")} install svn://rubyforge.org/var/svn/meta-rails/HEAD/#{plugin}")
 end
-#h.say "<%= color('Installing active_scaffold plugin ...', :green) %>"
-#system("ruby #{File.join("script","plugin")} install http://activescaffold.googlecode.com/svn/tags/active_scaffold")
+h.say "<%= color('Installing active_scaffold plugin ...', :green) %>"
+system("ruby #{File.join("script","plugin")} install http://activescaffold.googlecode.com/svn/tags/active_scaffold")
 
 # Create database.yml
 h.say "<%= color('Creating config/database.yml file ...', :green) %>"
