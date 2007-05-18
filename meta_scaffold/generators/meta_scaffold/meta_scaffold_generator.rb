@@ -64,7 +64,14 @@ class MetaScaffoldGenerator < Rails::Generator::Base
 
 
       m.puts "Begin migration ******"
-      m.system("rake db:migrate") #TODO: Use rake directly not using system call.
+
+      if RUBY_PLATFORM =~ /mswin32/
+        # In windows system method with rake don't work unless you redirect the
+        # output.
+        m.system("rake db:migrate > meta_scaffold-win.log")
+      else
+        m.system("rake db:migrate") #TODO: Use rake directly not using system call.
+      end
       m.puts "End migration ******"
 
       if @scaffold_method
