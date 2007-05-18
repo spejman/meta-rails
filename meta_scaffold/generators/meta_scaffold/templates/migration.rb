@@ -1,3 +1,4 @@
+<% require "#{RAILS_ROOT}/config/metarails_inflections.rb" -%>
 class Create<%= class_name.camelize %> < ActiveRecord::Migration
   def self.up
 
