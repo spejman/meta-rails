@@ -34,9 +34,8 @@ class MetaQuerierController < ApplicationController
     @activerecord_classes.each {|ar_class_name| @activerecord_associations[ar_class_name] = get_activerecord_associations(ar_class_name)}
   end
     
-  def get_table_names
-   # Only tested with MySql. The db must accept "SHOW TABLES" SQL sentence.
-   table_names_hash = ActiveRecord::Base.connection.select_values("SHOW TABLES") - AR_DB_RESERVED_WORDS
+  def get_table_names   
+   table_names_hash = ActiveRecord::Base.connection.tables - AR_DB_RESERVED_WORDS
   end
   
   def get_activerecord_classes(table_names)
