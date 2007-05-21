@@ -58,6 +58,8 @@ def dtd_to_mscff_yaml(filename)
             h_yaml[attribute[0]]["class_ass"] << {"has_many" => att_definition[0]}
           else
             #TODO: this must raise an error because is unable to determite the relation!!
+            #raise "Unable to determine the relation of #{attribute[0]} with [#{att_definition[0]}]"
+            # Now if don't exists the class of the relation, then create de attribute as a string.
             h_yaml[attribute[0]]["class_attr"][att_definition[0]] = :string
           end
       end
@@ -70,14 +72,13 @@ end
   #TODO: move this method to ../generators/meta_scaffold/meta_scaffold_generator.rb
   def add_relations_to_klasses(klasses)
     klasses.each do |klass_name, klass_info|
-      puts "* " + klass_name
+      #puts "* " + klass_name
       # getting classes related with has_many
       klass_info["class_ass"].select{|r| r["has_many"]}.map{|r| r.values}.flatten.each do |t_klass|
-        puts "--> " + t_klass
-        puts ""
+        #puts "--> " + t_klass
+        #puts ""
         target_klass = check_mode_klass_exists(klasses, t_klass, klass_name)
 
-        # check if habtm
         if klasses[target_klass]["class_ass"].select{|r| r["has_many"]}.map{|r| r.values}.flatten.include? klass_name
             klasses[target_klass]["class_ass"].delete( {"has_many" => klass_name})
             klasses[klass_name]["class_ass"].delete( {"has_many" => target_klass})
@@ -87,7 +88,7 @@ end
         # check if target class must have belongs_to
         elsif !klasses[target_klass]["class_ass"].select{|r| r["belongs_to"]}.map{|r| r.values}.flatten.include? klass_name
             klasses[target_klass]["class_ass"] << { "belongs_to" => klass_name }
-            puts "Added #{klass_name} to #{target_klass}"
+            #puts "Added #{klass_name} to #{target_klass}"
         end
       end
       
@@ -96,7 +97,7 @@ end
         
         if !klasses[target_klass]["class_ass"].select{|r| r["belongs_to"]}.map{|r| r.values}.flatten.include? klass_name
             klasses[target_klass]["class_ass"] << { "belongs_to" => klass_name }
-            puts "Added #{klass_name} to #{target_klass}"
+            #puts "Added #{klass_name} to #{target_klass}"
         end
       end
       

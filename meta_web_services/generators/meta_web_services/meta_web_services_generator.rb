@@ -47,11 +47,15 @@ class MetaWebServicesGenerator < Rails::Generator::Base
           habtm << fk_class_name #if class_def[0] < fk_class_name          
         end
 
-        attr_list = class_def[1]["class_attr"].keys.sort.join(", ")
-        attr_list += ", " + fks.collect {|fk| fk+"_id" }.join(", ") unless fks.empty?
+        if class_def[1]["class_attr"]
+          attr_list = class_def[1]["class_attr"].keys.sort.join(", ")
+        else
+          attr_list = ""
+        end
+        attr_list += ((attr_list.blank?) ? "" : ", " ) + fks.collect {|fk| fk+"_id" }.join(", ") unless fks.empty?
         attr_hash = attr_list.split(", ").collect {|a| ":#{a} => #{a}" }.join(", ")
         attr_hash_with_type = attr_list.split(", ").collect do |a|
-            "{ :#{a} => :" + (class_def[1]["class_attr"][a] || "int") + " }"
+            "{ :#{a} => :" + ((class_def[1]["class_attr"][a].to_s if class_def[1]["class_attr"] and class_def[1]["class_attr"][a]) || "int") + " }"
         end.join(", ")
         m.template 'webservice_controller.rb', File.join('app/controllers', "ws_#{class_def[0].tableize}_controller.rb"),
           :assigns => { :ws_name => "ws_" + class_def[0].tableize,
