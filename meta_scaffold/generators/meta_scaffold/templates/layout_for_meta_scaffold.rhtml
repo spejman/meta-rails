@@ -20,6 +20,9 @@
 </ul>
 <br/><br/>
 </div>
+<% if File.exist?(File.join(RAILS_ROOT, "vendor/plugins/meta_querier")) %>
+<%%= link_to "<img src='/meta_querier/get_image?model=#{@meta_scaffold_class_name}' maxwidth='800' border='0' />", :controller => "/meta_querier", :action => "get_image" %>
+<% end %>
 <div>
 <%%= yield  %>
 </div>
