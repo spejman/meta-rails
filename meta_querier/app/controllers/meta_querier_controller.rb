@@ -77,9 +77,17 @@ class MetaQuerierController < ApplicationController
   def get_image
     init
     @actual_query = session[:actual_query]
+    if model = params[:model]
+      @models = [params[:model]]
+      @models << @activerecord_associations[@models[0]].collect {|a_name, a_values| a_name.to_s.classify }
+      @models.flatten!
+    else
+      @models = @activerecord_classes      
+    end
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns) if session[:actual_query]
     
-    rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @activerecord_classes, :class_columns => @activerecord_columns,
+    rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @models, :class_columns => @activerecord_columns,
+                                                        :actual_model => params[:model],
                                                         :models => true, :controllers => false })
     rav.output("#{RAILS_ROOT}/public/images/pro-mq.png")
     redirect_to "/images/pro-mq.png"

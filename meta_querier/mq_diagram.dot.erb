@@ -1,27 +1,42 @@
 digraph G {
   bgcolor = "transparent"
-
+  color = black
+  
   node [
     shape = "record"
     style = "filled"
+    color = "black"
+    fillcolor = "#f1ffe8"
     fontname = "Verdana"
     fontsize = 9
   ]
 
+<% if actual_model %>
+  <%= actual_model %> [
+    shape = "record"
+    style = "filled"
+    color = "black"
+    fillcolor = "green"
+    fontname = "Verdana"
+    fontsize = 11    
+  ]
+<% end %>
+  
   graph [
     fontname = "Verdana"
     fontsize = 14
     style = "filled"
-    fillcolor = "white"
+    fillcolor = "#eeeeee"
+    labelfontsize = 5
   ]
 
   <% if options[:models] %>
     subgraph cluster_models {
       label = "Models"
-
-      node [ fillcolor = "#f1ffe8" ]
+      
 
       <% models.each do |model| %>
+
         <% if model.respond_to? :columns %>
           "<%= model %>" [
             <% rows = model_columns(model).collect { |name, type| "<#{name}> #{name} (#{type})" } %>

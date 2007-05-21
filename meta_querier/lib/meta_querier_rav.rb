@@ -32,7 +32,7 @@ module MetaQuerier
   
     protected
   
-    # These two methods are called from diagram.dot.erb
+    # These methods are called from diagram.dot.erb
   
     def models
       @options[:model_names].collect {|mn| mn.constantize }
@@ -40,6 +40,10 @@ module MetaQuerier
     
     def model_columns(model_name)
       @options[:class_columns][model_name.to_s]
+    end
+    
+    def actual_model
+      @options[:actual_model]
     end
     
     def controllers
