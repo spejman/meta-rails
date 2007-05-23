@@ -26,8 +26,8 @@ module MetaQuerierHelper
     delete_model_in_query(query.select {|aq| aq[:model] == actual_node }[0][:join], route)
   end
   
-  def add_new_model_for_query(model, join = [], conditions = [])
-    {:model => model, :join => join, :conditions => conditions }
+  def add_new_model_for_query(model, join_type = nil, join = [], conditions = [])
+    {:model => model, :join_type => join_type, :join => join, :conditions => conditions }
   end
   
   def add_new_condition_for_query(column_name, op, value, cond_type = nil)
@@ -77,12 +77,27 @@ module MetaQuerierHelper
     logger.debug "add_inner_joins_to_sql_for_query 0 - #{parent_index}"
     return if query[:join].empty?
     logger.debug "add_inner_joins_to_sql_for_query 1 - #{parent_index}"
-    tables = []
+    
+    tables = {:inner => [], :left => [], :right => []}
     query[:join].each_with_index do |query_n, q_index|
-      tables << query_n[:model].tableize  .to_sym.as("t_#{parent_index}_#{q_index}".to_sym)   
+      tables[query_n[:join_type].to_sym] << [query_n[:model], "t_#{parent_index}_#{q_index}", query_n[:model].tableize.to_sym.as("t_#{parent_index}_#{q_index}".to_sym)]   
     end
+    
     logger.debug tables.to_json
-    st.inner_join[tables]
+    [:inner, :right, :left].each do |join_type|
+      unless tables[join_type].empty?
+ 
+        on_join_tables = tables[join_type].collect do |join_table|
+          if @activerecord_associations[query[:model]].keys.include? "#{join_table[0].singularize.underscore}".to_sym
+            left_prefix = "#{join_table[0].singularize.underscore}_id"; right_prefix = "id"
+          else
+            left_prefix = "id"; right_prefix = "#{query[:model].singularize.underscore}_id"
+          end
+          "t_#{parent_index}.#{left_prefix} == #{join_table[1]}.#{right_prefix}"
+        end.join("\n")
+        st.send("#{join_type}_join")[tables[join_type].collect { |join_table| join_table[2] }].on { eval on_join_tables }
+      end     
+    end
     query[:join].each_with_index do |query_n, q_index|
       add_inner_joins_to_sql_for_query(query_n, "#{parent_index}_#{q_index}", st)
     end

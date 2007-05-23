@@ -2,7 +2,9 @@
 <div id="<%="model-#{model}-#{depth}-#{wide}"%>" class="meta-querier-model meta-querier-depth-<%= depth %> meta-querier-wide-<%= wide %>">
 <b>Model:</b> <%= model %> [<%= link_to_remote( "remove", :update => "query-builder-div",
                                         :url => { :action => "remove_model",
-                                                :condition_model => "#{model}_#{route.join(",")}" } ) %>]<br/>
+                                                :condition_model => "#{model}_#{route.join(",")}" } ) %>]
+<%= "#{actual_query[:join_type]} join with #{parent}" if defined? parent and parent %>
+<br/>
 
 <em>With what conditions?</em><br/>
     <ul>
@@ -42,7 +44,7 @@
 <% unless actual_query[:join].empty? %>
 <em>Actual Joins:</em>
     <% actual_query[:join].each do |aq| %>
-        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :depth => depth+1, :wide => wide+1, :route => route.dup } %>
+        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :depth => depth+1, :wide => wide+1, :route => route.dup, :parent => model } %>
     <% end %>
 <% end %>
         <% 
@@ -53,6 +55,7 @@
         <% if join_posibilities and !join_posibilities.empty? %>
             Join with:<br />
             <%= select :join, "#{model}_#{route.join(",")}", join_posibilities, { :include_blank => true }  %>
+            <%= select :join_type, "#{model}_#{route.join(",")}", %w{inner left right}, { :include_blank => false, :default => "inner" }  %>
             <%= submit_tag "Add join" %>
         <% end %>
 </div>

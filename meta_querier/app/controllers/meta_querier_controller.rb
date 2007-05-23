@@ -112,7 +112,7 @@ class MetaQuerierController < ApplicationController
         next if value.blank?
         route = get_route(key)
         join_position = search_model_in_query(@actual_query, route)
-        join_position[:join] << add_new_model_for_query(value)
+        join_position[:join] << add_new_model_for_query(value, params[:join_type][key])
       end
     end
   
