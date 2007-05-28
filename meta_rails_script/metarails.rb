@@ -66,12 +66,17 @@ else
 end
 Dir.chdir("#{app_name}")
 
+installed_plugins = {}
 %w{meta_querier meta_web_services meta_scaffold}.each do |plugin|
+  next unless installed_plugins[plugin] = h.agree("Install #{plugin.humanize} plugin?")
   h.say "<%= color('Installing #{plugin} plugin ...', :green) %>"
   system("ruby #{File.join("script","plugin")} install svn://rubyforge.org/var/svn/meta-rails/HEAD/#{plugin}")
 end
-h.say "<%= color('Installing active_scaffold plugin ...', :green) %>"
-system("ruby #{File.join("script","plugin")} install http://activescaffold.googlecode.com/svn/tags/active_scaffold")
+
+if installed_plugins["meta_scaffold"]
+  h.say "<%= color('Installing active_scaffold plugin ...', :green) %>"
+  system("ruby #{File.join("script","plugin")} install http://activescaffold.googlecode.com/svn/tags/active_scaffold")
+end
 
 # Create database.yml
 h.say "<%= color('Creating config/database.yml file ...', :green) %>"
@@ -100,6 +105,16 @@ raise "Models with names equals to reserved words: " + klasses_eq_reserved_words
       unless klasses_eq_reserved_words.empty?
       
 # 2. Check that RoR inflections are correct.
+metarails_custom_inflections = [
+        #"inflect.singular(/s$/i, '')", # fails "lexical_entry" <--> "lexical_entries"
+        "inflect.singular(/ss$/i, 'ss')",
+        "inflect.singular(/^s$/i, 's')",        
+        "inflect.singular(/(n)ews$/i, '\1ews')"
+        ]
+Inflector.inflections do |inflect|
+  eval metarails_custom_inflections.join("\n")
+end
+
 klasses_with_diff_sig_to_pl = check_for_incorrect_inflection(klasses.keys)
 unless klasses_with_diff_sig_to_pl.empty?
   h.say "There are some classes in the #{db_file} file that don't works well with Ruby on Rails Inflector."
@@ -113,7 +128,8 @@ unless klasses_with_diff_sig_to_pl.empty?
   
  inflections_file = File.open(File.join("config", "metarails_inflections.rb"), "w")
  inflections_file.write "Inflector.inflections do |inflect|\n"
- inflections_file.write correct_inflections.collect { |s,p| "inflect.irregular '#{s}', '#{p}'" }.join("\n")   
+  inflections_file.write metarails_custom_inflections.join("\n") + "\n"
+  inflections_file.write correct_inflections.collect { |s,p| "inflect.irregular '#{s}', '#{p}'" }.join("\n")   
  inflections_file.write "\nend\n"
  inflections_file.close
 
