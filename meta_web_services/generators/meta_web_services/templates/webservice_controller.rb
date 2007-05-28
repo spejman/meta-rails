@@ -12,13 +12,13 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
   end
 
   def new(<%= attr_list %>)
-    <% fks.each do |fk| -%>
-	<%= fk %>_id = nil if <%= fk %>_id < 0
-	raise "<%= fk %> invalid" unless <%= fk %>_id.nil? or <%= fk.classify %>.find(<%= fk %>_id)
-	<% end -%>
-	k = <%= klass %>.new(<%= attr_hash %>)
-	k.save
-	return k
+   <% fks.each do |fk| -%>
+	   <%= fk %>_id = nil if <%= fk %>_id < 0
+	   raise "<%= fk %> invalid" unless <%= fk %>_id.nil? or <%= fk.classify %>.find(<%= fk %>_id)
+	 <% end -%>
+	   k = <%= klass %>.new(<%= attr_hash %>)
+	   k.save
+	   return k
   end
 
   def update(id, <%= attr_list %>)
@@ -33,6 +33,11 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
     return <%= klass %>.delete id    
   end
   
+  <% klass_attr.keys.each do |attr| -%>
+  def find_by_<%= attr %>(<%= attr %>)
+    <%= klass %>.find_by_<%= attr %>(<%= attr %>)
+  end
+  <% end %>
   # Has and belongs to many management methods (view, add and remove)
   <% habtm.each do |habtm_klass| %>
   
