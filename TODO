@@ -1,4 +1,4 @@
-Mega Scaffold
+Meta Scaffold
 -------------
  * Guardar el estado de meta_scaffold actual (esquema de bd).
  * Permitir que se puedan construir bd incrementales:
@@ -16,7 +16,7 @@ Mega Scaffold
  * Test.
  * Documentación.
 
-Mega Querier
+Meta Querier
 -------------
  * Fix error de seguridad en meta_querier_helper.rb: 109, 111, 115 (eval conditions).
  * Exportar: HTML, csv, excel.
@@ -27,11 +27,12 @@ Mega Querier
  * Documentación:
     - meta_querier/README
 
-Mega WebService
+Meta WebService
 -------------
- * Mirar ActiveScaffold
- * Experimentar hasta donde se puede llegar.
- * Definir los métodos a implementar.
+  * Implementar método para insertar datos a partir de un xml (que infiera las clases a las que pertenecen
+ los datos y sus atributos y relaciones). Debe generar error y rollback si los datos no son consistentes 
+ con la bd. 
+ * ¿Finder que a partir de un xml te responda con los datos que cumplen dicha condición?
  * Documentación.
 
 meta-rails gem
