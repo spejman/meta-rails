@@ -1,7 +1,7 @@
 <h2>Build Query</h2>
 <%= form_remote_tag :update => "query-builder-div", :url => {:controller => "meta_querier", :action => "make_query"} %>
 <% if @actual_query %>
-
+<!--
     <pre style="background-color: #ccc; padding: 10px; margin: 10px; text-align: left; overflow: auto;">
 <b>debug info:</b>
 <code><%= @actual_query.to_json %>
@@ -12,7 +12,7 @@
 
 
     <br/>
-
+-->
     <%= link_to_remote( "Clear query", :update => "query-builder-div", :url => { :action => :clear_query } ) %>
     | <%= link_to_remote( "Run query", :update => "run-query-div", :url => { :action => :run_query } ) %>
     | Save query <small>(not yet impl.)</small> 

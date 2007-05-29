@@ -7,7 +7,7 @@ Export to: CSV | XML
 
 <table class="meta-querier">
 <tr>
-    <th><%= @ar_base[0].keys.join("</th><th>") %></th>
+    <th><%= @ar_base[0].keys.collect {|k| k[k.index("__")+2..-1].humanize }.join("</th><th>") %></th>
 </tr>
     <% @ar_base.each do |row| %>
         <tr>
