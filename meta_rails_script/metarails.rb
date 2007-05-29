@@ -13,6 +13,9 @@ if RUBY_PLATFORM.include? "mswin32"
   HighLine.use_color = false
 end
 
+environment = if ARGV[0] == "-d"; "HEAD"
+              else; "plugins"; end
+
 h = HighLine.new
 
 h.say "<%= color('-'*80, :green) %>"
@@ -21,7 +24,7 @@ h.say "    This is a alpha version of MetaRails script, only works with <%= colo
 h.say "<%= color('-'*80, :green) %>"
 
 app_name = h.ask "Aplication name:"
-db_file = h.ask "Database file schema:"
+db_file = h.ask("Database file schema:") {|q| q.default = "#{app_name}.yml" }
 raise "File #{db_file} don't exists" unless File.exists? db_file
 
 create_3_databases = h.agree("Create different databases for development, test and production?")
@@ -30,9 +33,9 @@ create_3_databases = h.agree("Create different databases for development, test a
 db = {}
 %w{production test development}.each do |db_type|
   db[db_type] = {}
-  db[db_type]["database"] = h.ask("Database name for #{db_type}:") {|q| q.default = db["production"]["database"] if db["production"]}
-  db[db_type]["username"] = h.ask("Database username for #{db_type}:") {|q| q.default = db["production"]["username"] if db["production"]}
-  db[db_type]["password"] = h.ask("Database Password for #{db_type}:") { |q| q.echo = "*" }
+  db[db_type]["database"] = h.ask("Database name for #{db_type}:") {|q| q.default = (db["production"]["database"] if db["production"]) || "#{app_name}" }
+  db[db_type]["username"] = h.ask("Database username for #{db_type}:") {|q| q.default = (db["production"]["username"] if db["production"]) || "#{app_name}"}  
+  db[db_type]["password"] = h.ask("Database Password for #{db_type}:") { |q| q.echo = "*"; q.default = "#{app_name}" }
   break unless create_3_databases
 end
 
@@ -70,12 +73,12 @@ installed_plugins = {}
 %w{meta_querier meta_web_services meta_scaffold}.each do |plugin|
   next unless installed_plugins[plugin] = h.agree("Install #{plugin.humanize} plugin?")
   h.say "<%= color('Installing #{plugin} plugin ...', :green) %>"
-  system("ruby #{File.join("script","plugin")} install svn://rubyforge.org/var/svn/meta-rails/HEAD/#{plugin}")
+  system("ruby #{File.join("script","plugin")} install svn://rubyforge.org/var/svn/meta-rails/#{environment}/#{plugin}")
 end
 
 if installed_plugins["meta_scaffold"]
   h.say "<%= color('Installing active_scaffold plugin ...', :green) %>"
-  system("ruby #{File.join("script","plugin")} install http://activescaffold.googlecode.com/svn/tags/active_scaffold")
+  system("ruby #{File.join("script","plugin")} install http://activescaffold.googlecode.com/svn/tags/active_scaffold")  
 end
 
 # Create database.yml
