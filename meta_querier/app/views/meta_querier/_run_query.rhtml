@@ -5,7 +5,7 @@
 <% else @ar_base and !@ar_base.empty? %>
 Export to: CSV | XML
 
-<table class="meta-querier">
+<table class="meta-querier" border="1" cellspacing="0" >
 <tr>
     <th><%= @ar_base[0].keys.collect {|k| k[k.index("__")+2..-1].humanize }.join("</th><th>") %></th>
 </tr>
