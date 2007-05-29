@@ -22,15 +22,15 @@ class <%= ws_name.camelize.pluralize %>Api < ActionWebService::API::Base
   <% habtm.each do |habtm_klass| %>
 
   api_method :<%= habtm_klass.underscore.pluralize %>,
-    :expects => [{:id => :int}],
+    :expects => [{:<%= klass.underscore.singularize %>_id => :int}],
 	:returns => [[<%= habtm_klass.classify %>]]
 
   api_method :add_<%= habtm_klass.underscore.singularize %>,
-    :expects => [{:id => :int}, {:<%= habtm_klass.underscore.singularize %>_id => :int} ],
+    :expects => [{:<%= klass.underscore.singularize %>_id => :int}, {:<%= habtm_klass.underscore.singularize %>_id => :int} ],
 	:returns => [[<%= habtm_klass.classify %>]]
 
   api_method :remove_<%= habtm_klass.underscore.singularize %>,
-    :expects => [{:id => :int}, {:<%= habtm_klass.underscore.singularize %>_id => :int}],
+    :expects => [{:<%= klass.underscore.singularize %>_id => :int}, {:<%= habtm_klass.underscore.singularize %>_id => :int}],
 	:returns => [[<%= habtm_klass.classify %>]]
     
   <% end %>

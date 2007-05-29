@@ -41,12 +41,12 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
   # Has and belongs to many management methods (view, add and remove)
   <% habtm.each do |habtm_klass| %>
   
-  def <%= habtm_klass.underscore.pluralize %>(id)
+  def <%= habtm_klass.underscore.pluralize %>(<%= klass.underscore.singularize %>_id)
     k = <%= klass %>.find id
     k.<%= habtm_klass.underscore.pluralize %>
   end
 
-  def add_<%= habtm_klass.underscore.singularize %>(id, habtm_id)
+  def add_<%= habtm_klass.underscore.singularize %>(<%= klass.underscore.singularize %>_id, <%= habtm_klass.underscore.singularize %>_id)
     k = <%= klass %>.find id
     habtm = <%= habtm_klass.classify %>.find habtm_id
     k.<%= habtm_klass.underscore.pluralize %> << habtm
@@ -54,7 +54,7 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
     k.<%= habtm_klass.underscore.pluralize %>
   end
 
-  def remove_<%= habtm_klass.underscore.singularize %>(id, habtm_id)
+  def remove_<%= habtm_klass.underscore.singularize %>(<%= klass.underscore.singularize %>_id, <%= habtm_klass.underscore.singularize %>_id)
     k = <%= klass %>.find id
     habtm = <%= habtm_klass.classify %>.find habtm_id
     k.<%= habtm_klass.underscore.pluralize %> -= [habtm]
