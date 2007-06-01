@@ -3,6 +3,8 @@ require "fileutils"
 require 'dtd_to_mscff_yaml.rb'
 require 'check_consistency.rb'
 
+RAILS_RESERVED_ATTR = %w{ created_on updated_on}
+
 class MetaWebServicesGenerator < Rails::Generator::Base
   attr_accessor :file_name
   
@@ -40,15 +42,17 @@ class MetaWebServicesGenerator < Rails::Generator::Base
           fk_class_name = v_cont.values[0].tableize.singularize
           fks << fk_class_name
         end
+        fks.uniq!
 
         habtm = []
         class_def[1]["class_ass"].select { |ass| ass.has_key? "has_and_belongs_to_many" or ass.has_key? "has_many" }.each do |v_cont|
           fk_class_name = v_cont.values[0].tableize.singularize
           habtm << fk_class_name #if class_def[0] < fk_class_name          
         end
-
+        habtm.uniq!
+        
         if class_def[1]["class_attr"]
-          attr_list = class_def[1]["class_attr"].keys.sort.join(", ")
+          attr_list = (class_def[1]["class_attr"].keys - RAILS_RESERVED_ATTR).sort.join(", ")
         else
           attr_list = ""
         end

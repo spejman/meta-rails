@@ -19,8 +19,13 @@ class <%= ws_name.camelize.pluralize %>Api < ActionWebService::API::Base
     :expects => [{:id => :int}],
 	:returns => [:bool]
 
-  <% habtm.each do |habtm_klass| %>
+  <% klass_attr.keys.each do |attr| %>
+  api_method :find_by_<%= attr %>,
+    :expects => [{:attr => :<%= klass_attr[attr] %>}],
+    :returns => [[<%= klass %>]]
+  <% end -%>
 
+  <% habtm.each do |habtm_klass| %>
   api_method :<%= habtm_klass.underscore.pluralize %>,
     :expects => [{:<%= klass.underscore.singularize %>_id => :int}],
 	:returns => [[<%= habtm_klass.classify %>]]
@@ -31,9 +36,8 @@ class <%= ws_name.camelize.pluralize %>Api < ActionWebService::API::Base
 
   api_method :remove_<%= habtm_klass.underscore.singularize %>,
     :expects => [{:<%= klass.underscore.singularize %>_id => :int}, {:<%= habtm_klass.underscore.singularize %>_id => :int}],
-	:returns => [[<%= habtm_klass.classify %>]]
-    
-  <% end %>
+	:returns => [[<%= habtm_klass.classify %>]]    
+  <% end -%>
 
 
 end

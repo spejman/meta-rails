@@ -1,12 +1,12 @@
 class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
   wsdl_service_name '<%= ws_name.camelize.pluralize %>'
-
   web_service_scaffold :invoke
 
   def show(id)
     <%= klass %>.find id
   end
 
+  # Return an array of all the <%= klass %> objects that exist. 
   def list
 	<%= klass %>.find :all
   end
@@ -30,17 +30,19 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
   end
 
   def delete(id)
-    return <%= klass %>.delete id    
+    return <%= klass %>.delete(id)    
   end
   
-  <% klass_attr.keys.each do |attr| -%>
+  # FindBy#{Attibute} methods that return an array of the objects that
+  # have the attribute equal to given value.
+  <% klass_attr.keys.each do |attr| %>
   def find_by_<%= attr %>(<%= attr %>)
-    <%= klass %>.find_by_<%= attr %>(<%= attr %>)
+    <%= klass %>.find_all_by_<%= attr %>(<%= attr %>)
   end
-  <% end %>
+  <% end -%>
+
   # Has and belongs to many management methods (view, add and remove)
-  <% habtm.each do |habtm_klass| %>
-  
+  <% habtm.each do |habtm_klass| %>  
   def <%= habtm_klass.underscore.pluralize %>(id)
     k = <%= klass %>.find id
     k.<%= habtm_klass.underscore.pluralize %>
@@ -60,7 +62,7 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
     k.<%= habtm_klass.underscore.pluralize %> -= [habtm]
     k.update
     k.<%= habtm_klass.underscore.pluralize %>
-  end
+  end  
+  <% end -%>
   
-  <% end %>
 end
