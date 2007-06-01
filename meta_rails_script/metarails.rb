@@ -47,7 +47,7 @@ if create_database = h.agree("Create database#{"s" if create_3_databases}?")
   
   databases.each do |db_type|
     h.say "<%= color('Creating #{db_type} database ...', :green) %>"
-    system "mysqladmin -u #{db_priv_user} --password=#{db_priv_password} create #{db[db_type]["database"]}"
+    system "mysqladmin -u #{db_priv_user} #{"--password="+db_priv_password if db_priv_password} create #{db[db_type]["database"]}"
   end
 
   if create_user = h.agree("Create user#{"s" if create_3_databases}?")
@@ -55,7 +55,7 @@ if create_database = h.agree("Create database#{"s" if create_3_databases}?")
       h.say "<%= color('Creating #{db_type} user ...', :green) %>"
       create_user_sql = "GRANT ALL PRIVILEGES ON #{db[db_type]["database"]}.* TO '#{db[db_type]["username"]}'@'localhost'" \
         "IDENTIFIED BY '#{db[db_type]["password"]}';"
-      system "mysql -u #{db_priv_user} --password=#{db_priv_password} --execute=\"#{create_user_sql}\""
+      system "mysql -u #{db_priv_user} #{"--password="+db_priv_password if db_priv_password} --execute=\"#{create_user_sql}\""
     end
   end
   
