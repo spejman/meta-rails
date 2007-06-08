@@ -39,7 +39,7 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
   def find_by_<%= attr %>(<%= attr %>)
     <%= klass %>.find_all_by_<%= attr %>(<%= attr %>)
   end
-  <% end -%>
+  <% end if klass_attr -%>
 
   # Has and belongs to many management methods (view, add and remove)
   <% habtm.each do |habtm_klass| %>  

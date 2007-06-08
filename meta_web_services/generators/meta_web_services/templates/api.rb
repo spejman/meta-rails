@@ -23,7 +23,7 @@ class <%= ws_name.camelize.pluralize %>Api < ActionWebService::API::Base
   api_method :find_by_<%= attr %>,
     :expects => [{:attr => :<%= klass_attr[attr] %>}],
     :returns => [[<%= klass %>]]
-  <% end -%>
+  <% end if klass_attr -%>
 
   <% habtm.each do |habtm_klass| %>
   api_method :<%= habtm_klass.underscore.pluralize %>,
