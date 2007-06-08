@@ -14,7 +14,7 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
   def new(<%= attr_list %>)
    <% fks.each do |fk| -%>
 	   <%= fk %>_id = nil if <%= fk %>_id < 0
-	   raise "<%= fk %> invalid" unless <%= fk %>_id.nil? or <%= fk.classify %>.find(<%= fk %>_id)
+	   raise "<%= fk %> invalid" unless <%= fk %>_id.nil? or <%= fk.underscore.classify %>.find(<%= fk %>_id)
 	 <% end -%>
 	   k = <%= klass %>.new(<%= attr_hash %>)
 	   k.save
@@ -50,7 +50,7 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
 
   def add_<%= habtm_klass.underscore.singularize %>(id, habtm_id)
     k = <%= klass %>.find id
-    habtm = <%= habtm_klass.classify %>.find habtm_id
+    habtm = <%= habtm_klass.underscore.classify %>.find habtm_id
     k.<%= habtm_klass.underscore.pluralize %> << habtm
     k.update
     k.<%= habtm_klass.underscore.pluralize %>
@@ -58,7 +58,7 @@ class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
 
   def remove_<%= habtm_klass.underscore.singularize %>(id, habtm_id)
     k = <%= klass %>.find id
-    habtm = <%= habtm_klass.classify %>.find habtm_id
+    habtm = <%= habtm_klass.underscore.classify %>.find habtm_id
     k.<%= habtm_klass.underscore.pluralize %> -= [habtm]
     k.update
     k.<%= habtm_klass.underscore.pluralize %>

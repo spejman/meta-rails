@@ -68,7 +68,7 @@ class MetaWebServicesGenerator < Rails::Generator::Base
                         :attr_list => attr_list,
                         :attr_hash => attr_hash,
                         :habtm => habtm,
-                        :klass => class_def[0].classify }
+                        :klass => class_def[0].underscore.classify }
         m.template 'api.rb', File.join('app/apis', "ws_#{class_def[0].tableize}_api.rb"),
           :assigns => { :ws_name => "ws_" + class_def[0].tableize,
                         :klass_attr => class_def[1]["class_attr"],
@@ -77,7 +77,7 @@ class MetaWebServicesGenerator < Rails::Generator::Base
                         :attr_hash => attr_hash,
                         :attr_hash_with_type => attr_hash_with_type,
                         :habtm => habtm,
-                        :klass => class_def[0].classify }      
+                        :klass => class_def[0].underscore.classify }      
 
       end
       end    
