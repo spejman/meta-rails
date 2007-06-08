@@ -6,7 +6,7 @@ class Create<%= class_name.camelize %> < ActiveRecord::Migration
        t.column "<%= name %>", :<%= type %>
     <% end -%>
     <% fks.each do |name| -%>
-      t.column "<%= name %>_id", :integer, :limit => 10, :default => 0, :null => false
+      t.column "<%= name %>_id", :integer, :limit => 10, :default => 0, :null => true
     <% end -%>
     end
     <% unless habtm.empty? %>
