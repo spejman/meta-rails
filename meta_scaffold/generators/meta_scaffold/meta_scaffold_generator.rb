@@ -50,7 +50,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         end
 
       
-        m.template 'migration.rb', File.join('db/migrate', "00#{index+1}_create_#{class_def[0].tableize}.rb"),
+        m.template 'migration.rb', File.join('db/migrate', "#{next_migration_string(index)}_create_#{class_def[0].tableize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
                         :class_attr => class_def[1]["class_attr"] || [],
                         :fks => fks, :habtm => habtm }
@@ -105,6 +105,18 @@ class MetaScaffoldGenerator < Rails::Generator::Base
 
     end
   end
+
+          def current_migration_number
+            Dir.glob("db/migrate/[0-9]*.rb").inject(0) do |max, file_path|
+              n = File.basename(file_path).split('_', 2).first.to_i
+              if n > max then n else max end
+            end
+          end
+
+          def next_migration_string(index, padding = 3)
+            "%.#{padding}d" % (current_migration_number + index)
+          end
+  
   
   def generate(args)
     Rails::Generator::Scripts::Generate.new.run(args)
