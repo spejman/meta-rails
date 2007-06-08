@@ -132,7 +132,7 @@ unless klasses_with_diff_sig_to_pl.empty?
  inflections_file = File.open(File.join("config", "metarails_inflections.rb"), "w")
  inflections_file.write "Inflector.inflections do |inflect|\n"
   inflections_file.write metarails_custom_inflections.join("\n") + "\n"
-  inflections_file.write correct_inflections.collect { |s,pl| "inflect.irregular '#{s.camelize}', '#{pl.camelize}'" }.join("\n")   
+  inflections_file.write correct_inflections.collect { |s,pl| "inflect.irregular '#{s.camelize}', '#{pl.camelize}'" }.join("\n") + "\n"   
   inflections_file.write correct_inflections.collect { |s,pl| "inflect.irregular '#{s.underscore}', '#{pl.underscore}'" }.join("\n")
  inflections_file.write "\nend\n"
  inflections_file.close
