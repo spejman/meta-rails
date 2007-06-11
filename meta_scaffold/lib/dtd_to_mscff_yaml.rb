@@ -1,5 +1,5 @@
 #require "rubygems"
-#require "active_support"
+require "active_support"
 
 RESERVED_MIGRATION_WORDS = ["id"]
 
@@ -54,8 +54,9 @@ def dtd_to_mscff_yaml(filename)
           end
         when "IDREFS"
           # If exists a class with this name then has_many
-          if h_yaml[att_definition[0]]
-            h_yaml[attribute[0]]["class_ass"] << {"has_many" => att_definition[0]}
+          if h_yaml[att_definition[0].singularize.camelize]
+            #h_yaml[attribute[0]]["class_ass"] << {"has_many" => att_definition[0]}
+            h_yaml[attribute[0]]["class_ass"] << {"has_and_belongs_to_many" => att_definition[0]}
           else
             #TODO: this must raise an error because is unable to determite the relation!!
             h_yaml[attribute[0]]["class_attr"][att_definition[0]] = :string

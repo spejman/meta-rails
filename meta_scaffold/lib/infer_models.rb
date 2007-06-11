@@ -1,4 +1,0 @@
-##
-##
-## THIS IS A TEST, DON'T WORK AS EXPECTED!!!
-##

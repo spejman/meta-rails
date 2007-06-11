@@ -1,6 +1,6 @@
 require 'active_support'
 require "fileutils"
-require 'dtd_to_mscff_yaml.rb'
+require File.join(File.dirname(__FILE__), "/../../lib/dtd_to_mscff_yaml.rb")
 require 'check_consistency.rb'
 
 class MetaScaffoldGenerator < Rails::Generator::Base
@@ -50,7 +50,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         end
 
       
-        m.template 'migration.rb', File.join('db/migrate', "#{next_migration_string(index)}_create_#{class_def[0].tableize}.rb"),
+        m.template 'migration.rb', File.join('db/migrate', "#{next_migration_string(index+1)}_create_#{class_def[0].tableize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
                         :class_attr => class_def[1]["class_attr"] || [],
                         :fks => fks, :habtm => habtm }
