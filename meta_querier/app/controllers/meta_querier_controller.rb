@@ -1,3 +1,5 @@
+require "digest/md5"
+require "fileutils"
 require "meta_querier"
 require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_helper.rb"
 
@@ -78,19 +80,31 @@ class MetaQuerierController < ApplicationController
     init
     @actual_query = session[:actual_query]
     if model = params[:model]
-      @models = [params[:model]]
-      @models << @activerecord_associations[@models[0]].collect {|a_name, a_values| a_name.to_s.classify }
-      @models.flatten!
+      @model_names = [params[:model]]
+      @model_names << @activerecord_associations[@model_names[0]].collect {|a_name, a_values| a_name.to_s.classify }
+      @model_names.flatten!
     else
-      @models = @activerecord_classes      
+      @model_names = @activerecord_classes      
     end
-    @q_sql = get_sql_for_query(@actual_query, @activerecord_columns) if session[:actual_query]
-    
-    rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @models, :class_columns => @activerecord_columns,
-                                                        :actual_model => params[:model],
-                                                        :models => true, :controllers => false })
-    rav.output("#{RAILS_ROOT}/public/images/pro-mq.png")
-    redirect_to "/images/pro-mq.png"
+    image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.new(@model_names.join("#")).to_s + ".png"
+    image_path = "#{RAILS_ROOT}/public#{image_filename}"
+    # Create the image only if not exists
+    unless File.exists? image_path
+      @q_sql = get_sql_for_query(@actual_query, @activerecord_columns) if session[:actual_query]    
+      rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @model_names, :class_columns => @activerecord_columns,
+                                                          :actual_model => params[:model],
+                                                          :models => true, :controllers => false })    
+      rav.output image_path
+    end
+    redirect_to image_filename
+  end
+  
+  def clear_models_images_cache
+    num_images = Dir["#{RAILS_ROOT}/public/images/meta_rails/meta_querier/*.png"].size
+    Dir["#{RAILS_ROOT}/public/images/meta_rails/meta_querier/*.png"].each do |image_file|
+      FileUtils.rm_f image_file
+    end
+    render :text => "Deleted #{num_images} images in models images cache"
   end
   
   def clear_query
