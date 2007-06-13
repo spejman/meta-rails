@@ -7,9 +7,11 @@
 <body>
 <div class="meta-querier">
 <h1>Meta Querier</h1>
-<%= link_to "Meta Scaffold", :controller => "/meta_scaffold_info" if File.exists? ("#{RAILS_ROOT}/app/controllers/meta_scaffold_info_controller.rb") %>
+<%= link_to "Meta Scaffold", :controller => "/meta_scaffold_info" if File.exists? ("#{RAILS_ROOT}/app/controllers/meta_scaffold_info_controller.rb") %> |
+<%= link_to_remote( "Clear Models Images Cache", :update => "notification-div", :url => { :action => :clear_models_images_cache }, :confirm => "This will erase all the cache, forcing the reload of all Models Images.\n Are you sure?" ) %>
 <br/><br/>
 </div>
+<div id="notification-div"></div>
 <br/>
 <%= @content_for_layout %>
 </body>
