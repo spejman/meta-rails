@@ -37,7 +37,7 @@ digraph G {
 
       <% models.each do |model| %>
 
-        <% if model.respond_to? :columns %>
+        <% unless model_columns(model).empty? %>
           "<%= model %>" [
             <% rows = model_columns(model).collect { |name, type| "<#{name}> #{name} (#{type})" } %>
             label = "{ <%= model %> | <%= rows.join(' | ') %> }"
@@ -48,36 +48,17 @@ digraph G {
           ]
         <% end %>
 
-        <% if model.respond_to? :reflect_on_all_associations %>
-          <% model.reflect_on_all_associations.each do |assoc| %>
-            <% unless assoc.macro == :belongs_to %>
-              <% to = (assoc.options[:class_name] || assoc.name.to_s.capitalize).singularize.camelize %>
-              "<%= assoc.active_record %>" -> "<%= to %>" [ label = "<%= assoc.name.to_s.humanize.downcase %>" ];
+        <% unless model_associations(model).empty? %>
+          <% model_associations(model).keys.each do |assoc| %>
+            <% unless model_associations(model)[assoc] == "belongs_to" %>
+              <% to = assoc.classify %>
+              "<%= model %>" -> "<%= to %>" [ label = "<%= assoc.humanize.downcase %>" ];
             <% end %>
           <% end %>
         <% end %>
 
-        <% unless [ Object, ActiveRecord::Base, ActionMailer::Base ].include?(model.superclass) %>
-          "<%= model %>" -> "<%= model.superclass %>" [ label = "is a" ];
-        <% end %>
       <% end %>
     }
   <% end %>
 
-  <% if options[:controllers] %>
-    subgraph cluster_controllers {
-      label = "Controllers"
-
-      node [ fillcolor = "#ffe8e8" ]
-
-      <% controllers.each do |controller| %>
-        "<%= controller %>" [
-          <% rows = controller.instance_methods(false).map { |col| "<#{col}> #{col}" } %>
-          label = "{ <%= controller %> | <%= rows.join(' | ') %> }"
-        ]
-
-        <%= %("#{controller.superclass}" -> "#{controller}") unless controller == ApplicationController %>
-      <% end %>
-    }
-  <% end %>
 }

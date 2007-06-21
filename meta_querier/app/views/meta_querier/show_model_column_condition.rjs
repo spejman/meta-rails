@@ -1,29 +1,29 @@
 #page.alert("va --> #{@c_type}")
 # Set condition type hidden variable.
-page["conditions_c_type_" + @route].value = @c_type
+page["conditions_c_type_" + @key].value = @c_type
 
 # Show custom type fields.
 if @c_type == "string".to_sym
-  page[@route+"_op_string"].show();
-  page[@route+"_op_integer"].hide();
-  page[@route+"_dt"].hide();
-  page[@route+"_tf"].show();
+  page[@key+"_op_string"].show();
+  page[@key+"_op_integer"].hide();
+  page[@key+"_dt"].hide();
+  page[@key+"_tf"].show();
 elsif @c_type == "integer".to_sym
-  page[@route+"_op_integer"].show();
-  page[@route+"_op_string"].hide();  
-  page[@route+"_dt"].hide();
-  page[@route+"_tf"].show();
+  page[@key+"_op_integer"].show();
+  page[@key+"_op_string"].hide();  
+  page[@key+"_dt"].hide();
+  page[@key+"_tf"].show();
 elsif @c_type == "date".to_sym
-  page[@route+"_op_integer"].show();
-  page[@route+"_op_string"].hide();  
-  page[@route+"_dt"].show();
-  page[@route+"_tf"].hide();
+  page[@key+"_op_integer"].show();
+  page[@key+"_op_string"].hide();  
+  page[@key+"_dt"].show();
+  page[@key+"_tf"].hide();
 else
-  page[@route+"_op_integer"].show();
-  page[@route+"_op_string"].hide();  
-  page[@route+"_dt"].hide();
-  page[@route+"_tf"].show();
+  page[@key+"_op_integer"].show();
+  page[@key+"_op_string"].hide();  
+  page[@key+"_dt"].hide();
+  page[@key+"_tf"].show();
 end
 
 # Show submit button.
-page[@route+"_sb"].show();
+page[@key+"_sb"].show();

@@ -4,15 +4,13 @@ require "meta_querier"
 require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_helper.rb"
 
 include MetaQuerierHelper
+include MetaRails::InferDbModel
 
 class MetaQuerierController < ApplicationController
   self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/views/"
   
   layout "application"
-  
-  AR_DB_RESERVED_WORDS = ["schema_info", "engine_schema_info"]
-  AR_DB_NO_RELEVANT_COLUMNS = ["id"]
-
+ 
   # ActAsAuthenticated hook
   if File.exists? "#{RAILS_ROOT}/vendor/plugins/acts_as_authenticated"
     include AuthenticatedSystem
@@ -23,50 +21,31 @@ class MetaQuerierController < ApplicationController
   end
 # INIT methods
 # 
-  
   def init
-    @tables = get_table_names
-    @activerecord_classes = get_activerecord_classes(@tables)
-  
-    @activerecord_columns = {}
-    @activerecord_classes.each {|ar_class_name| AR_DB_NO_RELEVANT_COLUMNS << ar_class_name.underscore + "_id"}
-    @activerecord_classes.each {|ar_class_name| @activerecord_columns[ar_class_name] = get_activerecord_attributes(ar_class_name)}
-  
-    @activerecord_associations = {}
-    @activerecord_classes.each {|ar_class_name| @activerecord_associations[ar_class_name] = get_activerecord_associations(ar_class_name)}
-  end
-    
-  def get_table_names   
-   table_names_hash = ActiveRecord::Base.connection.tables - AR_DB_RESERVED_WORDS
-  end
-  
-  def get_activerecord_classes(table_names)
-    activerecord_classes_names = []
-    table_names.each do |table_name|
-      table_name = table_name.classify
-      begin # if table_name couldn't be a constant .constantize will throw a exception.
-        activerecord_classes_names << table_name if table_name.constantize
-      rescue; end
-    end
-    activerecord_classes_names
-  end
-  
-  
-  def get_activerecord_attributes(ar_class_name)
-    columns = {}
-    ActiveRecord::Base.connection.columns(ar_class_name.tableize).each {|c| 
-        columns[c.name] = c.type unless AR_DB_NO_RELEVANT_COLUMNS.include?(c.name)  }
-    columns
-  end
-  
-  def get_activerecord_associations(ar_class_name)
-    associations = {}
-    ar_class_name.constantize.reflections.each do |a_name, a_values|
-      associations[a_name] = a_values.macro.to_s
-    end
-    associations
-  end
+    session[:profile] ||= "all"
+    session[:profile] = params[:profile] if params[:profile]
 
+    @avaliable_profiles = Dir["#{RAILS_ROOT}/db/metarails/*.yml"].collect{|pr| File.basename(pr)[0..-5]}
+
+    if @avaliable_profiles.include? session[:profile]
+      @klasses_struct = YAML.load(File.open("#{RAILS_ROOT}/db/metarails/#{session[:profile]}.yml").read)
+    else
+      @klasses_struct = klass_struct
+    end
+
+    # TODO: evaluate if will improve efficiency if we change necessary code in order to only 
+    # use @klasses_struct instead of @tables, @activerecord_classes, @activerecord_columns 
+    # and @activerecord_associations
+    @tables = @klasses_struct.keys.map(&:tableize)
+    @activerecord_classes = @klasses_struct.keys
+    @activerecord_columns = {}
+    @klasses_struct.each {|klass_name, values| @activerecord_columns[klass_name] = (values["class_attr"] || {})}
+    @activerecord_associations = {}
+    @klasses_struct.each do |klass_name, values|
+      @activerecord_associations[klass_name] = {}
+      values["class_ass"].map{|e| e.to_a.flatten}.each {|rel| @activerecord_associations[klass_name][rel[1]] = rel[0]}
+    end
+  end
 # ACTIONS
 # 
 
@@ -81,17 +60,18 @@ class MetaQuerierController < ApplicationController
     @actual_query = session[:actual_query]
     if model = params[:model]
       @model_names = [params[:model]]
-      @model_names << @activerecord_associations[@model_names[0]].collect {|a_name, a_values| a_name.to_s.classify }
+      @model_names << @klasses_struct[@model_names[0]]["class_ass"].collect {|rel| rel.values[0].to_s.classify }
       @model_names.flatten!
     else
-      @model_names = @activerecord_classes      
+      @model_names = @klasses_struct.keys
     end
     image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.new(@model_names.join("#")).to_s + ".png"
     image_path = "#{RAILS_ROOT}/public#{image_filename}"
     # Create the image only if not exists
     unless File.exists? image_path
       @q_sql = get_sql_for_query(@actual_query, @activerecord_columns) if session[:actual_query]    
-      rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @model_names, :class_columns => @activerecord_columns,
+      rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @model_names, :model_columns => @activerecord_columns,
+                                                          :model_associations => @activerecord_associations,
                                                           :actual_model => params[:model],
                                                           :models => true, :controllers => false })    
       rav.output image_path
@@ -118,7 +98,7 @@ class MetaQuerierController < ApplicationController
     session[:actual_query] ||= []
     @actual_query = session[:actual_query]
     if params[:query] 
-      @actual_query << add_new_model_for_query(params[:query][:model]) if params[:query][:model]
+      @actual_query << add_new_model_for_query(params[:query][:model], 0, 0) if params[:query][:model]
     end
     # Get join conditions
     if params[:join]
@@ -126,7 +106,8 @@ class MetaQuerierController < ApplicationController
         next if value.blank?
         route = get_route(key)
         join_position = search_model_in_query(@actual_query, route)
-        join_position[:join] << add_new_model_for_query(value, params[:join_type][key])
+        new_join_deep = join_position[:deep]+1; new_join_wide = join_position[:join].size
+        join_position[:join] << add_new_model_for_query(value, new_join_deep, new_join_wide, params[:join_type][key])
       end
     end
   
@@ -170,9 +151,9 @@ class MetaQuerierController < ApplicationController
         params_type = params[:conditions_cond_type][key] if params[:conditions_cond_type]
         join_position[:conditions] << add_new_condition_for_query(column_name, conditions_op,
                                           conditions_value,  params_type)
-      end
+      end # params[:conditions_column].each
 
-    end
+    end # if params[:conditions_column] and (params[:conditions_op_string] or params...
 
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
 
@@ -222,6 +203,7 @@ class MetaQuerierController < ApplicationController
     #logger.debug @activerecord_columns.to_json
     #logger.debug @activerecord_columns[model].to_json
     @c_type = @activerecord_columns[model][column]
-    @route = params[:route]
+    @key = params[:key]
+    #@position = params[:deep] + "_" + params[:wide]
   end
 end

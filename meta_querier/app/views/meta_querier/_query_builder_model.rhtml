@@ -1,61 +1,64 @@
-<% model = actual_query[:model]; route << model %>
-<div id="<%="model-#{model}-#{depth}-#{wide}"%>" class="meta-querier-model meta-querier-depth-<%= depth %> meta-querier-wide-<%= wide %>">
-<b>Model:</b> <%= model %> [<%= link_to_remote( "remove", :update => "query-builder-div",
+<% model = actual_query[:model]; model_route << "#{model}_#{wide}" %>
+<% key = "#{model_route.join("__")}" %>
+<div id="<%="model-#{model}-#{deep}-#{wide}"%>" class="meta-querier-model meta-querier-deep-<%= deep %> meta-querier-wide-<%= wide %>">
+<a name="<%= model_route.join("_") %>"><b>Model:</b></a> <%= model_route.join(".") %> [<%= link_to_remote( "remove", :update => "query-builder-div",
                                         :url => { :action => "remove_model",
-                                                :condition_model => "#{model}_#{route.join(",")}" } ) %>]
+                                                :condition_model => "#{key}" } ) %>]
 <%= "#{actual_query[:join_type]} join with #{parent}" if defined? parent and parent %>
 <br/>
 
+<% unless @activerecord_columns[model].empty? %>
 <em>With what conditions?</em><br/>
     <ul>
-<% unless actual_query[:conditions].empty? %>
-
-    <% actual_query[:conditions].each_with_index do |ac, index| %>
-        <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%> - 
-        [<%= link_to_remote( "remove", :update => "query-builder-div",
-                                        :url => { :action => "remove_condition",
-                                                :condition_model => "#{model}_#{route.join(",")}", :condition_index => index  } ) %>]</li>
+    <% unless actual_query[:conditions].empty? %>
+    
+        <% actual_query[:conditions].each_with_index do |ac, index| %>
+            <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%> - 
+            [<%= link_to_remote( "remove", :update => "query-builder-div",
+                                            :url => { :action => "remove_condition",
+                                                    :condition_model => "#{key}", :condition_index => index  } ) %>]</li>
+        <% end %>
+        <li>
+            <% cond_types = ["OR", "AND"] %>
+            <%= select :conditions_cond_type, "#{key}", cond_types, { :include_blank => true }  %>
+    <% else %>
+        <li>
     <% end %>
-    <li>
-        <% cond_types = ["OR", "AND"] %>
-        <%= select :conditions_cond_type, "#{model}_#{route.join(",")}", cond_types, { :include_blank => true }  %>
-<% else %>
-    <li>
-<% end %>
-
-        <%= select :conditions_column, "#{model}_#{route.join(",")}", @activerecord_columns[model].keys, { :include_blank => true },
-                        :onchange => "new Ajax.Request('/meta_querier/show_model_column_condition?column='+this.value+'&amp;model=#{model}&amp;route=#{model}_#{route.join(",")}', {asynchronous:true, evalScripts:true})" %>
+        <%= select :conditions_column, "#{key}", @activerecord_columns[model].keys, { :include_blank => true },
+                        :onchange => "new Ajax.Request('/meta_querier/show_model_column_condition?column='+this.value+'&amp;model=#{model}&amp;key=#{key}&amp;model_route=#{model_route}&amp;deep=#{deep}&amp;wide=#{wide}', {asynchronous:true, evalScripts:true})" %>
         <% operations = ["==", "<=>", ">", "<", ">=", "<=", "=~"] %>
-        <%= select :conditions_op_string, "#{model}_#{route.join(",")}", operations, { :include_blank => true },
-                    :id => "#{model}_#{route.join(",")}_op_string", :style => "display: none;"  %>
+        <%= select :conditions_op_string, "#{key}", operations, { :include_blank => true },
+                    :id => "#{key}_op_string", :style => "display: none;"  %>
         <% operations = ["==", "<=>", ">", "<", ">=", "<="] %>
-        <%= select :conditions_op_integer, "#{model}_#{route.join(",")}", operations, { :include_blank => true },
-                    :id => "#{model}_#{route.join(",")}_op_integer", :style => "display: none;"  %>
-        <%= text_field :conditions_value, "#{model}_#{route.join(",")}", :id => "#{model}_#{route.join(",")}_tf", :style => "display: none;" %>
-        <span id="<%= "#{model}_#{route.join(",")}_dt" %>" style="display: none;">
-            <%= date_select :conditions_value_date, "#{model}_#{route.join(",")}", :order => [:day, :month, :year], :start_year => 0 %>
+        <%= select :conditions_op_integer, "#{key}", operations, { :include_blank => true },
+                    :id => "#{key}_op_integer", :style => "display: none;"  %>
+        <%= text_field :conditions_value, "#{key}", :id => "#{key}_tf", :style => "display: none;" %>
+        <span id="<%= "#{key}_dt" %>" style="display: none;">
+            <%= date_select :conditions_value_date, "#{key}", :order => [:day, :month, :year], :start_year => 0 %>
         </span>
-        <%= hidden_field :conditions_c_type, "#{model}_#{route.join(",")}" %>
-        <%= submit_tag "Add condition", :id => "#{model}_#{route.join(",")}_sb", :style => "display: none;" %>
-    </li>
+        <%= hidden_field :conditions_c_type, "#{key}" %>
+        <%= submit_tag "Add condition", :id => "#{key}_sb", :style => "display: none;" %>
     </ul>
+<% else %>
+    Model without attributes.
+<% end %>
 <br/>
 
 <% unless actual_query[:join].empty? %>
 <em>Actual Joins:</em>
     <% actual_query[:join].each do |aq| %>
-        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :depth => depth+1, :wide => wide+1, :route => route.dup, :parent => model } %>
+        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => model_route.dup, :parent => model } %>
     <% end %>
 <% end %>
         <% 
         join_posibilities = @activerecord_associations[model].keys.collect {|k| k.to_s.classify } if @activerecord_associations[model]
-        join_posibilities -= actual_query[:join].collect {|j| j[:model]} if join_posibilities
-        join_posibilities -= route
+        #join_posibilities -= actual_query[:join].collect {|j| j[:model]} if join_posibilities
+        join_posibilities -= model_route
         #@activerecord_classes - @actual_query.collect { |aq| aq[:model] } %>
         <% if join_posibilities and !join_posibilities.empty? %>
             Join with:<br />
-            <%= select :join, "#{model}_#{route.join(",")}", join_posibilities, { :include_blank => true }  %>
-            <%= select :join_type, "#{model}_#{route.join(",")}", %w{inner left right}, { :include_blank => false, :default => "inner" }  %>
+            <%= select :join, "#{key}", join_posibilities, { :include_blank => true }  %>
+            <%= select :join_type, "#{key}", %w{inner left right}, { :include_blank => false, :default => "inner" }  %>
             <%= submit_tag "Add join" %>
         <% end %>
 </div>

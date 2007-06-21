@@ -1,57 +1,56 @@
 module MetaQuerierHelper
 
+  # NAVIGATION helpers
+
+  
   # Returns the route of given key in query hash.
+  # [[model_1, wide_1], ..., [model_n, wide_n]]
   def get_route(key)
-    route = key.split("_")[1]
-    route = route.split(",") if route
-    route = [route] unless route.class == Array
+    route = key.split("__").collect {|e| [e.split("_")[0], e.split("_")[1].to_i] }
     return route
   end
 
   # Returns the node with the model in the query hash for given key.
   def search_model_in_query(query, route)
     route ||= []
-    return query.select {|aq| aq[:model] == route[0] }[0] if route.size == 1
+    return query.select {|aq| aq[:model] == route[0][0] &&  aq[:wide] == route[0][1]}[0] if route.size == 1
     actual_node = route.shift  
-    search_model_in_query(query.select {|aq| aq[:model] == actual_node }[0][:join], route)
+    search_model_in_query(query.select {|aq| aq[:model] == actual_node[0] &&  aq[:wide] == actual_node[1] }[0][:join], route)
   end
-
+  
+  # Search the model in the query and deletes it
   def delete_model_in_query(query, route)
     route ||= []
     # final case of recursive search
-    return query.delete_if {|aq| aq[:model] == route[0] } if route.size == 1
+    return query.delete_if {|aq| aq[:model] == route[0][0] &&  aq[:wide] == route[0][1] } if route.size == 1
 
     # recursive search
     actual_node = route.shift  
-    delete_model_in_query(query.select {|aq| aq[:model] == actual_node }[0][:join], route)
+    delete_model_in_query(query.select {|aq| aq[:model] == actual_node[0] &&  aq[:wide] == actual_node[1] }[0][:join], route)
   end
   
-  def add_new_model_for_query(model, join_type = nil, join = [], conditions = [])
-    {:model => model, :join_type => join_type, :join => join, :conditions => conditions }
-  end
+  # CREATE SQL Helpers
   
-  def add_new_condition_for_query(column_name, op, value, cond_type = nil)
-    { :column => column_name,
-      :op => op,
-      :value => value,
-      :cond_type => cond_type 
-    }
-  end
-  
-  def get_fields_for_select(query, columns, parent_index = "")
+  # Returns a string to use for create the select fields of the sql query
+  def get_fields_for_select(query, columns, key = "t_")
     fields = []
     logger.debug query.to_json
+    
     query.each_with_index do |query_n, q_index|
+      key_tmp = key
+      key_tmp += "__" unless key_tmp == "t_"
+      key_tmp += "#{query_n[:model]}_#{query_n[:wide]}"
     #logger.debug "query_n --> #{query_n.to_json}"
       columns[query_n[:model]].each do |field|
-        fields << "t#{parent_index}_#{q_index}.#{field[0]} as t#{parent_index}_#{q_index}__#{field[0]}".to_sym
+        fields << "#{key_tmp}.#{field[0]} as #{key_tmp}___#{field[0]}".to_sym
       end
-      fields << get_fields_for_select(query_n[:join], columns, "#{parent_index}_#{q_index}") unless query_n[:join].empty?
+      fields << get_fields_for_select(query_n[:join], columns, key_tmp) unless query_n[:join].empty?
     end
 
     fields.flatten
   end
-  
+
+  # Returns the SQL corresponding to the query
   def get_sql_for_query(actual_query, columns)
   #  st = Select["t_0.name".to_sym, "t_0_0.name as name2".to_sym]
     return "" if actual_query.nil? or actual_query.empty?
@@ -60,52 +59,60 @@ module MetaQuerierHelper
     st = Select[fields]
     
     tables = []
-    actual_query.each_with_index do |query, q_index|
-      tables << query[:model].tableize.to_sym.as("t_#{q_index}".to_sym)   
-      columns[query[:model]].each do |field|
-        fields << "t_#{q_index}.#{field[0]} as t_#{q_index}__#{field[0]}".to_sym
+    #actual_query.each_with_index do |query, q_index|
+      key = "t_#{actual_query[0][:model]}_#{actual_query[0][:wide]}"
+      tables << actual_query[0][:model].tableize.to_sym.as(key.to_sym)   
+      columns[actual_query[0][:model]].each do |field|
+        fields << "#{key}.#{field[0]} as #{key}___#{field[0]}".to_sym
       end
-    end
+    #end
 
     st.from[tables]
-    add_inner_joins_to_sql_for_query(actual_query[0], 0, st)
-    add_where_to_sql_for_query(actual_query[0], 0, st, true)
+    add_inner_joins_to_sql_for_query(actual_query[0], key, st)
+    add_where_to_sql_for_query(actual_query[0], key, st, true)
     st.to_sql
   end
   
-  def add_inner_joins_to_sql_for_query(query, parent_index, st)
-    logger.debug "add_inner_joins_to_sql_for_query 0 - #{parent_index}"
+  # Adds inner joins to the SQL query
+  def add_inner_joins_to_sql_for_query(query, key, st)
+    logger.debug "add_inner_joins_to_sql_for_query 0 - #{key}"
     return if query[:join].empty?
-    logger.debug "add_inner_joins_to_sql_for_query 1 - #{parent_index}"
-    
+    logger.debug "add_inner_joins_to_sql_for_query 1 - #{key}"
+
     tables = {:inner => [], :left => [], :right => []}
-    query[:join].each_with_index do |query_n, q_index|
-      tables[query_n[:join_type].to_sym] << [query_n[:model], "t_#{parent_index}_#{q_index}", query_n[:model].tableize.to_sym.as("t_#{parent_index}_#{q_index}".to_sym)]   
+    query[:join].each do |query_n|
+      key_tmp = key; key_tmp += "__" unless key_tmp.blank?
+      key_tmp += "#{query_n[:model]}_#{query_n[:wide]}"
+      tables[query_n[:join_type].to_sym] << [query_n[:model], key_tmp, query_n[:model].tableize.to_sym.as(key_tmp.to_sym)]   
     end
     
     logger.debug tables.to_json
     [:inner, :right, :left].each do |join_type|
       unless tables[join_type].empty?
  
-        on_join_tables = tables[join_type].collect do |join_table|
+        tables[join_type].each do |join_table|
           if @activerecord_associations[query[:model]].keys.include? "#{join_table[0].singularize.underscore}".to_sym
             left_prefix = "#{join_table[0].singularize.underscore}_id"; right_prefix = "id"
           else
             left_prefix = "id"; right_prefix = "#{query[:model].singularize.underscore}_id"
           end
-          "t_#{parent_index}.#{left_prefix} == #{join_table[1]}.#{right_prefix}"
-        end.join("\n")
-        st.send("#{join_type}_join")[tables[join_type].collect { |join_table| join_table[2] }].on { eval on_join_tables }
+          
+          st.send("#{join_type}_join")[join_table[2]].on { eval "#{key}.#{left_prefix} == #{join_table[1]}.#{right_prefix}" }
+        end
+        
       end     
     end
-    query[:join].each_with_index do |query_n, q_index|
-      add_inner_joins_to_sql_for_query(query_n, "#{parent_index}_#{q_index}", st)
+
+    query[:join].each do |query_n|
+      key_tmp = key; key_tmp += "__" unless key_tmp.blank?
+      key_tmp += "#{query_n[:model]}_#{query_n[:wide]}"
+      add_inner_joins_to_sql_for_query(query_n, key_tmp, st)
     end
     
   end
   
-  
-  def add_where_to_sql_for_query(query, parent_index, st, is_first = false)
+  # Adds where clauses to the SQL query
+  def add_where_to_sql_for_query(query, key, st, is_first = false)
       unless query[:conditions].empty?
         cond = query[:conditions].dup
         or_conds = cond.select { |c| c[:cond_type] == "OR" }.sort_by { |c| cond.index c }
@@ -119,27 +126,43 @@ module MetaQuerierHelper
     
         logger.debug conds_grouped_by_ors.to_json
         
-        str_cond = conds_grouped_by_ors[0].collect { |cond| "t_#{parent_index}.#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
+        str_cond = conds_grouped_by_ors[0].collect { |cond| "#{key}.#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
         if is_first
           st.where { eval str_cond.join(";") }
+          is_first = false
         else
           st.and { eval str_cond.join(";") }
         end
         conds_grouped_by_ors[1..-1].each do |cond_grouped|
-          str_cond = cond_grouped.collect { |cond| "t_#{parent_index}.#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
+          str_cond = cond_grouped.collect { |cond| "#{key}.#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
           st.or { eval str_cond.join(";") }    
         end  
     end
-    return if query[:join].empty?
+    return is_first if query[:join].empty?
 
     # Actualize is_first to know if is the first condition or
     # not. This is necessary in order to put AND to the sql query.
     is_first = is_first && query[:conditions].empty?
-    query[:join].each_with_index do |query_n, q_index|      
-      add_where_to_sql_for_query(query_n, "#{parent_index}_#{q_index}", st, is_first)
-      is_first = is_first && query_n[:conditions].empty?
+    query[:join].each_with_index do |query_n, q_index|
+      key_tmp = key; key_tmp += "__" unless key_tmp.blank?
+      key_tmp += "#{query_n[:model]}_#{query_n[:wide]}"    
+      is_first = add_where_to_sql_for_query(query_n, key_tmp, st, is_first)
+#      is_first = is_first && query_n[:conditions].empty?
     end    
-      
+    return is_first
+  end
+
+  # STRUCTURE helpers 
+  def add_new_model_for_query(model, deep, wide, join_type = nil, join = [], conditions = [])
+    {:model => model, :deep => deep, :wide => wide, :join_type => join_type, :join => join, :conditions => conditions }
+  end
+  
+  def add_new_condition_for_query(column_name, op, value, cond_type = nil)
+    { :column => column_name,
+      :op => op,
+      :value => value,
+      :cond_type => cond_type 
+    }
   end
 
 

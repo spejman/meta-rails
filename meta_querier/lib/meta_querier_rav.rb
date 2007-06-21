@@ -39,39 +39,17 @@ module MetaQuerier
     end
     
     def model_columns(model_name)
-      @options[:class_columns][model_name.to_s]
+      @options[:model_columns][model_name.to_s]
     end
+
+    def model_associations(model_name)
+      @options[:model_associations][model_name.to_s]
+    end
+
     
     def actual_model
       @options[:actual_model]
     end
-    
-    def controllers
-      load 'app/controllers/application.rb'
-      filenames_to_constants(controller_filenames) << ApplicationController
-    end
-  
-    private
-  
-    def model_filenames
-      filter_model_filenames(Dir.glob('app/models/*.rb'))
-    end
-  
-    def filter_model_filenames(filenames)
-      filenames.reject { |fn| fn.match(/_observer\.rb$/) }
-    end
-  
-    def controller_filenames
-      Dir.glob('app/controllers/**/*_controller.rb')
-    end
-  
-    # app/models/fish.rb -> Fish class
-    # app/controllers/foo/bar_controller.rb -> Foo::BarController class
-    def filenames_to_constants(filenames)
-      filenames.map do |filename|
-        # Suggestions on how to make the next line a bit more sane are welcome
-        filename.split('/')[2..-1].join('/').split('.').first.camelize.constantize # :-)
-      end
-    end
+      
   end
 end

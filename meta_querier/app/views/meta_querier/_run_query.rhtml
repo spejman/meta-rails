@@ -3,7 +3,8 @@
 <% if @ar_base.empty? %>
     This query has no data [<%= Time.now %>]
 <% else @ar_base and !@ar_base.empty? %>
-Export to: CSV | XML
+<b><%= @ar_base.size %></b> fields [<%= Time.now %>]<br/>
+<b>Export to:</b> CSV | XML | TXT (Tabs)
 
 <table class="meta-querier" border="1" cellspacing="0" >
 <tr>
