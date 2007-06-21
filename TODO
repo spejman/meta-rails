@@ -9,7 +9,6 @@ Meta Scaffold
  		- delete models
  		- modify models
  * Método simple para manejar las Inflections incorrectas.
- * Inducir el estado de meta_scaffold actual (esquema de bd).
  * Inducir modelos y controladores en lugar de usar generators de código (Decidir si usamos los MagicModels del DrNic).
  * Generar código a partir de dbdesigner http://wiki.rubyonrails.org/rails/pages/DBModelGem
  * Scaffold propio XHTML simple y muy configurable mediante CSS.
@@ -19,9 +18,8 @@ Meta Scaffold
 Meta Querier
 -------------
  * Fix error de seguridad en meta_querier_helper.rb: 109, 111, 115 (eval conditions).
- * Exportar: HTML, csv, excel.
+ * Exportar: HTML, csv, excel, txt(tabs).
  * Hacer la query clicando en la imagen del modelo (mediante usemaps devueltos por graphviz).
- * Definir zonas de la base de datos para bds muy grandes.
  * Guardar queries: permitir a un usuario tener sus queries habituales.
  * Test
  * Documentación:
