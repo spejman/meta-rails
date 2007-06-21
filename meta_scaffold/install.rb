@@ -5,6 +5,9 @@ destination = File.join(RAILS_ROOT, "public/stylesheets/meta_rails")
 FileUtils.mkdir(destination) unless File.exist?(destination)
 FileUtils.cp(File.join(RAILS_ROOT, "vendor/plugins/meta_scaffold/generators/meta_scaffold/files/meta_scaffold.css"), destination)
 
+destination = File.join(RAILS_ROOT, "db/metarails")
+FileUtils.mkdir(destination) unless File.exist?(destination)
+
 # Install ActiveScaffold if not already installed.
 unless File.exists? File.join(RAILS_ROOT, "vendor/plugins/active_scaffold")
   puts "ActiveScaffold is not installed and is needed for MetaScaffold,\n \

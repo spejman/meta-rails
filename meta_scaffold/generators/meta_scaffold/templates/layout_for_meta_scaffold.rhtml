@@ -11,17 +11,22 @@
 
 <div class="meta-scaffold">
 <h2>Menu</h2>
+<%% form_tag :action => params[:action] do -%>
 <%%= link_to "Querier", :controller => "/meta_querier" if File.exist?(File.join(RAILS_ROOT, "vendor/plugins/meta_querier")) %> | 
-<%%= link_to "Scaffold info", :controller => "/meta_scaffold_info" %>
+<%%= link_to "Scaffold info", :controller => "/meta_scaffold_info" %> |
+Profile: <%%= select_tag "profile", options_for_select( [["ALL"]*2] + @avaliable_profiles.collect{|pr| [pr]*2 }, session[:profile] ) %>
+<%%= submit_tag "change" %> 
+<%% end -%>
+
 <ul class="meta-scaffold-menu">
-<% class_names.sort.each do |class_name| -%>
-    <li><a href="/meta_scaffold_models/<%= class_name.tableize.pluralize %>"><%= class_name.pluralize %></a></li>
-<% end -%>
+<%% @klasses_struct.keys.each do |model_name| %>
+    <li><a href="/meta_scaffold_models/<%%= model_name.pluralize.underscore %>"><%%= model_name.classify.pluralize %></a></li>
+<%% end %>
 </ul>
 <br/><br/>
 </div>
 <% if File.exist?(File.join(RAILS_ROOT, "vendor/plugins/meta_querier")) %>
-<%%= link_to("<img src='/meta_querier/get_image?model=#{@meta_scaffold_class_name}' maxwidth='800' border='0' />", :controller => "/meta_querier", :action => "get_image", :model => @meta_scaffold_class_name) if @meta_scaffold_class_name %>
+<%%= link_to("<img src='/meta_querier/get_image?model=#{@meta_scaffold_class_name}&session_profile_cache=#{session[:profile]}' maxwidth='800' border='0' />", :controller => "/meta_querier", :action => "get_image", :model => @meta_scaffold_class_name, :session_profile_cache => session[:profile]) if @meta_scaffold_class_name %>
 <% end %>
 <div>
 <%%= yield  %>
