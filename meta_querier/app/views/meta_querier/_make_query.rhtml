@@ -1,4 +1,4 @@
-<div style="float:left; width: 600px;">
+<div style="float:left; width: 50%;">
 <h2>Build Query</h2>
 <%= form_remote_tag :update => "query-builder-div", :url => {:controller => "meta_querier", :action => "make_query"} %>
 <% if @actual_query %>
@@ -16,7 +16,9 @@
     <br/>
 
     <%= link_to_remote( "Clear query", :update => "query-builder-div", :url => { :action => :clear_query } ) %>
-    | <%= link_to_remote( "Run query", :update => "run-query-div", :url => { :action => :run_query } ) %>
+    | <% # link_to_remote( "Run query", {:update => "run-query-div", :url => { :action => :run_query }}, :href => "#run_query_div" ) 
+    %>
+    <a href="#run_query_div" onclick="new Ajax.Updater('run-query-div', '/meta_querier/run_query', {asynchronous:true, evalScripts:true}); return true;">Run query</a>
     | Save query <small>(not yet impl.)</small> 
     | My queries  <small>(not yet impl.)</small> 
     <br />
@@ -33,10 +35,10 @@
 <% end %>
 <%= end_form_tag %>
 </div>
-<div style="float:left; margin-left:10px; margin-top:30px;">
+<div style="float:left; margin-left:10px; margin-top:30px;width:43%">
 <iframe 
 src ="<%= url_for :controller => "/meta_querier", :action => "get_image", :session_profile_cache => session[:profile] %>"
-width="500" height="800">
+width="100%" height="800">
 </iframe>
 </div>
 <div style="clear: both;">&nbsp;</div>

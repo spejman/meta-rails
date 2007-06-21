@@ -1,3 +1,14 @@
+/*
+Colors:
+    - dark blue: 005CB8
+    - middle blue: 378CDF C5DBF7 B9DCFF AFD0F5
+    - soft blue: E6F2FF
+    - dark green: 1F7F00
+    - middle green: 7FcF00
+    - soft green: DAFFCD
+    - dark grey ~ black: 3D3D3D
+*/
+
 .meta-querier {
 	padding-left: 5%;
 	padding-right: 5%;
@@ -6,7 +17,7 @@
 	font-size: 12px;
 	background-color: #E6F2FF;
 	border: solid 1px #C5DBF7;
-    overflow: hidden;
+/*    overflow: hidden; */
 	width: 90%;	
 }
 .meta-querier h2 {
@@ -48,6 +59,7 @@ ul.meta-querier-menu li {
     padding:0.5em 1.5em;
     /* padding-left: 5px;
         padding-right: 5px; */
-    border-top: 1px solid #3D3D3D;
-    border-bottom: 1px solid #3D3D3D;
+    border-top: 1px solid #7FcF00;
+    border-bottom: 1px solid #7FcF00;
+    border-left: 1px solid #7FcF00;
 }
