@@ -1,0 +1,23 @@
+artists:
+  class_attr:
+    name: string
+    created_on: date
+  class_ass:  
+  - has_many: albums
+  
+albums:
+  class_attr:
+    title: string
+    year: string
+    created_on: date
+  class_ass:
+  - belongs_to: artist
+  - has_many: songs
+  
+songs:
+  class_attr:
+    name: string
+    created_on: date
+  class_ass:
+  - belongs_to: album
+    

@@ -1,0 +1,76 @@
+LexicalResource:
+  class_attr:
+    dtdVersion: :string
+  class_ass:  
+  - has_many: lexicons
+  label:
+    dtdVersion
+  
+Lexicon:
+  class_attr:
+  class_ass:
+  - belongs_to: lexical_resource
+  - has_many: lexical_entries
+  - has_many: feats  
+  label:
+    self.feats.first.val unless self.feats.empty?
+
+LexicalEntry:
+  class_attr:
+  class_ass:
+  - belongs_to: lexicon
+  - has_many: word_forms
+  - has_many: senses
+  - has_many: syntactic_behaviours
+  - has_many: feats
+  label:
+    self.word_forms.collect(&:to_label).join(", ")
+
+WordForm:
+  class_attr:
+  class_ass:
+  - belongs_to: lexical_entry
+  - has_many: feats
+  label:
+    self.feats.first.val
+    
+Sense:
+  class_attr:
+  class_ass:
+  - belongs_to: lexical_entry  
+  - has_many: feats
+  - has_many: definitions  
+  label:
+    self.feats.first.val
+
+Definition:
+  class_attr:
+    text: :string
+  class_ass:
+  - belongs_to: sense
+  label:
+    text
+
+SyntacticBehaviour:
+  class_attr:
+  class_ass:
+  - belongs_to: lexical_entry  
+  - has_many: feats
+  - has_many: senses
+  label:
+    self.feats.first.val + " [sn:" + self.senses.collect(&:to_label).join(", ")+"]"
+  
+
+Feat:
+  class_attr:
+    att: :string
+    val: :string
+  class_ass:
+  - belongs_to: lexicon
+  - belongs_to: lexical_entry
+  - belongs_to: word_form
+  - belongs_to: sense
+  - belongs_to: syntactic_behaviour
+  label:
+    att + "=" + val
+  
