@@ -1,13 +1,19 @@
 <div class="meta-scaffold">
+<div style="float: left; width: 28%;">
 <h2>Meta Scaffold</h2>
 <ul>
 <li><b>Detected classes:</b> <%%= @klasses_struct.size %></li>
-<li><b>Class names:</b> <%%= @klasses_struct.keys.join(", ") %></li>
+<li><b>Class names:</b> <%%= @klasses_struct.keys.sort.join(", ") %></li>
 </ul>
+</div>
 <%% if File.exists? ("#{RAILS_ROOT}/vendor/plugins/meta_querier")%>
-<div style="float: left;">
+<div style="float: left; width: 70%;">
 <h2>Database diagram</h2>
-<%%= link_to("<img src='/meta_querier/get_image?model=#{@meta_scaffold_class_name}&session_profile_cache=#{session[:profile]}' maxwidth='800' border='0' />", :controller => "/meta_querier", :action => "get_image", :model => @meta_scaffold_class_name, :session_profile_cache => session[:profile]) if @meta_scaffold_class_name %>
+<iframe 
+src ="<%%= url_for :controller => "/meta_querier", :action => "get_image", :session_profile_cache => session[:profile] %>"
+width="100%" height="800">
+</iframe>
+
 </div>
 <%% end %>
 </div>

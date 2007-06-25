@@ -1,6 +1,12 @@
 Description:
 
 Example:
-    ./script/generate meta_scaffold fileName
+    ./script/generate meta_scaffold databaseModelFile options
 
-    This will create ...
+    This will create the models, migrations and scaffold controllers for given database codified in databaseModelFile,
+    options can be:
+     * nomigrations -> migrations won't be generated
+     * nomodels -> models won't be generated
+     * nocontrollers -> scaffold controllers won't be generated
+     * fromdb -> The database model used will be infered from the actual db (a fake databaseModelFile is needed
+    in order to parse de script options).

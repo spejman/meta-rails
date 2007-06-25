@@ -19,7 +19,7 @@ Profile: <%%= select_tag "profile", options_for_select( [["ALL"]*2] + @avaliable
 <%% end -%>
 
 <ul class="meta-scaffold-menu">
-<%% @klasses_struct.keys.each do |model_name| %>
+<%% @klasses_struct.keys.sort.each do |model_name| %>
     <li><a href="/meta_scaffold_models/<%%= model_name.pluralize.underscore %>"><%%= model_name.classify.pluralize %></a></li>
 <%% end %>
 </ul>

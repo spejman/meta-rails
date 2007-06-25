@@ -2,6 +2,9 @@ require 'active_support'
 require "fileutils"
 require File.join(File.dirname(__FILE__), "/../../lib/dtd_to_mscff_yaml.rb")
 require 'check_consistency.rb'
+require "infer_db_model"
+include MetaRails::InferDbModel
+
 
 class MetaScaffoldGenerator < Rails::Generator::Base
   attr_accessor :file_name, :scaffold_method
@@ -10,8 +13,33 @@ class MetaScaffoldGenerator < Rails::Generator::Base
      super(*runtime_args)
      @file_name = args[0]
      raise "Filename of database schema file not given." unless @file_name
-     @scaffold_method = args[1]
-     @scaffold_method = "active_scaffold" unless @scaffold_method
+
+     
+#     @scaffold_method = args[1]
+     @scaffold_method = "active_scaffold" #unless @scaffold_method
+     
+     @hasto_create_migrations = true
+     @hasto_create_models = true
+     @hasto_create_from_db = false
+
+     args[1..-1].each do |arg|
+      case arg
+        when "nomigrations"
+          @hasto_create_migrations = false
+        when "nomodels"
+          @hasto_create_models = false
+          @hasto_create_migrations = false
+        when "nocontrollers"
+          @scaffold_method = nil
+        when "fromdb"
+          @hasto_create_from_db = true
+#          hasto_create_models = false
+          @hasto_create_migrations = false
+
+        else
+          raise "Wrong parameter: #{arg}"
+      end
+     end
   end
 
   def manifest
@@ -26,11 +54,15 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       #                          },
       #       ... }
       #
-      classes = YAML.load(File.open(@file_name)) if @file_name[-4..-1] == ".yml"
-      classes = dtd_to_mscff_yaml(@file_name) if @file_name[-4..-1] == ".dtd"
+      if @hasto_create_from_db
+        classes = klass_struct
+      else
+        classes = YAML.load(File.open(@file_name)) if @file_name[-4..-1] == ".yml"
+        classes = dtd_to_mscff_yaml(@file_name) if @file_name[-4..-1] == ".dtd"
+        # If classes loaded from a file, check its consistency
+        raise "Consistency error." unless check_consitency(classes)
+      end
       
-      raise "Consistency error." unless check_consitency(classes)
-
       # Adding needed relations for building migrations and models
       classes = add_relations_to_klasses(classes)
       
@@ -53,10 +85,10 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         m.template 'migration.rb', File.join('db/migrate', "#{next_migration_string(index+1)}_create_#{class_def[0].tableize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
                         :class_attr => class_def[1]["class_attr"] || [],
-                        :fks => fks, :habtm => habtm }
+                        :fks => fks, :habtm => habtm } if @hasto_create_migrations
         m.template 'model.rb', File.join('app/models', "#{class_def[0].tableize.singularize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
-                        :class_ass => class_def[1]["class_ass"]}
+                        :class_ass => class_def[1]["class_ass"]} if @hasto_create_models
 
       end
 
@@ -64,17 +96,18 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       #m.class_collisions class_path, class_name, "#{class_name}WorkerTest"
 
 
-      m.puts "Begin migration ******"
-
-      if RUBY_PLATFORM =~ /mswin32/
-        # In windows system method with rake don't work unless you redirect the
-        # output.
-        m.system("rake db:migrate > meta_scaffold-win.log")
-      else
-        m.system("rake db:migrate") #TODO: Use rake directly not using system call.
+      if @hasto_create_migrations
+        m.puts "Begin migration ******"
+        if RUBY_PLATFORM =~ /mswin32/
+          # In windows system method with rake don't work unless you redirect the
+          # output.
+          m.system("rake db:migrate > meta_scaffold-win.log")
+        else
+          m.system("rake db:migrate") #TODO: Use rake directly not using system call.
+        end
+        m.puts "End migration ******"
       end
-      m.puts "End migration ******"
-
+      
       if @scaffold_method
         #m.directory  File.join('public/stylesheets/meta_rails')        
         class_names = classes.collect {|class_name, class_def| class_name }
