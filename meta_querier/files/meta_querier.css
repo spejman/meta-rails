@@ -52,14 +52,15 @@ ul.meta-querier-menu li {
 }
 
 .meta-querier-model {
-    margin-top: 7px;
-    margin-bottom: 7px;
+    margin-top: 12px;
+    margin-bottom: 6px;
     margin-left: 0px;
-    margin-right: 10px;
+    margin-right: 3px;
     padding:0.5em 1.5em;
     /* padding-left: 5px;
         padding-right: 5px; */
-    border-top: 1px solid #7FcF00;
+/*    border-top: 1px solid #7FcF00;
     border-bottom: 1px solid #7FcF00;
-    border-left: 1px solid #7FcF00;
+    border-left: 1px solid #7FcF00;*/
+    border: 1px solid #7FcF00;
 }

@@ -9,7 +9,7 @@ include MetaRails::InferDbModel
 class MetaQuerierController < ApplicationController
   self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/views/"
   
-  layout "application"
+  layout "application", :except => ["run_query_txt", "run_query_excel"]
  
   # ActAsAuthenticated hook
   if File.exists? "#{RAILS_ROOT}/vendor/plugins/acts_as_authenticated"
@@ -165,9 +165,24 @@ class MetaQuerierController < ApplicationController
     @actual_query = session[:actual_query]
     if @actual_query
       @ar_base = ActiveRecord::Base.connection.select_all(get_sql_for_query(@actual_query, @activerecord_columns))
+      session[:ar_base] = @ar_base
     end
     render :partial => "run_query"
   end
+  
+  def run_query_txt
+    @delimiter = params[:csv] ? ";": "\t"
+    @ar_base = session[:ar_base]
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = 'attachment; filename="query-export.'+ (params[:csv] ? "csv": "txt") + '"'
+  end
+
+  def run_query_excel
+    @ar_base = session[:ar_base]
+    headers['Content-Type'] = "application/vnd.ms-excel"
+    headers['Content-Disposition'] = 'attachment; filename="query-export.xls"'
+  end
+
   
   def remove_condition
     @actual_query = session[:actual_query]

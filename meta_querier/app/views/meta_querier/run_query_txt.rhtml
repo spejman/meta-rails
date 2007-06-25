@@ -1,0 +1,4 @@
+<%= model_name(@ar_base[0].keys.collect {|k| model_name(k[k.index("__")+2..-1].split("__")) }.join(@delimiter) %>
+<% @ar_base.each do |row| -%>
+<%= row.values.join(@delimiter) %>
+<% end -%>

@@ -1,22 +1,42 @@
 <% model = actual_query[:model]; model_route << "#{model}_#{wide}" %>
 <% key = "#{model_route.join("__")}" %>
 <div id="<%="model-#{model}-#{deep}-#{wide}"%>" class="meta-querier-model meta-querier-deep-<%= deep %> meta-querier-wide-<%= wide %>">
-<a name="<%= model_route.join("_") %>"><b>Model:</b></a> <%= model_route.join(".") %> [<%= link_to_remote( "remove", :update => "query-builder-div",
+<a name="<%= model_route.join("_") %>"><b>Model:</b></a> <%= model_name(model_route) %> <%= link_to_remote( image_tag("meta_rails/cross.png", :title=> "remove", :border => 0, :align => "top"),
+                                        :update => "query-builder-div",
                                         :url => { :action => "remove_model",
-                                                :condition_model => "#{key}" } ) %>]
-<%= "#{actual_query[:join_type]} join with #{parent}" if defined? parent and parent %>
+                                                :condition_model => "#{key}" },
+                                        :confirm => "This will remove the model #{model_name(model_route)} from the query.\n Are you sure?" ) %><br />
+<%= "#{actual_query[:join_type].capitalize} join with #{parent}<br/>" if defined? parent and parent %>
 <br/>
 
+<%= link_to_function image_tag("meta_rails/add.png", :title=> "select attributes", :border => 0, :align => "top") + " Select attributes<br/>",
+                     :id => "a-select-#{key}" do |page|
+        page.alert("still not implemented")
+#        page["div-select-#{key}"].toggle
+#        page["a-select-#{key}"].toggle
+    end
+%>
+
+
+<%= link_to_function image_tag("meta_rails/add.png", :title=> "add conditions", :border => 0, :align => "top") + " Add conditions<br/>",
+                     :id => "a-conditions-#{key}" do |page|
+        page["div-conditions-#{key}"].toggle
+        page["a-conditions-#{key}"].toggle
+    end if actual_query[:conditions].empty?
+%>
+<div id="div-conditions-<%= key %>" style="<%= "display:none;" if actual_query[:conditions].empty? %>">
+<a name="#">Conditions:</a><br />
 <% unless @activerecord_columns[model].empty? %>
-<em>With what conditions?</em><br/>
     <ul>
     <% unless actual_query[:conditions].empty? %>
     
         <% actual_query[:conditions].each_with_index do |ac, index| %>
-            <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%> - 
-            [<%= link_to_remote( "remove", :update => "query-builder-div",
+            <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%>
+            <%= link_to_remote( image_tag("meta_rails/remove.png", :title=> "remove condition", :border => 0, :align => "top"),
+                                            :update => "query-builder-div",
                                             :url => { :action => "remove_condition",
-                                                    :condition_model => "#{key}", :condition_index => index  } ) %>]</li>
+                                                    :condition_model => "#{key}", :condition_index => index  },
+                                            :confirm => "This will remove the condition from the query.\n Are you sure?" ) %></li>
         <% end %>
         <li>
             <% cond_types = ["OR", "AND"] %>
@@ -40,25 +60,36 @@
         <%= submit_tag "Add condition", :id => "#{key}_sb", :style => "display: none;" %>
     </ul>
 <% else %>
-    Model without attributes.
+    Model without attributes.<br/><br/>
 <% end %>
-<br/>
+</div>
 
-<% unless actual_query[:join].empty? %>
-<em>Actual Joins:</em>
-    <% actual_query[:join].each do |aq| %>
-        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => model_route.dup, :parent => model } %>
-    <% end %>
-<% end %>
         <% 
         join_posibilities = @activerecord_associations[model].keys.collect {|k| k.to_s.classify } if @activerecord_associations[model]
         #join_posibilities -= actual_query[:join].collect {|j| j[:model]} if join_posibilities
         join_posibilities -= model_route
         #@activerecord_classes - @actual_query.collect { |aq| aq[:model] } %>
         <% if join_posibilities and !join_posibilities.empty? %>
-            Join with:<br />
+
+            <%= link_to_function image_tag("meta_rails/add.png", :title=> "Add joins", :border => 0, :align => "top") + " Add joins<br/>",
+                                 :id => "a-join-#{key}" do |page|
+                    page["div-join-#{key}"].toggle
+                    page["a-join-#{key}"].toggle
+                end
+            %>
+            <div id="div-join-<%= key %>" style="display:none;">
+            <a name="#">Join with:</a><br />
             <%= select :join, "#{key}", join_posibilities, { :include_blank => true }  %>
             <%= select :join_type, "#{key}", %w{inner left right}, { :include_blank => false, :default => "inner" }  %>
-            <%= submit_tag "Add join" %>
+            <%= submit_tag "Add join" %><br />
+            </div>
         <% end %>
+<br/>
+
+<% unless actual_query[:join].empty? %>
+<em><a name="#">Actual Joins:</a></em>
+    <% actual_query[:join].each do |aq| %>
+        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => model_route.dup, :parent => model } %>
+    <% end %>
+<% end %>
 </div>

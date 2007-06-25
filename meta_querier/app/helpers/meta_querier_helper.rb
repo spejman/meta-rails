@@ -164,6 +164,12 @@ module MetaQuerierHelper
       :cond_type => cond_type 
     }
   end
+  
+  # VIEWS helpers
+  def model_name(model_route)
+    #model_route.collect {|mr| mr.split("_")[0]}.join(".")
+    model_route.join(".")
+  end
 
 
 end
