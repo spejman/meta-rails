@@ -13,11 +13,13 @@ if RUBY_PLATFORM.include? "mswin32"
   HighLine.use_color = false
 end
 
-environment = if ARGV[0] == "-d"; "HEAD"
-              else; "plugins"; end
 
 h = HighLine.new
 
+environment = if ARGV[0] == "-d"; "HEAD"
+              else; "plugins"; end
+
+h.say "Development Environment" if environment == "HEAD"
 h.say "<%= color('-'*80, :green) %>"
 h.say "  <%= color('MetaRails Script', BOLD) %>"
 h.say "    This is a alpha version of MetaRails script, only works with <%= color('MySQL', BOLD) %>\n    databases."
@@ -145,7 +147,7 @@ end
 
 # Meta Scaffold
 h.say "<%= color('Scaffolding with Meta Scaffold ...', :green) %>"
-system("ruby #{File.join("script","generate")} meta_scaffold #{klasses_filename} active_scaffold")
+system("ruby #{File.join("script","generate")} meta_scaffold #{klasses_filename}")
 
 # Meta Web Services
 h.say "<%= color('Scaffolding with Meta Web Services ...', :green) %>"
