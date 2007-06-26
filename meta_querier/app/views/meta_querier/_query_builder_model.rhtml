@@ -9,60 +9,69 @@
 <%= "#{actual_query[:join_type].capitalize} join with #{parent}<br/>" if defined? parent and parent %>
 <br/>
 
-<%= link_to_function image_tag("meta_rails/add.png", :title=> "select attributes", :border => 0, :align => "top") + " Select attributes<br/>",
-                     :id => "a-select-#{key}" do |page|
-        page.alert("still not implemented")
-#        page["div-select-#{key}"].toggle
-#        page["a-select-#{key}"].toggle
-    end
-%>
-
-
-<%= link_to_function image_tag("meta_rails/add.png", :title=> "add conditions", :border => 0, :align => "top") + " Add conditions<br/>",
-                     :id => "a-conditions-#{key}" do |page|
-        page["div-conditions-#{key}"].toggle
-        page["a-conditions-#{key}"].toggle
-    end if actual_query[:conditions].empty?
-%>
-<div id="div-conditions-<%= key %>" style="<%= "display:none;" if actual_query[:conditions].empty? %>">
-<a name="#">Conditions:</a><br />
 <% unless @activerecord_columns[model].empty? %>
-    <ul>
-    <% unless actual_query[:conditions].empty? %>
+    <%= link_to_function image_tag("meta_rails/add.png", :title=> "select attributes", :border => 0, :align => "top") + " Select attributes<br/>",
+                         :id => "a-select-#{key}" do |page|
+            #page.alert("still not implemented")
+            page["div-select-#{key}"].toggle
+            page["a-select-#{key}"].toggle
+        end
+    %>
+    <div id="div-select-<%= key %>" style="display:none;">
+        Attributes to query:
+        <ul>
+        <% @activerecord_columns[model].keys.each do |model_col| -%>
+            <li><%= check_box_tag "select_columns[#{key}][]", model_col, actual_query[:select][model_col] %> <%= model_col %></li>
+        <% end -%>
+        </ul>
+        <%= submit_tag "Change select attributes"%>
+    </div>
     
-        <% actual_query[:conditions].each_with_index do |ac, index| %>
-            <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%>
-            <%= link_to_remote( image_tag("meta_rails/remove.png", :title=> "remove condition", :border => 0, :align => "top"),
-                                            :update => "query-builder-div",
-                                            :url => { :action => "remove_condition",
-                                                    :condition_model => "#{key}", :condition_index => index  },
-                                            :confirm => "This will remove the condition from the query.\n Are you sure?" ) %></li>
+    <%= link_to_function image_tag("meta_rails/add.png", :title=> "add conditions", :border => 0, :align => "top") + " Add conditions<br/>",
+                         :id => "a-conditions-#{key}" do |page|
+            page["div-conditions-#{key}"].toggle
+            page["a-conditions-#{key}"].toggle
+        end if actual_query[:conditions].empty?
+    %>
+    <div id="div-conditions-<%= key %>" style="<%= "display:none;" if actual_query[:conditions].empty? %>">
+    <a name="#">Conditions:</a><br />
+        <ul>
+        <% unless actual_query[:conditions].empty? %>
+        
+            <% actual_query[:conditions].each_with_index do |ac, index| %>
+                <li><%= "<b>#{ac[:cond_type]}</b>" if ac[:cond_type] %> <%= ac[:column]%> <%= ac[:op]%> <%= ac[:value]%>
+                <%= link_to_remote( image_tag("meta_rails/remove.png", :title=> "remove condition", :border => 0, :align => "top"),
+                                                :update => "query-builder-div",
+                                                :url => { :action => "remove_condition",
+                                                        :condition_model => "#{key}", :condition_index => index  },
+                                                :confirm => "This will remove the condition from the query.\n Are you sure?" ) %></li>
+            <% end %>
+            <li>
+                <% cond_types = ["OR", "AND"] %>
+                <%= select :conditions_cond_type, "#{key}", cond_types, { :include_blank => true }  %>
+        <% else %>
+            <li>
         <% end %>
-        <li>
-            <% cond_types = ["OR", "AND"] %>
-            <%= select :conditions_cond_type, "#{key}", cond_types, { :include_blank => true }  %>
-    <% else %>
-        <li>
-    <% end %>
-        <%= select :conditions_column, "#{key}", @activerecord_columns[model].keys, { :include_blank => true },
-                        :onchange => "new Ajax.Request('/meta_querier/show_model_column_condition?column='+this.value+'&amp;model=#{model}&amp;key=#{key}&amp;model_route=#{model_route}&amp;deep=#{deep}&amp;wide=#{wide}', {asynchronous:true, evalScripts:true})" %>
-        <% operations = ["==", "<=>", ">", "<", ">=", "<=", "=~"] %>
-        <%= select :conditions_op_string, "#{key}", operations, { :include_blank => true },
-                    :id => "#{key}_op_string", :style => "display: none;"  %>
-        <% operations = ["==", "<=>", ">", "<", ">=", "<="] %>
-        <%= select :conditions_op_integer, "#{key}", operations, { :include_blank => true },
-                    :id => "#{key}_op_integer", :style => "display: none;"  %>
-        <%= text_field :conditions_value, "#{key}", :id => "#{key}_tf", :style => "display: none;" %>
-        <span id="<%= "#{key}_dt" %>" style="display: none;">
-            <%= date_select :conditions_value_date, "#{key}", :order => [:day, :month, :year], :start_year => 0 %>
-        </span>
-        <%= hidden_field :conditions_c_type, "#{key}" %>
-        <%= submit_tag "Add condition", :id => "#{key}_sb", :style => "display: none;" %>
-    </ul>
+            <%= select :conditions_column, "#{key}", @activerecord_columns[model].keys, { :include_blank => true },
+                            :onchange => "new Ajax.Request('/meta_querier/show_model_column_condition?column='+this.value+'&amp;model=#{model}&amp;key=#{key}&amp;model_route=#{model_route}&amp;deep=#{deep}&amp;wide=#{wide}', {asynchronous:true, evalScripts:true})" %>
+            <% operations = ["==", "<=>", ">", "<", ">=", "<=", "=~"] %>
+            <%= select :conditions_op_string, "#{key}", operations, { :include_blank => true },
+                        :id => "#{key}_op_string", :style => "display: none;"  %>
+            <% operations = ["==", "<=>", ">", "<", ">=", "<="] %>
+            <%= select :conditions_op_integer, "#{key}", operations, { :include_blank => true },
+                        :id => "#{key}_op_integer", :style => "display: none;"  %>
+            <%= text_field :conditions_value, "#{key}", :id => "#{key}_tf", :style => "display: none;" %>
+            <span id="<%= "#{key}_dt" %>" style="display: none;">
+                <%= date_select :conditions_value_date, "#{key}", :order => [:day, :month, :year], :start_year => 0 %>
+            </span>
+            <%= hidden_field :conditions_c_type, "#{key}" %>
+            <%= submit_tag "Add condition", :id => "#{key}_sb", :style => "display: none;" %>
+        </ul>
+    </div>
 <% else %>
     Model without attributes.<br/><br/>
 <% end %>
-</div>
+
 
         <% 
         join_posibilities = @activerecord_associations[model].keys.collect {|k| k.to_s.classify } if @activerecord_associations[model]

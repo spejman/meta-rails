@@ -17,6 +17,15 @@ module MetaQuerierHelper
     actual_node = route.shift  
     search_model_in_query(query.select {|aq| aq[:model] == actual_node[0] &&  aq[:wide] == actual_node[1] }[0][:join], route)
   end
+   
+  def each_model_with_route(query, model = "", &block)
+    query.each do |actual_q|
+        route = (model + "__" unless model.blank?) || ""
+        route += "#{actual_q[:model]}_#{actual_q[:wide]}"
+        yield actual_q, route
+        each_model_with_route(actual_q[:join], route, &block) if actual_q[:join]
+    end    
+  end
   
   # Search the model in the query and deletes it
   def delete_model_in_query(query, route)
@@ -41,9 +50,9 @@ module MetaQuerierHelper
       key_tmp += "__" unless key_tmp == "t_"
       key_tmp += "#{query_n[:model]}_#{query_n[:wide]}"
     #logger.debug "query_n --> #{query_n.to_json}"
-      columns[query_n[:model]].each do |field|
-        fields << "#{key_tmp}.#{field[0]} as #{key_tmp}___#{field[0]}".to_sym
-      end
+      query_n[:select].each do |field, value|
+        fields << "#{key_tmp}.#{field} as #{key_tmp}___#{field}".to_sym if value
+      end unless query_n[:select].empty?
       fields << get_fields_for_select(query_n[:join], columns, key_tmp) unless query_n[:join].empty?
     end
 
@@ -153,8 +162,8 @@ module MetaQuerierHelper
   end
 
   # STRUCTURE helpers 
-  def add_new_model_for_query(model, deep, wide, join_type = nil, join = [], conditions = [])
-    {:model => model, :deep => deep, :wide => wide, :join_type => join_type, :join => join, :conditions => conditions }
+  def add_new_model_for_query(model, select, deep, wide, join_type = nil, join = [], conditions = [])
+    {:model => model, :select => select, :deep => deep, :wide => wide, :join_type => join_type, :join => join, :conditions => conditions }
   end
   
   def add_new_condition_for_query(column_name, op, value, cond_type = nil)
@@ -163,6 +172,12 @@ module MetaQuerierHelper
       :value => value,
       :cond_type => cond_type 
     }
+  end
+  
+  def add_columns_select_for_query(columns_hash)
+    hash = {}
+    columns_hash.each { |k| hash[k] = true}
+    hash
   end
   
   # VIEWS helpers

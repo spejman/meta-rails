@@ -97,17 +97,40 @@ class MetaQuerierController < ApplicationController
     init
     session[:actual_query] ||= []
     @actual_query = session[:actual_query]
-    if params[:query] 
-      @actual_query << add_new_model_for_query(params[:query][:model], 0, 0) if params[:query][:model]
+    if params[:query]      
+      select_columns = add_columns_select_for_query @activerecord_columns[params[:query][:model]].keys
+      @actual_query << add_new_model_for_query(params[:query][:model], select_columns, 0, 0) if params[:query][:model]
     end
+    
+    # Select attribute checks. ATENTION: must be before get join conditions
+    # otherwise will unselect the attributes of new created joins.
+    each_model_with_route(@actual_query) do |actual_q, route|
+      if params[:select_columns][route]
+        actual_q[:select].keys.each do |column_name|
+          actual_q[:select][column_name] = params[:select_columns][route].include? column_name
+        end
+      else
+        actual_q[:select].keys.each {|column_name| actual_q[:select][column_name] = false } unless actual_q[:select].empty?
+      end
+    end if params[:select_columns]
+    
+    
     # Get join conditions
     if params[:join]
       params[:join].each do |key, value|
         next if value.blank?
         route = get_route(key)
         join_position = search_model_in_query(@actual_query, route)
-        new_join_deep = join_position[:deep]+1; new_join_wide = join_position[:join].size
-        join_position[:join] << add_new_model_for_query(value, new_join_deep, new_join_wide, params[:join_type][key])
+
+        # Check for selected columns
+        select_columns = add_columns_select_for_query @activerecord_columns[value].keys
+        # Get deep and wide
+        new_join_deep = join_position[:deep]+1
+        new_join_wide = (join_position[:join].collect {|j| j[:wide]}.max + 1 unless join_position[:join].empty?) || 0
+        #new_join_wide = join_position[:join].size
+
+        # Add join position to the structure
+        join_position[:join] << add_new_model_for_query(value, select_columns, new_join_deep, new_join_wide, params[:join_type][key])
       end
     end
   
@@ -154,7 +177,7 @@ class MetaQuerierController < ApplicationController
       end # params[:conditions_column].each
 
     end # if params[:conditions_column] and (params[:conditions_op_string] or params...
-
+        
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
 
     render :partial => "make_query"
