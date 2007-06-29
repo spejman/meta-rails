@@ -5,6 +5,8 @@ module MetaRails
       def klass_struct
         ar_db_no_relevant_columns = ["id"]
         ar_db_reserved_words = ["schema_info", "engine_schema_info"]
+        ar_db_reserved_words += ["sitealizer"] if File.exist?(File.join(RAILS_ROOT, "vendor/plugins/sitealizer"))
+        ar_db_reserved_words += [MetaQuerierQuery.table_name, MetaQuerierQueryCondition.table_name]
         
         klasses = {}
         tables = get_table_names(ar_db_reserved_words)

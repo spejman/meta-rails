@@ -6,7 +6,7 @@
 <li><b>Class names:</b> <%%= @klasses_struct.keys.sort.join(", ") %></li>
 </ul>
 </div>
-<%% if File.exists? ("#{RAILS_ROOT}/vendor/plugins/meta_querier")%>
+<%% if File.exists?("#{RAILS_ROOT}/vendor/plugins/meta_querier") %>
 <div style="float: left; width: 70%;">
 <h2>Database diagram</h2>
 <iframe 
