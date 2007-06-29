@@ -1,0 +1,14 @@
+<div class="meta-querier-model">
+    QUERIES:
+    <%= link_to_remote( "New", :update => "query-builder-div", :url => { :action => :clear_query } ) %>
+    | <%= link_to_remote( "Edit", :update => "query-builder-div", :url => { :action => :make_query } ) %>
+    | <%= link_to_remote( "Save", :update => "query-builder-div", :url => { :action => :save_query } ) %>
+    | <%= link_to_remote( "List", :update => "query-builder-div", :url => { :action => :list_queries, :history => 0 } ) %>
+    | <%= link_to_remote( "History", :update => "query-builder-div", :url => { :action => :list_queries } ) %>    
+    <br/>
+    </hr>
+    Actual query: <%= @my_query.name %>
+    <br/>
+    </hr>
+    <%= link_to( "Run query", {:action => :run_query}, :popup => true  ) if @actual_query %>
+</div>

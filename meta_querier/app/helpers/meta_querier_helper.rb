@@ -17,14 +17,25 @@ module MetaQuerierHelper
     actual_node = route.shift  
     search_model_in_query(query.select {|aq| aq[:model] == actual_node[0] &&  aq[:wide] == actual_node[1] }[0][:join], route)
   end
-   
+
+  # Gives a block of |node, route| for given query.
   def each_model_with_route(query, model = "", &block)
     query.each do |actual_q|
         route = (model + "__" unless model.blank?) || ""
         route += "#{actual_q[:model]}_#{actual_q[:wide]}"
-        yield actual_q, route
+        yield actual_q, route rescue raise route
         each_model_with_route(actual_q[:join], route, &block) if actual_q[:join]
     end    
+  end
+  
+  # Returns an Array with all the conditions of the query with its indexes:
+  # [condition, position, route]
+  def get_conditions(query)
+    conditions = []
+    each_model_with_route(query) do |node, route|
+      node[:conditions].each_with_index {|c, i| conditions << [c, i, route]} unless node[:conditions].empty?
+    end
+    return conditions
   end
   
   # Search the model in the query and deletes it
@@ -186,5 +197,16 @@ module MetaQuerierHelper
     model_route.join(".")
   end
 
+  def model_condition_html(ac)
+    str = ("<b>#{ac[:cond_type]}</b>" if ac[:cond_type]) || ""
+    str += "#{ac[:column]} #{ac[:op]} #{ac[:value]}"
+    return str
+  end
+
+  def adecuate_conditions_value(conditions_value, conditions_op, column_type)
+    conditions_value = "%" + conditions_value + "%" if conditions_op == "=~"
+    conditions_value = "\"" + conditions_value + "\"" if column_type == "string"
+    conditions_value
+  end
 
 end

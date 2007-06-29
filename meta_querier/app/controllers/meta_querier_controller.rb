@@ -7,6 +7,7 @@ include MetaQuerierHelper
 include MetaRails::InferDbModel
 
 class MetaQuerierController < ApplicationController
+
   self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/views/"
   
   layout "application", :except => ["run_query_txt", "run_query_excel"]
@@ -19,8 +20,10 @@ class MetaQuerierController < ApplicationController
       login_required if (!defined?(MetaQuerierUseActAsAuth) or MetaQuerierUseActAsAuth) and !logged_in?
     end
   end
-# INIT methods
-# 
+
+# COMMON method
+
+  # Inialization method #TODO: put as before_filter
   def init
     session[:profile] ||= "all"
     session[:profile] = params[:profile] if params[:profile]
@@ -52,9 +55,15 @@ class MetaQuerierController < ApplicationController
   def index
     init
     @actual_query = session[:actual_query]
+    session[:my_query] ||= MetaQuerierQuery.new(:name => "Query #{Time.now}")
+    @my_query = session[:my_query]
+
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns) if session[:actual_query]
   end
+
+# IMAGE GENERATION actions
   
+  # Generates the image and redirects to the correct image path.
   def get_image
     init
     @actual_query = session[:actual_query]
@@ -79,6 +88,7 @@ class MetaQuerierController < ApplicationController
     redirect_to image_filename
   end
   
+  # Deletes all the models images cache.
   def clear_models_images_cache
     num_images = Dir["#{RAILS_ROOT}/public/images/meta_rails/meta_querier/*.png"].size
     Dir["#{RAILS_ROOT}/public/images/meta_rails/meta_querier/*.png"].each do |image_file|
@@ -86,17 +96,125 @@ class MetaQuerierController < ApplicationController
     end
     render :text => "Deleted #{num_images} images in models images cache"
   end
-  
+
+# QUERY MANAGEMENT actions (new, save, load ... )
+
+
   def clear_query
     session[:actual_query] = nil
+    session[:my_query] = MetaQuerierQuery.new(:name => "Query #{Time.now}", :history => true)
+    @my_query = session[:my_query]
     init
     render :partial => "make_query"
   end
+
+  def save_query
+    init
+    session[:actual_query] ||= []
+    @actual_query = session[:actual_query]
+    @my_query = session[:my_query]
+
+    if params[:meta_querier_query]
+      if @my_query.new_record?
+        @meta_querier_query = MetaQuerierQuery.new(params[:meta_querier_query])
+      else
+        @meta_querier_query = session[:my_query]
+        @meta_querier_query.update_attributes(params[:meta_querier_query])
+      end
+      @meta_querier_query.query = @actual_query
+      @meta_querier_query.save!
+      
+      if params[:meta_querier_query_conditions]
+        params[:meta_querier_query_conditions].keys.each do |mqqc_key|
+          p_mqqc = params[:meta_querier_query_conditions][mqqc_key]
+          next if (p_mqqc[:id].nil? && (p_mqqc[:variable] == "false"))
+          
+          if p_mqqc[:id]
+            mqqc = MetaQuerierQueryCondition.find p_mqqc[:id]
+            mqqc.destroy and next if (p_mqqc[:variable] == "false")
+          else
+            mqqc = MetaQuerierQueryCondition.new
+          end
+          mqqc.description = p_mqqc[:description]
+          mqqc.route = mqqc_key.split("___")[0]
+          mqqc.position = mqqc_key.split("___")[1]
+          mqqc.meta_querier_query = @meta_querier_query
+          mqqc.save!
+        end
+      end
+      list_queries
+    else
+      @query_conditions = get_conditions(@actual_query)
+      render :partial => "save_query"
+    end
+  end
   
+  def list_queries
+    init
+    session[:actual_query] ||= []
+    @actual_query = session[:actual_query]
+    @my_query = session[:my_query]
+    @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
+    opts = {}
+    opts[:conditions] = [ "history = ?", params[:history] ] if params[:history]
+    opts[:order] = "created_at desc"
+    @queries = MetaQuerierQuery.find :all, opts
+    render :partial => "my_queries"
+  end
+
+  def run_my_query
+    query = MetaQuerierQuery.find params[:id]
+    session[:my_query] = query
+    session[:actual_query] = query.query
+    if query.meta_querier_query_conditions.empty?
+      run_query
+    else
+      choose_conditions_for_run_query
+    end
+  end
+  
+  def choose_conditions_for_run_query
+    init
+    @actual_query = session[:actual_query]
+    if params[:meta_querier_query_conditions]
+      params[:meta_querier_query_conditions].keys.each do |mqqc_key|
+        route = get_route(mqqc_key.split("___")[0])
+        position = mqqc_key.split("___")[1].to_i
+        node = search_model_in_query(@actual_query, route)
+        node[:conditions][position][:value] = adecuate_conditions_value(params[:meta_querier_query_conditions][mqqc_key],
+                                                  node[:conditions][position][:op],
+                                                  @activerecord_columns[node[:model]][node[:conditions][position][:column]].to_s)
+      end
+      run_query
+    else
+      @query = session[:my_query]
+      render :partial => "choose_conditions_for_run_query", :layout => "run_query"
+    end
+  end
+  
+  def edit_my_query
+    query = MetaQuerierQuery.find params[:id]
+    session[:my_query] = query
+    session[:actual_query] = query.query
+    @my_query = session[:my_query]
+    make_query
+  end
+
+  def delete_my_query
+    query = MetaQuerierQuery.find params[:id]
+    query.destroy
+    list_queries
+  end
+   
+# BUILD & EDIT query actions
+
+  # Main build query action that constructs the actual_query struct based on
+  # form data recieved.
   def make_query
     init
     session[:actual_query] ||= []
     @actual_query = session[:actual_query]
+    @my_query = session[:my_query]    
     if params[:query]      
       select_columns = add_columns_select_for_query @activerecord_columns[params[:query][:model]].keys
       @actual_query << add_new_model_for_query(params[:query][:model], select_columns, 0, 0) if params[:query][:model]
@@ -158,10 +276,7 @@ class MetaQuerierController < ApplicationController
           # TODO: show a message warning: ej. not op field choosen ...
           next if column_name.blank? or !conditions_op or !params[:conditions_value][key]
           next if conditions_op.blank? or params[:conditions_value][key].blank?
-          conditions_value = params[:conditions_value][key]
-          conditions_value = "%" + conditions_value + "%" if conditions_op == "=~"
-          conditions_value = "\"" + conditions_value + "\"" if column_type == "string"
-          
+          conditions_value = adecuate_conditions_value(params[:conditions_value][key], conditions_op, column_type)         
         end
         route = get_route(key)
         join_position = search_model_in_query(@actual_query, route)
@@ -182,33 +297,10 @@ class MetaQuerierController < ApplicationController
 
     render :partial => "make_query"
   end
-  
-  def run_query
-    init
-    @actual_query = session[:actual_query]
-    if @actual_query
-      @ar_base = ActiveRecord::Base.connection.select_all(get_sql_for_query(@actual_query, @activerecord_columns))
-      session[:ar_base] = @ar_base
-    end
-    render :partial => "run_query"
-  end
-  
-  def run_query_txt
-    @delimiter = params[:csv] ? ";": "\t"
-    @ar_base = session[:ar_base]
-    headers['Content-Type'] = "text/plain"
-    headers['Content-Disposition'] = 'attachment; filename="query-export.'+ (params[:csv] ? "csv": "txt") + '"'
-  end
-
-  def run_query_excel
-    @ar_base = session[:ar_base]
-    headers['Content-Type'] = "application/vnd.ms-excel"
-    headers['Content-Disposition'] = 'attachment; filename="query-export.xls"'
-  end
-
-  
+   
   def remove_condition
     @actual_query = session[:actual_query]
+    @my_query = session[:my_query]
     route = get_route(params[:condition_model])
     cond_position = search_model_in_query(@actual_query, route)
     cond_position[:conditions].delete_at(params[:condition_index].to_i)
@@ -222,6 +314,7 @@ class MetaQuerierController < ApplicationController
 
   def remove_model
     @actual_query = session[:actual_query]
+    @my_query = session[:my_query]    
     route = get_route(params[:condition_model])
     delete_model_in_query(@actual_query, route)
     init
@@ -244,4 +337,37 @@ class MetaQuerierController < ApplicationController
     @key = params[:key]
     #@position = params[:deep] + "_" + params[:wide]
   end
+
+# RUN QUERY actions
+
+  # Returns HTML
+  def run_query
+    init
+    @actual_query = session[:actual_query]
+    session[:my_query].query = @actual_query
+    session[:my_query].save
+    if @actual_query
+      @ar_base = ActiveRecord::Base.connection.select_all(get_sql_for_query(@actual_query, @activerecord_columns))
+      session[:ar_base] = @ar_base
+    end
+    render :partial => "run_query", :layout => "run_query"
+  end
+  
+  # Returns txt (csv or tab separated values)
+  def run_query_txt
+    @delimiter = params[:csv] ? ";": "\t"
+    @ar_base = session[:ar_base]
+    headers['Content-Type'] = "text/plain"
+    headers['Content-Disposition'] = 'attachment; filename="query-export.'+ (params[:csv] ? "csv": "txt") + '"'
+  end
+
+  # Returns XML for excel
+  def run_query_excel
+    @ar_base = session[:ar_base]
+    headers['Content-Type'] = "application/vnd.ms-excel"
+    headers['Content-Disposition'] = 'attachment; filename="query-export.xls"'
+  end
+
+
+
 end

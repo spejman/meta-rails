@@ -1,0 +1,14 @@
+<div class="meta-querier-model">
+<%= render :partial => "query", :locals => {:query => @query} %>
+<% form_tag url_for(:controller => "meta_querier", :action => "choose_conditions_for_run_query") do -%>
+    <% @query.meta_querier_query_conditions.each do |mqqc| %>
+        <% qc_key = "#{mqqc.route}___#{mqqc.position}" %>
+        <div class="meta-querier-model">
+        <%= mqqc.description %>:<br/>
+        <%= text_field_tag "meta_querier_query_conditions[#{qc_key}]" %>
+        </div>
+    <% end -%>
+    <%= submit_tag "Run query" %>
+<% end -%>
+
+</div>

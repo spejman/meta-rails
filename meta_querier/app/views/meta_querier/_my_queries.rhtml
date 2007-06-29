@@ -1,0 +1,19 @@
+<div style="float:left; width: 50%;">
+<h2>My Queries</h2>
+
+<%= render :partial => "query_management_menu" %>
+
+<div class="meta-querier-model">
+<% @queries.each do |query|%>
+<div class="meta-querier-model">
+    <%= link_to( "Run", { :action => :run_my_query, :id => query.id }, :popup => true ) %> |
+    <%= link_to_remote( "Load", :update => "query-builder-div", :url => { :action => :edit_my_query, :id => query.id } ) %> |
+    <%= link_to_remote( "Delete", :update => "query-builder-div", :url => { :action => :delete_my_query, :id => query.id },
+                                  :confirm => "This action will delete permanently the query.\n Are you sure?" ) %>
+    <br/>
+    <%= render :partial => "query", :locals => {:query => query} %>
+</div>
+<% end %>
+</div>
+</div>
+<div style="clear: both;">&nbsp;</div>

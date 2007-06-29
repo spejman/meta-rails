@@ -1,0 +1,51 @@
+<div style="float:left; width: 50%;">
+<h2>Save Query</h2>
+    <%= render :partial => "query_management_menu" %>
+<div class="meta-querier-model">
+<%= form_remote_tag :update => "query-builder-div", :url => {:controller => "meta_querier", :action => "save_query"} %>
+    Query: <%= render :partial => "humanize_query", :locals => {:actual_query => @actual_query } %><br/>
+    Name: <%= text_field :meta_querier_query, :name, :value => @my_query.name %><br/>
+    Description: <%= text_area :meta_querier_query, :description, :cols => 23, :rows => 3, :value => @my_query.description %><br/>
+    <%= hidden_field :meta_querier_query, :history, {:value => false} %>
+    <% @query_conditions.each do |query_condition| %>
+        <% qc_key = "#{query_condition[2]}___#{query_condition[1]}" %>
+        <% mqqc = @my_query.meta_querier_query_conditions.select {|a| a.route == query_condition[2] && a.position == query_condition[1]}.first %>
+        <% variable = !mqqc.nil? %>
+        <% description = (mqqc.description if mqqc) || "" %>
+        <% mqqc_id = (mqqc.id if mqqc) || false %>
+        <div class="meta-querier-model" id="qc_<%= qc_key %>" >
+         <div id="qc_<%= qc_key %>_fix" <%= "style='display: none;'" if variable %>>
+            <%= model_name(query_condition[2].split("__")) if query_condition[2] %> (<%= query_condition[1]%>): 
+            <%= model_condition_html(query_condition[0]) %>
+            <%= link_to_function "Make variable" do |page| 
+                page["qc_#{qc_key}_fix"].toggle
+                page["qc_#{qc_key}_variable"].toggle
+                page["qc_#{qc_key}-hidden"].value = true
+             end %>
+        </div>
+         <div id="qc_<%= qc_key %>_variable" <%= "style='display: none;'" if !variable %>>
+            <%= model_name(query_condition[2].split("__")) if query_condition[2] %> (<%= query_condition[1]%>): 
+            <%= model_condition_html(query_condition[0]) %>
+            <%= link_to_function "Make Fix" do |page| 
+                page["qc_#{qc_key}_fix"].toggle
+                page["qc_#{qc_key}_variable"].toggle
+                page["qc_#{qc_key}-hidden"].value = false                                            
+             end %><br/>
+             Description: <%= text_field_tag "meta_querier_query_conditions[#{qc_key}][description]", description %>
+             <%= hidden_field_tag "meta_querier_query_conditions[#{qc_key}][variable]", variable, :id => "qc_#{qc_key}-hidden" %>
+             <%= hidden_field_tag("meta_querier_query_conditions[#{qc_key}][id]", mqqc_id) if mqqc_id %>
+        </div>        
+        </div>
+    <% end %>    
+
+    <% unless @my_query.new_record? %>
+        <%= submit_tag "Update query"%>
+        <%= submit_tag "Save as new query", :disabled => true %>
+    <% else %>
+        <%= submit_tag "Save query"%>
+    <% end %>
+
+<%= end_form_tag %>    
+</div>
+</div>
+<div style="clear: both;">&nbsp;</div>
