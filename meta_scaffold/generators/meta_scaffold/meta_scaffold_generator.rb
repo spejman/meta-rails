@@ -129,12 +129,17 @@ class MetaScaffoldGenerator < Rails::Generator::Base
 
           #m.generate([@scaffold_method, class_names].compact.flatten)
         end
+        # Meta scaffold models controllers test
+        m.file File.join('../files/', 'meta_scaffold_models_test.rb'), File.join('test/integration','meta_scaffold_models_test.rb')
+        
         # Generate meta_scaffold_info, that is the index or menu of meta_scaffold.
+        # Controller, view and test
         m.file File.join('../files/', 'meta_scaffold_info_controller.rb'), File.join('app/controllers','meta_scaffold_info_controller.rb')
-#        m.generate(["controller", "meta_scaffold_info", "index"])  
         m.directory  File.join('app/views/meta_scaffold_info')
         m.template 'index.rhtml', File.join('app/views/meta_scaffold_info/index.rhtml'),
-                      :assigns => { :class_names => class_names }, :collision => :force
+                      :assigns => { :class_names => class_names }, :collision => :force        
+        m.file File.join('../files/', 'meta_scaffold_info_controller_test.rb'), File.join('test/functional','meta_scaffold_info_controller_test.rb')
+        
         # Singleton used for comunicate controllers with models.
         m.file File.join('../files/', 'metarails_singleton.rb'), File.join('app/models','metarails_singleton.rb')
       end
