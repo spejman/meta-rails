@@ -25,14 +25,19 @@ class MetaQuerierController < ApplicationController
 
   # Inialization method #TODO: put as before_filter
   def init
-    session[:profile] ||= "all"
+    raise "Meta querier tables don't exist, run script/generate meta_querier_query_tables, rake db:migrate \
+    and restart the Server" unless META_QUERIER_TABLES
+    session[:profile] ||= "ALL"
     session[:profile] = params[:profile] if params[:profile]
 
     @avaliable_profiles = Dir["#{RAILS_ROOT}/db/metarails/*.yml"].collect{|pr| File.basename(pr)[0..-5]}
 
     if @avaliable_profiles.include? session[:profile]
+      flash[:notice] = "Profile changed" if params[:profile]
       @klasses_struct = YAML.load(File.open("#{RAILS_ROOT}/db/metarails/#{session[:profile]}.yml").read)
     else
+      session[:profile] = "ALL"
+      flash[:notice] = "Profile #{params[:profile]} doesn't exist using default profile #{session[:profile]}" if params[:profile]
       @klasses_struct = klass_struct
     end
 
@@ -66,7 +71,6 @@ class MetaQuerierController < ApplicationController
   # Generates the image and redirects to the correct image path.
   def get_image
     init
-    @actual_query = session[:actual_query]
     if model = params[:model]
       @model_names = [params[:model]]
       @model_names << @klasses_struct[@model_names[0]]["class_ass"].collect {|rel| rel.values[0].to_s.classify }
@@ -78,7 +82,6 @@ class MetaQuerierController < ApplicationController
     image_path = "#{RAILS_ROOT}/public#{image_filename}"
     # Create the image only if not exists
     unless File.exists? image_path
-      @q_sql = get_sql_for_query(@actual_query, @activerecord_columns) if session[:actual_query]    
       rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @model_names, :model_columns => @activerecord_columns,
                                                           :model_associations => @activerecord_associations,
                                                           :actual_model => params[:model],
