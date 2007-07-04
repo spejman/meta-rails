@@ -33,7 +33,7 @@ module MetaQuerierHelper
   def get_conditions(query)
     conditions = []
     each_model_with_route(query) do |node, route|
-      node[:conditions].each_with_index {|c, i| conditions << [c, i, route]} unless node[:conditions].empty?
+      node[:conditions].each_with_index {|c, i| conditions << {:cond => c, :position => i, :route => route}} unless node[:conditions].empty?
     end
     return conditions
   end
@@ -198,7 +198,7 @@ module MetaQuerierHelper
   end
 
   def model_condition_html(ac)
-    str = ("<b>#{ac[:cond_type]}</b>" if ac[:cond_type]) || ""
+    str = ("<b>#{ac[:cond_type]}</b> " if ac[:cond_type]) || ""
     str += "#{ac[:column]} #{ac[:op]} #{ac[:value]}"
     return str
   end

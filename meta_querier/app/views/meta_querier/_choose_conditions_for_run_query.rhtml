@@ -5,7 +5,16 @@
         <% qc_key = "#{mqqc.route}___#{mqqc.position}" %>
         <div class="meta-querier-model">
         <%= mqqc.description %>:<br/>
-        <%= text_field_tag "meta_querier_query_conditions[#{qc_key}]" %>
+		<% if mqqc.is_select %>
+			<% s_model = mqqc.route.split("__")[-1].split("_")[0].constantize
+			   s_route = get_route(mqqc.route)
+			   s_field = search_model_in_query(@actual_query, s_route)[:conditions][mqqc.position][:column]
+			   s_values = options_for_select(s_model.find(:all).collect{|v| v.send(s_field)}.uniq)
+			%>
+			<%= select_tag "meta_querier_query_conditions[#{qc_key}]", s_values %>
+		<% else %>
+	        <%= text_field_tag "meta_querier_query_conditions[#{qc_key}]" %>
+		<% end %>
         </div>
     <% end -%>
     <%= submit_tag "Run query" %>

@@ -138,6 +138,7 @@ class MetaQuerierController < ApplicationController
           else
             mqqc = MetaQuerierQueryCondition.new
           end
+          mqqc.is_select = p_mqqc[:is_select] || false
           mqqc.description = p_mqqc[:description]
           mqqc.route = mqqc_key.split("___")[0]
           mqqc.position = mqqc_key.split("___")[1]
@@ -281,7 +282,7 @@ class MetaQuerierController < ApplicationController
           next if conditions_op.blank? or params[:conditions_value][key].blank?
           conditions_value = adecuate_conditions_value(params[:conditions_value][key], conditions_op, column_type)         
         end
-        route = get_route(key)
+        route = get_route(key)        
         join_position = search_model_in_query(@actual_query, route)
   
         # jump if there're more than one condition but there aren't any condition type (or, and, ... )
@@ -348,7 +349,7 @@ class MetaQuerierController < ApplicationController
     init
     @actual_query = session[:actual_query]
     session[:my_query].query = @actual_query
-    session[:my_query].save
+    session[:my_query].save if session[:my_query].history
     if @actual_query
       @ar_base = ActiveRecord::Base.connection.select_all(get_sql_for_query(@actual_query, @activerecord_columns))
       session[:ar_base] = @ar_base

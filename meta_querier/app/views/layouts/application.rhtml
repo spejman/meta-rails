@@ -18,7 +18,8 @@ Profile: <%= select_tag "profile", options_for_select( [["ALL"]*2] + @avaliable_
 <br/><br/>
 </div>
 
-<div id="notification-div"><br/></div>
+<div id="notification-div" style="color: green"><%= flash[:notice] %><br/></div>
+
 <%= @content_for_layout %>
 </body>
 </html>

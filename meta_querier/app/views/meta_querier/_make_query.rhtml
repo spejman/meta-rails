@@ -2,30 +2,28 @@
 <h2>Build Query</h2>
 <%= render :partial => "query_management_menu" %>
 
-<%= form_remote_tag :update => "query-builder-div", :url => {:controller => "meta_querier", :action => "make_query"} %>
-
-<% if @actual_query && !@actual_query.empty? %>
-
-<!--
-    <pre style="background-color: #ccc; padding: 10px; margin: 10px; text-align: left; overflow: auto;">
-<b>debug info:</b>
-<code><%= @actual_query.to_json %>
-<% if @q_sql -%>
-<%= @q_sql %>
-<% end -%>
-</code></pre>
--->
-    <br />
-    <% @actual_query.each do |aq| %>
-        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => [] } %>
-    <% end %>
-    
-<% else %>
-    Where do you want to begin:<br />
-    <%= select :query, :model, @activerecord_classes %><br />
-    <%= submit_tag "Choose begin model" %>
+<% form_remote_tag :update => "query-builder-div", :url => {:controller => "meta_querier", :action => "make_query"} do %>
+	<% if @actual_query && !@actual_query.empty? %>
+	<!--
+	    <pre style="background-color: #ccc; padding: 10px; margin: 10px; text-align: left; overflow: auto;">
+	<b>debug info:</b>
+	<code><%= @actual_query.to_json %>
+	<% if @q_sql -%>
+	<%= @q_sql %>
+	<% end -%>
+	</code></pre>
+	-->
+	    <br />
+	    <% @actual_query.each do |aq| %>
+	        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => [] } %>
+	    <% end %>
+	    
+	<% else %>
+	    Where do you want to begin:<br />
+	    <%= select :query, :model, @activerecord_classes %><br />
+	    <%= submit_tag "Choose begin model" %>
+	<% end %>
 <% end %>
-<%= end_form_tag %>
 </div>
 <div style="float:left; margin-left:10px; margin-top:30px;width:43%">
 <iframe 
