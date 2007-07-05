@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding="UTF-8"?>
+            <!-- DTD for LMFNLP packages-->
+            <!--#################### Core package-->
+<!ELEMENT LexicalResource (feat*, GlobalInformation, Lexicon+, SenseAxis*, TransferAxis*, ExampleAxis*)>
+<!ATTLIST LexicalResource
+    dtdVersion CDATA     #FIXED "1.2">
+<!ELEMENT GlobalInformation (feat*)>
+<!ELEMENT Lexicon (feat*, LexicalEntry+,  SubcategorizationFrame*, SubcategorizationFrameSet*, SemanticPredicate*, Synset*, 
+                                   SynSemCorrespondence*, ParadigmPattern*, TransformClass*, MWEPattern*, ConstraintSet*)>
+<!ELEMENT LexicalEntry (feat*, Lemma, WordForm*, StemOrRoot*, DerivedForm*, ReferredRoot*, ListOfComponents?, Sense*, 
+                                           SyntacticBehaviour*)>
+<!ATTLIST LexicalEntry
+    id       ID #IMPLIED
+    paradigmPattern IDREFS #IMPLIED
+    mwePattern  IDREF #IMPLIED>
+<!ELEMENT Sense (feat*, PredicativeRepresentation*, SenseExample*, SemanticDefinition*, SenseRelation*, 
+                                 MonolingualExternalRef*, Definition*)>
+<!ATTLIST Sense
+    id       ID #IMPLIED
+    inherit  IDREFS #IMPLIED
+ synset IDREF #IMPLIED>
+            <!--#################### Package for Morphology -->
+<!ELEMENT Lemma (feat*, FormRepresentation*)>
+<!ELEMENT WordForm (feat*, FormRepresentation*)>
+<!ELEMENT StemOrRoot (feat*, FormRepresentation*, MorphologicalFeatures*)>
+<!ELEMENT FormRepresentation (feat*)>
+<!ELEMENT DerivedForm (feat*, FormRepresentation*)>
+<!ATTLIST DerivedForm
+    targets IDREFS #IMPLIED>
+<!ELEMENT ReferredRoot (feat*, FormRepresentation*)>
+<!ATTLIST ReferredRoot
+    targets IDREFS #IMPLIED>
+<!ELEMENT ListOfComponents (feat*, Component+)>
+<!ELEMENT Component (feat*)>
+<!ATTLIST Component
+    entry IDREF #REQUIRED>
+<!ELEMENT MorphologicalFeatures (feat*)>
+            <!--#################### Package for Syntax -->
+<!ELEMENT SyntacticBehaviour (feat*)>
+<!ATTLIST SyntacticBehaviour
+    id					ID #IMPLIED
+    senses				IDREFS #IMPLIED
+    subcategorizationFrames	IDREFS #IMPLIED
+    subcategorizationFrameSets	IDREFS #IMPLIED>
+<!ELEMENT SubcategorizationFrame (feat*, LexemeProperty?, SyntacticArgument*)>
+<!ATTLIST SubcategorizationFrame
+    id                 ID #IMPLIED
+    inherit          IDREFS #IMPLIED>
+<!ELEMENT LexemeProperty (feat*)>
+<!ELEMENT SyntacticArgument (feat*)>
+<!ATTLIST SyntacticArgument
+    id                 ID #IMPLIED
+    target           IDREF #IMPLIED>
+<!ELEMENT SubcategorizationFrameSet (feat*, SynArgMap*)>
+<!ATTLIST SubcategorizationFrameSet
+    id					ID #IMPLIED
+    subcategorizationFrames	IDREFS #IMPLIED
+    inherit				IDREFS #IMPLIED>
+<!ELEMENT SynArgMap (feat*)>
+<!ATTLIST SynArgMap
+    arg1	IDREF #REQUIRED
+    arg2	IDREF #REQUIRED>
+            <!--#################### Package for Semantics -->
+<!ELEMENT PredicativeRepresentation (feat*)>
+<!ATTLIST PredicativeRepresentation
+   predicate              IDREF #REQUIRED
+   correspondences IDREFS #REQUIRED>
+<!ELEMENT SemanticPredicate (feat*, SemanticDefinition*, SemanticArgument*, PredicateRelation*)>
+<!ATTLIST SemanticPredicate
+    id               ID #REQUIRED>
+<!ELEMENT SemanticArgument (feat*)>
+<!ATTLIST SemanticArgument
+    id               ID #IMPLIED>
+<!ELEMENT SynSemCorrespondence (feat*,SynSemArgMap*)>
+<!ATTLIST SynSemCorrespondence
+    id              ID #REQUIRED>
+<!ELEMENT SynSemArgMap (feat*)>
+<!ATTLIST SynSemArgMap
+   synFeature        CDATA #REQUIRED
+   semFeature       CDATA #REQUIRED>
+<!ELEMENT PredicateRelation (feat*)>
+<!ATTLIST PredicateRelation
+    targets          IDREFS #IMPLIED>
+<!ELEMENT SenseExample (feat*)>
+<!ATTLIST SenseExample
+    id               ID #IMPLIED>
+<!ELEMENT SemanticDefinition (feat*, Statement*)>
+<!ELEMENT Statement (feat*)>
+<!ELEMENT Synset (feat*, SemanticDefinition*, SynsetRelation*, MonolingualExternalRef*)>
+<!ATTLIST Synset
+    id               ID #IMPLIED>
+<!ELEMENT SynsetRelation (feat*)>
+<!ATTLIST SynsetRelation
+    targets          IDREFS #IMPLIED>
+<!ELEMENT MonolingualExternalRef (feat*)>
+<!ELEMENT SenseRelation (feat*)>
+<!ATTLIST SenseRelation
+    targets  IDREFS #REQUIRED>
+            <!--#################### Package for Multilingual notations -->
+<!ELEMENT SenseAxis (feat*, SenseAxisRelation*, InterlingualExternalRef*)>
+<!ATTLIST SenseAxis
+    id		ID #IMPLIED
+    senses	IDREFS #IMPLIED
+    synsets	IDREFS #IMPLIED>
+<!ELEMENT InterlingualExternalRef (feat*)>
+<!ELEMENT SenseAxisRelation (feat*)>
+<!ATTLIST SenseAxisRelation
+    targets          IDREFS #REQUIRED>
+<!ELEMENT TransferAxis (feat*, TransferAxisRelation*, SourceTest*, TargetTest*)>
+<!ATTLIST TransferAxis
+    id               ID #IMPLIED
+    synBehaviours IDREFS #IMPLIED>
+<!ELEMENT TransferAxisRelation (feat*)>
+<!ATTLIST TransferAxisRelation
+    targets          IDREFS #REQUIRED>
+<!ELEMENT SourceTest (feat*)>
+<!ATTLIST SourceTest
+    synBehaviours IDREFS #REQUIRED>
+<!ELEMENT TargetTest (feat*)>
+<!ATTLIST TargetTest
+    synBehaviours IDREFS #REQUIRED>
+<!ELEMENT ExampleAxis (feat*, ExampleAxisRelation*)>
+<!ATTLIST ExampleAxis
+    id               ID #IMPLIED
+    examples IDREFS #IMPLIED>
+<!ELEMENT ExampleAxisRelation (feat*)>
+<!ATTLIST ExampleAxisRelation
+    targets          IDREFS #REQUIRED>
+            <!--#################### Package for paradigm patterns -->
+<!ELEMENT ParadigmPattern (feat*, TransformSet*, Affix*, PrefixSlot*, InfixSlot*, SuffixSlot*)>
+<!ATTLIST ParadigmPattern
+    id       ID #REQUIRED>
+<!ELEMENT TransformSet (feat*, ProcessRubyReserved*, MorphologicalFeatures*)>
+<!ELEMENT ProcessRubyReserved (feat*, Condition*, MorphologicalFeatures*)>
+<!ELEMENT Condition (feat*)>
+<!ATTLIST Condition
+    id      ID #IMPLIED>
+<!ELEMENT Affix (feat*, FormRepresentation*, Condition*, AffixAllomorph*, MorphologicalFeatures*)>
+<!ELEMENT AffixAllomorph (feat*, FormRepresentation*)>
+<!ATTLIST AffixAllomorph
+    conditions IDREFS #IMPLIED>
+<!ELEMENT PrefixSlot (feat*, Affix*)>
+<!ELEMENT InfixSlot (feat*, Affix*)>
+<!ELEMENT SuffixSlot (feat*, Affix*)>
+<!ELEMENT TransformClass (feat*)>
+<!ATTLIST TransformClass
+    id       ID #REQUIRED>
+            <!--#################### Package for MWE patterns -->
+<!ELEMENT MWEPattern (feat*, MWENode*)>
+<!ELEMENT MWENode (feat*, MWEEdge*, MWELex)>
+<!ELEMENT MWEEdge (feat*, MWENode*)>
+<!ELEMENT MWELex (feat*)>
+            <!--#################### Package for Constraint expression -->
+<!ELEMENT ConstraintSet (feat*, Constraint*)>
+<!ELEMENT Constraint (feat*, LogicalOperation*)>
+<!ATTLIST Constraint
+    id       ID #IMPLIED>
+<!ELEMENT LogicalOperation (feat*, AttributeValuation*)>
+<!ATTLIST LogicalOperation
+   constraints  IDREFS #IMPLIED>
+<!ELEMENT AttributeValuation (feat*)>
+<!-- MRD Extension -->
+<!ELEMENT Definition EMPTY>
+<!ATTLIST Definition
+id ID #IMPLIED
+text CDATA #REQUIRED>
+
+            <!--#################### for datcat adornment: feat stands for feature-->
+<!ELEMENT feat EMPTY>
+            <!-- att=constant to be taken from the DCR -->
+            <!-- val=free string or constant to be taken from the DCR-->
+<!ATTLIST feat
+    att      CDATA #REQUIRED 
+    val      CDATA #REQUIRED>
