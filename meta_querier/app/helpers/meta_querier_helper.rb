@@ -109,9 +109,12 @@ module MetaQuerierHelper
     logger.debug tables.to_json
     [:inner, :right, :left].each do |join_type|
       unless tables[join_type].empty?
- 
+
         tables[join_type].each do |join_table|
-          if @activerecord_associations[query[:model]].keys.include? "#{join_table[0].singularize.underscore}".to_sym
+          if ((@activerecord_associations[query[:model]].keys.include? "#{join_table[0].singularize.underscore}") \
+                && (@activerecord_associations[query[:model]]["#{join_table[0].singularize.underscore}"] == "belongs_to")) \
+              || ((@activerecord_associations[join_table[0].classify].keys.include? query[:model].singularize.underscore) \
+                && (@activerecord_associations[join_table[0].classify][query[:model].singularize.underscore] != "belongs_to"))               
             left_prefix = "#{join_table[0].singularize.underscore}_id"; right_prefix = "id"
           else
             left_prefix = "id"; right_prefix = "#{query[:model].singularize.underscore}_id"
