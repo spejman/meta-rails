@@ -28,6 +28,6 @@ if  (resp == "y") || (resp == "\n")
 end
 
 # Meta querier functional tests
-destination = File.join(RAILS_ROOT, "test/functional")
-FileUtils.mkdir(destination) unless File.exist?(destination)
-FileUtils.cp(File.join(RAILS_ROOT, "vendor/plugins/meta_querier/files/meta_querier_controller_test.rb"), destination)
+# destination = File.join(RAILS_ROOT, "test/functional")
+# FileUtils.mkdir(destination) unless File.exist?(destination)
+# FileUtils.cp(File.join(RAILS_ROOT, "vendor/plugins/meta_querier/files/meta_querier_controller_test.rb"), destination)
