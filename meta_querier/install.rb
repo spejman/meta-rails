@@ -20,12 +20,9 @@ destination = File.join(RAILS_ROOT, "public/images/meta_rails/meta_querier")
 FileUtils.mkdir(destination) unless File.exist?(destination)
 
 # Meta querier migrations
-puts "Generate and run migrations required to save queries ? (Recommended) [Y/n]"
-resp = gets[0].chr
-if  (resp == "y") || (resp == "\n")
-  system("script/generate meta_querier_query_tables")
-  system("rake db:migrate")
-end
+puts "Generating and running migrations required to save queries ..."
+system("ruby script/generate meta_querier_query_tables")
+system("rake db:migrate")
 
 # Meta querier functional tests
 # destination = File.join(RAILS_ROOT, "test/functional")
