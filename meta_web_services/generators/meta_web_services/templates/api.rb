@@ -1,4 +1,4 @@
-class <%= ws_name.camelize.pluralize %>Api < ActionWebService::API::Base
+class MetaWebServicesWs::<%= ws_name.camelize.pluralize %>Api < ActionWebService::API::Base
 
   api_method :show,
     :expects => [{:id => :int}],

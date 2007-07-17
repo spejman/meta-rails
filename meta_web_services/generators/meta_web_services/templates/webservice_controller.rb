@@ -1,5 +1,5 @@
-class <%= ws_name.camelize.pluralize %>Controller < ApplicationController
-  wsdl_service_name '<%= ws_name.camelize.pluralize %>'
+class MetaWebServicesWs::<%= ws_name.camelize.pluralize %>Controller < ApplicationController
+  wsdl_service_name 'MetaWebServicesWs/<%= ws_name.camelize.pluralize %>'
   web_service_scaffold :invoke
 
   def show(id)

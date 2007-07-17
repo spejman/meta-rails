@@ -35,6 +35,9 @@ class MetaWebServicesGenerator < Rails::Generator::Base
       classes = add_relations_to_klasses(classes)
       
       m.directory  File.join('app/apis')
+      m.directory  File.join('app/apis/meta_web_services_ws')      
+      m.directory  File.join('app/controllers/meta_web_services_ws')      
+
       classes.each_with_index do |class_def, index|        
         # add foreign keys
         fks = []
@@ -61,7 +64,7 @@ class MetaWebServicesGenerator < Rails::Generator::Base
         attr_hash_with_type = attr_list.split(", ").collect do |a|
             "{ :#{a} => :" + ((class_def[1]["class_attr"][a].to_s if class_def[1]["class_attr"] and class_def[1]["class_attr"][a]) || "int") + " }"
         end.join(", ")
-        m.template 'webservice_controller.rb', File.join('app/controllers', "ws_#{class_def[0].tableize}_controller.rb"),
+        m.template 'webservice_controller.rb', File.join('app/controllers/meta_web_services_ws', "ws_#{class_def[0].tableize}_controller.rb"),
           :assigns => { :ws_name => "ws_" + class_def[0].tableize,
                         :klass_attr => class_def[1]["class_attr"],
                         :fks => fks,
@@ -69,7 +72,7 @@ class MetaWebServicesGenerator < Rails::Generator::Base
                         :attr_hash => attr_hash,
                         :habtm => habtm,
                         :klass => class_def[0].underscore.classify }
-        m.template 'api.rb', File.join('app/apis', "ws_#{class_def[0].tableize}_api.rb"),
+        m.template 'api.rb', File.join('app/apis/meta_web_services_ws', "ws_#{class_def[0].tableize}_api.rb"),
           :assigns => { :ws_name => "ws_" + class_def[0].tableize,
                         :klass_attr => class_def[1]["class_attr"],
                         :fks => fks,
