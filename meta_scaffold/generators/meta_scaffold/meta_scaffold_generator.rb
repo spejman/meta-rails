@@ -113,6 +113,9 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         class_names = classes.collect {|class_name, class_def| class_name }
   
         if @scaffold_method == "active_scaffold"
+          # MetaScaffoldModels controllers super class
+          m.file File.join('../files/', 'meta_scaffold_base_controller.rb'), File.join('app/controllers','meta_scaffold_base_controller.rb')
+
           m.directory File.join('app/controllers/meta_scaffold_models')
           class_names.each do |class_name|
             m.template 'active_scaffold_controller.rb', File.join('app/controllers/meta_scaffold_models', "#{class_name.tableize}_controller.rb"),
@@ -129,6 +132,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
 
           #m.generate([@scaffold_method, class_names].compact.flatten)
         end
+
         # Meta scaffold models controllers test
         m.file File.join('../files/', 'meta_scaffold_models_test.rb'), File.join('test/integration','meta_scaffold_models_test.rb')
         
