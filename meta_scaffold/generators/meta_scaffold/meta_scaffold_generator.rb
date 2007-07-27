@@ -21,7 +21,8 @@ class MetaScaffoldGenerator < Rails::Generator::Base
      @hasto_create_migrations = true
      @hasto_create_models = true
      @hasto_create_from_db = false
-
+     @incremental = false
+     
      args[1..-1].each do |arg|
       case arg
         when "nomigrations"
@@ -35,7 +36,10 @@ class MetaScaffoldGenerator < Rails::Generator::Base
           @hasto_create_from_db = true
 #          hasto_create_models = false
           @hasto_create_migrations = false
-
+          @incremental = false
+        when "incremental"
+          @incremental = true
+          @hasto_create_from_db = false
         else
           raise "Wrong parameter: #{arg}"
       end
@@ -56,6 +60,11 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       #
       if @hasto_create_from_db
         classes = klass_struct
+      elsif @incremental
+        db_klasses = klass_struct
+        new_klasses = YAML.load(File.open(@file_name)) if @file_name[-4..-1] == ".yml"
+        new_kclasses = dtd_to_mscff_yaml(@file_name) if @file_name[-4..-1] == ".dtd"          
+        classes = changes_to_apply(db_klasses, new_klasses)
       else
         classes = YAML.load(File.open(@file_name)) if @file_name[-4..-1] == ".yml"
         classes = dtd_to_mscff_yaml(@file_name) if @file_name[-4..-1] == ".dtd"
@@ -85,6 +94,9 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         m.template 'migration.rb', File.join('db/migrate', "#{next_migration_string(index+1)}_create_#{class_def[0].tableize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
                         :class_attr => class_def[1]["class_attr"] || [],
+                        :add => class_def[1]["add"] || [],
+                        :remove => class_def[1]["remove"] || [],
+                        :modify => class_def[1]["modify"] || [],
                         :fks => fks, :habtm => habtm } if @hasto_create_migrations
         m.template 'model.rb', File.join('app/models', "#{class_def[0].tableize.singularize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
@@ -151,16 +163,16 @@ class MetaScaffoldGenerator < Rails::Generator::Base
     end
   end
 
-          def current_migration_number
-            Dir.glob("db/migrate/[0-9]*.rb").inject(0) do |max, file_path|
-              n = File.basename(file_path).split('_', 2).first.to_i
-              if n > max then n else max end
-            end
-          end
+  def current_migration_number
+    Dir.glob("db/migrate/[0-9]*.rb").inject(0) do |max, file_path|
+      n = File.basename(file_path).split('_', 2).first.to_i
+      if n > max then n else max end
+    end
+  end
 
-          def next_migration_string(index, padding = 3)
-            "%.#{padding}d" % (current_migration_number + index)
-          end
+  def next_migration_string(index, padding = 3)
+    "%.#{padding}d" % (current_migration_number + index)
+  end
   
   
   def generate(args)
