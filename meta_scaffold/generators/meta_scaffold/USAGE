@@ -10,3 +10,5 @@ Example:
      * nocontrollers -> scaffold controllers won't be generated
      * fromdb -> The database model used will be infered from the actual db (a fake databaseModelFile is needed
     in order to parse de script options).
+     * incremental -> The generator will search for differences between the db and given databaseModelFile, then will made
+     the required migrations.
