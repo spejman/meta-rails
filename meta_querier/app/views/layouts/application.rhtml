@@ -20,6 +20,9 @@ Profile: <%= select_tag "profile", options_for_select( [["ALL"]*2] + @avaliable_
 
 <div id="notification-div" style="color: green"><%= flash[:notice] %><br/></div>
 
+<div id="query-builder-div" class="meta-querier">
 <%= @content_for_layout %>
+</div>
+
 </body>
 </html>

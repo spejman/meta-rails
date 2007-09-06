@@ -77,7 +77,7 @@
         join_posibilities = @activerecord_associations[model].keys.collect {|k| k.to_s.classify } if @activerecord_associations[model]
         #join_posibilities -= actual_query[:join].collect {|j| j[:model]} if join_posibilities
         join_posibilities -= model_route
-        #@activerecord_classes - @actual_query.collect { |aq| aq[:model] } %>
+        %>
         <% if join_posibilities and !join_posibilities.empty? %>
 
             <%= link_to_function image_tag("meta_rails/add.png", :title=> "Add joins", :border => 0, :align => "top") + " Add joins<br/>",

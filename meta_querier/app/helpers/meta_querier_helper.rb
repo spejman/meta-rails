@@ -1,8 +1,7 @@
 module MetaQuerierHelper
 
-  # NAVIGATION helpers
-
-  
+# actual_query struct NAVIGATION helpers
+ 
   # Returns the route of given key in query hash.
   # [[model_1, wide_1], ..., [model_n, wide_n]]
   def get_route(key)
@@ -49,8 +48,31 @@ module MetaQuerierHelper
     delete_model_in_query(query.select {|aq| aq[:model] == actual_node[0] &&  aq[:wide] == actual_node[1] }[0][:join], route)
   end
   
-  # CREATE SQL Helpers
+# CREATE SQL Helpers
   
+  # Returns the SQL string corresponding to the query struct in actual_query
+  def get_sql_for_query(actual_query, columns)
+
+    return "" if actual_query.nil? or actual_query.empty?
+
+    fields = get_fields_for_select(actual_query, columns)
+    st = Select[fields]
+    
+    tables = []
+    #actual_query.each_with_index do |query, q_index|
+      key = "t_#{actual_query[0][:model]}_#{actual_query[0][:wide]}"
+      tables << actual_query[0][:model].tableize.to_sym.as(key.to_sym)   
+      columns[actual_query[0][:model]].each do |field|
+        fields << "#{key}.#{field[0]} as #{key}___#{field[0]}".to_sym
+      end
+    #end
+
+    st.from[tables]
+    add_joins_to_sql_for_query(actual_query[0], key, st)
+    add_where_to_sql_for_query(actual_query[0], key, st, true)
+    st.to_sql
+  end
+
   # Returns a string to use for create the select fields of the sql query
   def get_fields_for_select(query, columns, key = "t_")
     fields = []
@@ -69,35 +91,13 @@ module MetaQuerierHelper
 
     fields.flatten
   end
-
-  # Returns the SQL corresponding to the query
-  def get_sql_for_query(actual_query, columns)
-  #  st = Select["t_0.name".to_sym, "t_0_0.name as name2".to_sym]
-    return "" if actual_query.nil? or actual_query.empty?
-    logger.debug "get_sql_for_query 0"
-    fields = get_fields_for_select(actual_query, columns)
-    st = Select[fields]
     
-    tables = []
-    #actual_query.each_with_index do |query, q_index|
-      key = "t_#{actual_query[0][:model]}_#{actual_query[0][:wide]}"
-      tables << actual_query[0][:model].tableize.to_sym.as(key.to_sym)   
-      columns[actual_query[0][:model]].each do |field|
-        fields << "#{key}.#{field[0]} as #{key}___#{field[0]}".to_sym
-      end
-    #end
-
-    st.from[tables]
-    add_inner_joins_to_sql_for_query(actual_query[0], key, st)
-    add_where_to_sql_for_query(actual_query[0], key, st, true)
-    st.to_sql
-  end
-  
-  # Adds inner joins to the SQL query
-  def add_inner_joins_to_sql_for_query(query, key, st)
-    logger.debug "add_inner_joins_to_sql_for_query 0 - #{key}"
+  # Adds joins to the SQL query st (builded with sqldsl), using
+  # the information of query struct.
+  def add_joins_to_sql_for_query(query, key, st)
+    logger.debug "add_joins_to_sql_for_query 0 - #{key}"
     return if query[:join].empty?
-    logger.debug "add_inner_joins_to_sql_for_query 1 - #{key}"
+    logger.debug "add_joins_to_sql_for_query 1 - #{key}"
 
     tables = {:inner => [], :left => [], :right => []}
     query[:join].each do |query_n|
@@ -130,12 +130,13 @@ module MetaQuerierHelper
     query[:join].each do |query_n|
       key_tmp = key; key_tmp += "__" unless key_tmp.blank?
       key_tmp += "#{query_n[:model]}_#{query_n[:wide]}"
-      add_inner_joins_to_sql_for_query(query_n, key_tmp, st)
+      add_joins_to_sql_for_query(query_n, key_tmp, st)
     end
     
   end
   
-  # Adds where clauses to the SQL query
+  # Adds where clauses to the SQL query st (builded with sqldsl), using
+  # the information of query struct.
   def add_where_to_sql_for_query(query, key, st, is_first = false)
       unless query[:conditions].empty?
         cond = query[:conditions].dup
@@ -178,49 +179,72 @@ module MetaQuerierHelper
     return is_first
   end
 
-  # STRUCTURE helpers 
-  def add_new_model_for_query(model, select, deep, wide, join_type = nil, join = [], conditions = [])
-    {:model => model, :select => select, :deep => deep, :wide => wide, :join_type => join_type, :join => join, :conditions => conditions }
-  end
+# STRUCTURE helpers
   
-  def add_new_condition_for_query(column_name, op, value, cond_type = nil)
-    { :column => column_name,
-      :op => op,
-      :value => value,
-      :cond_type => cond_type 
+  # Returns an empty struct of a model for a query (to build actual_query)
+  def add_new_model_for_query(model, select, deep, wide, join_type = nil, join = [], conditions = [])
+    { :model => model, # Model being queried
+      :select => select, # Columns of the model that will be shown in the query
+      :deep => deep,  # (struct internal counter)
+      :wide => wide,  # (struct internal counter)
+      :join_type => join_type,  # Join relation with its parent
+      :join => join,  # Own join relations
+      :conditions => conditions # Model conditions to be applied
     }
   end
   
-  def add_columns_select_for_query(columns_hash)
-    hash = {}
-    columns_hash.each { |k| hash[k] = true}
-    hash
+  # Returns an empty struct of a condition for a query (to build actual_query)
+  def add_new_condition_for_query(column_name, op, value, cond_type = nil)
+    { :column => column_name, # Name of the column where the condition will be applied
+      :op => op, # Opetarion of the condition (=, <, >, like, etc ...)
+      :value => value, # Value the must take the condition
+      :cond_type => cond_type # If there are concatenated condition which type is (and, or)
+    }
   end
   
-  # VIEWS helpers
+  # Returns a hash with keys equal to given array of names (that are expected to be
+  # column names), and for each postion its value is true.  
+  def add_columns_select_for_query(columns)
+    hash = {}; columns.each { |k| hash[k] = true}
+    return hash
+  end
+  
+# VIEWS helpers
+ 
+  # Returns a string with the name of a model given its route.
   def model_name(model_route)
     #model_route.collect {|mr| mr.split("_")[0]}.join(".")
     model_route.join(".")
   end
 
+  # Returns a HTML formated string with the 
   def model_condition_html(ac)
     str = ("<b>#{ac[:cond_type]}</b> " if ac[:cond_type]) || ""
     str += "#{ac[:column]} #{ac[:op]} #{ac[:value]}"
     return str
   end
 
+  # Formats with correct SQL format the conditions value
   def adecuate_conditions_value(conditions_value, conditions_op, column_type)
     conditions_value = "%" + conditions_value + "%" if conditions_op == "=~"
     conditions_value = "\"" + conditions_value + "\"" if column_type == "string"
-    conditions_value
+    return conditions_value
   end
 
-  # SECURITY
-  def check_for_code_injection(instructions)
-    return unless ci.class == String
-    ci = instructions.gsub("\\", "")
+# SECURITY
+
+  # Checks a if string tries to do a code injection hack
+  # having in mind that this string will be used into a eval()
+  # call begining and ending it with ".
+  #
+  # Example:
+  #   "\"; File.rm('../config/*'); \""
+  def check_for_code_injection(instruction)
+    return unless instruction.class == String
+    ci = instruction.gsub("\\", "")
     ci.gsub!("\"", "")
     return if (ci.count("\"") == 0)    
-    raise "Possible code injection attack in: #{instructions}"
+    raise "Possible code injection attack in: #{instruction}"
   end
+  
 end
