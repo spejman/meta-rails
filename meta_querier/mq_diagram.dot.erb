@@ -30,7 +30,6 @@ digraph G {
     labelfontsize = 5
   ]
 
-  <% if options[:models] %>
     subgraph cluster_models {
       label = "Models"
       
@@ -59,6 +58,5 @@ digraph G {
 
       <% end %>
     }
-  <% end %>
 
 }

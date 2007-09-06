@@ -7,5 +7,6 @@ require "infer_db_model"
 require File.dirname(__FILE__) + "/../app/models/meta_querier_query.rb"
 require File.dirname(__FILE__) + "/../app/models/meta_querier_query_condition.rb"
 
+# Check if MetaQuerier model tables exist in the DB
 META_QUERIER_TABLES = MetaQuerierQuery.table_exists? && MetaQuerierQueryCondition.table_exists?
 

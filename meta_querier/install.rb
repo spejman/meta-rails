@@ -23,8 +23,3 @@ FileUtils.mkdir(destination) unless File.exist?(destination)
 puts "Generating and running migrations required to save queries ..."
 system("ruby script/generate meta_querier_query_tables")
 system("rake db:migrate")
-
-# Meta querier functional tests
-# destination = File.join(RAILS_ROOT, "test/functional")
-# FileUtils.mkdir(destination) unless File.exist?(destination)
-# FileUtils.cp(File.join(RAILS_ROOT, "vendor/plugins/meta_querier/files/meta_querier_controller_test.rb"), destination)

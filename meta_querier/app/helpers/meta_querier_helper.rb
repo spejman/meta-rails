@@ -119,8 +119,9 @@ module MetaQuerierHelper
           else
             left_prefix = "id"; right_prefix = "#{query[:model].singularize.underscore}_id"
           end
-          
-          st.send("#{join_type}_join")[join_table[2]].on { eval "#{key}.#{left_prefix} == #{join_table[1]}.#{right_prefix}" }
+          str_join = "#{key}.#{left_prefix} == #{join_table[1]}.#{right_prefix}"
+          check_for_code_injection(str_join)
+          st.send("#{join_type}_join")[join_table[2]].on { eval str_join }
         end
         
       end     
@@ -150,6 +151,7 @@ module MetaQuerierHelper
         logger.debug conds_grouped_by_ors.to_json
         
         str_cond = conds_grouped_by_ors[0].collect { |cond| "#{key}.#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
+        str_cond.each {|str| check_for_code_injection(str)} # Check for code injection
         if is_first
           st.where { eval str_cond.join(";") }
           is_first = false
@@ -158,6 +160,7 @@ module MetaQuerierHelper
         end
         conds_grouped_by_ors[1..-1].each do |cond_grouped|
           str_cond = cond_grouped.collect { |cond| "#{key}.#{cond[:column]} #{cond[:op]} #{cond[:value]}" }
+          str_cond.each {|str| check_for_code_injection(str)} # Check for code injection
           st.or { eval str_cond.join(";") }    
         end  
     end
@@ -212,4 +215,12 @@ module MetaQuerierHelper
     conditions_value
   end
 
+  # SECURITY
+  def check_for_code_injection(instructions)
+    return unless ci.class == String
+    ci = instructions.gsub("\\", "")
+    ci.gsub!("\"", "")
+    return if (ci.count("\"") == 0)    
+    raise "Possible code injection attack in: #{instructions}"
+  end
 end

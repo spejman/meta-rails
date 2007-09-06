@@ -54,8 +54,8 @@ class MetaQuerierController < ApplicationController
       values["class_ass"].map{|e| e.to_a.flatten}.each {|rel| @activerecord_associations[klass_name][rel[1]] = rel[0]}
     end
   end
+
 # ACTIONS
-# 
 
   def index
     init
@@ -69,6 +69,7 @@ class MetaQuerierController < ApplicationController
 # IMAGE GENERATION actions
   
   # Generates the image and redirects to the correct image path.
+
   def get_image
     init
     if model = params[:model]
@@ -84,8 +85,7 @@ class MetaQuerierController < ApplicationController
     unless File.exists? image_path
       rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @model_names, :model_columns => @activerecord_columns,
                                                           :model_associations => @activerecord_associations,
-                                                          :actual_model => params[:model],
-                                                          :models => true, :controllers => false })    
+                                                          :actual_model => params[:model] })    
       rav.output image_path
     end
     redirect_to image_filename
@@ -101,7 +101,6 @@ class MetaQuerierController < ApplicationController
   end
 
 # QUERY MANAGEMENT actions (new, save, load ... )
-
 
   def clear_query
     session[:actual_query] = nil
@@ -214,6 +213,7 @@ class MetaQuerierController < ApplicationController
 
   # Main build query action that constructs the actual_query struct based on
   # form data recieved.
+
   def make_query
     init
     session[:actual_query] ||= []
@@ -345,6 +345,7 @@ class MetaQuerierController < ApplicationController
 # RUN QUERY actions
 
   # Returns HTML
+
   def run_query
     init
     @actual_query = session[:actual_query]
@@ -371,7 +372,5 @@ class MetaQuerierController < ApplicationController
     headers['Content-Type'] = "application/vnd.ms-excel"
     headers['Content-Disposition'] = 'attachment; filename="query-export.xls"'
   end
-
-
 
 end

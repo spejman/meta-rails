@@ -3,14 +3,11 @@
 require 'erb'
 module MetaQuerier
   class RailsApplicationVisualizer
-    DEFAULT_OPTIONS = {
-      :models => true,
-      :controllers => true,
-    }
+    #DEFAULT_OPTIONS = { }
   
     def initialize(options = {})
-      @options  = DEFAULT_OPTIONS.merge(options)
-      template = File.read('vendor/plugins/meta_querier/mq_diagram.dot.erb')
+      @options  = options #DEFAULT_OPTIONS.merge(options)
+      template = File.read(File.dirname(__FILE__) + '/../mq_diagram.dot.erb')
   
       @dot = ERB.new(template).result(binding)
     end
