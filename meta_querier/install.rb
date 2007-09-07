@@ -1,3 +1,8 @@
+# Author::    Sergio Espeja
+# Copyright:: Copyright (c) 2007 Sergio Espeja
+# License::   GPL License
+# More Information:: http://meta-rails.rubyforge.org
+
 # Install hook code here
 RAILS_ROOT = "./" unless defined? RAILS_ROOT
 require "fileutils"

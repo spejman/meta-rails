@@ -1,3 +1,10 @@
+# Author::    Sergio Espeja
+# Copyright:: Copyright (c) 2007 Sergio Espeja
+# License::   GPL License
+# More Information:: http://meta-rails.rubyforge.org
+
+# Migration that creates MetaQuerier tables needed for saving
+# Queries and its conditions.
 class AddMetaQuerierQueryTables < ActiveRecord::Migration
   def self.up
     create_table(MetaQuerierQuery.table_name) do |t|

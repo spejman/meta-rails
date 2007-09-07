@@ -1,3 +1,8 @@
+# Author::    Sergio Espeja
+# Copyright:: Copyright (c) 2007 Sergio Espeja
+# License::   GPL License
+# More Information:: http://meta-rails.rubyforge.org
+
 module MetaQuerierHelper
 
 # actual_query struct NAVIGATION helpers

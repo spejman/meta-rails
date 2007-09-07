@@ -1,3 +1,8 @@
+# Author::    Sergio Espeja
+# Copyright:: Copyright (c) 2007 Sergio Espeja
+# License::   GPL License
+# More Information:: http://meta-rails.rubyforge.org
+
 # Include hook code here
 directory = "#{RAILS_ROOT}/vendor/plugins/meta_querier"
 

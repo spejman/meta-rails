@@ -15,8 +15,11 @@ end
 desc 'Generate documentation for the meta_querier plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'MetaQuerier'
+  rdoc.title    = 'MetaQuerier Developer Documentation'
+  rdoc.template    = 'jamis'
   rdoc.options << '--line-numbers' << '--inline-source'
   rdoc.rdoc_files.include('README')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.rdoc_files.include('lib/*.rb') # only document first lib subdir
+  rdoc.rdoc_files.include('app/**/*.rb')
+  rdoc.rdoc_files.include('generators/**/*.rb')
 end

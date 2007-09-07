@@ -1,3 +1,9 @@
+# Author::    Sergio Espeja
+# Copyright:: Copyright (c) 2007 Sergio Espeja
+# License::   GPL License
+# More Information:: http://meta-rails.rubyforge.org
+
+
 # MetaQuerier
 require "sqldsl-1.4.2/sqldsl.rb"
 require "meta_querier_rav"

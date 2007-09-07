@@ -1,3 +1,13 @@
+# Ruby on Rails Controller that loads itself at /meta_querier url
+# of the application.
+# 
+# Provides tools for doing advanced queries to the tables of the application.
+#
+# Author::    Sergio Espeja
+# Copyright:: Copyright (c) 2007 Sergio Espeja
+# License::   GPL License
+# More Information:: http://meta-rails.rubyforge.org
+
 require "digest/md5"
 require "fileutils"
 require "meta_querier"
@@ -5,6 +15,11 @@ require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_help
 
 include MetaQuerierHelper
 include MetaRails::InferDbModel
+
+# Ruby on Rails Controller that loads itself at /meta_querier url
+# of the application.
+# 
+# Provides tools for doing advanced queries to the tables of the application.
 
 class MetaQuerierController < ApplicationController
 

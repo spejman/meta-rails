@@ -1,3 +1,10 @@
+# Author::    Sergio Espeja
+# Copyright:: Copyright (c) 2007 Sergio Espeja
+# License::   GPL License
+# More Information:: http://meta-rails.rubyforge.org
+
+# Generator that will create MetaQuerier tables (calling AddMetaQuerierQueryTables migration).
+
 class MetaQuerierQueryTablesGenerator < Rails::Generator::NamedBase
 
   def initialize(runtime_args, runtime_options = {})
