@@ -1,7 +1,58 @@
-MetaQuerier
-===========
+=MetaQuerier
 
+MetaQuerier is a RubyOnRails plugin that is a part of MetaRails. Its aim is to make any kind of query to a database in a RubyOnRails application with zero configuration.
 
-Description goes here
+MetaQuerier detects the structure of the application models. Shows a diagram of the application and offers a custom form for building queries and browsing its data.
 
-Uses sqldsl (http://sqldsl.rubyforge.org)
+It also permits save and load queries, and parametrice them allowing made conditions fixed or variables.
+If you save a query with variable conditions then when you run this query MetaQuerier ask you for the condition value to assign.
+
+Shows the result in HTML and permits export it to CSV, text separated by tabs, XML or Excel.
+
+Integrates itself with ActAsAuthenticated plugin.
+
+Manages different profiles that can be used to define different zones of the application database. This functionality helps the user defining queries.
+
+==Install
+
+Prerequisites: In order to show graphs of the application database structure, MetaQuerier needs Graphviz.
+
+1. From the rails application root directory:
+
+      script/plugin install svn://rubyforge.org/var/svn/meta-rails/plugins/meta_querier
+
+2. Reload your server and point your browser to the "/meta_querier" folder of your application, for example:
+
+      http://localhost:3000/meta_querier
+
+MetaQuerier looks if you have ActAsAuthenticated plugin installed, if so it calls automatically the function login_required acting as expected.
+If you have ActAsAuthenticated plugin installed but you don't want MetaQuerier to use ActAsAuthenticated you must add the next code to config/environment.rb:
+
+	MetaQuerierUseActAsAuth = false
+
+==How it works
+
+During the installation MetaQuerier copy all images, css, ... to the public directory of your rails application,
+and creates 2 tables in the database in order to manage queries (you can check this at install.rb)
+
+In the Rails initialization phase MetaQuerier loads the MetaQuerierController (disponible at /meta_querier url of the
+application), loads needed libs and models (MetaQuerierQuery and MetaQuerierQueryCondition). If during the installation
+the MetaQuerierQuery and MetaQuerierQueryCondition tables weren't created MetaQuerier will fail to initialize (you
+can solve this running AddMetaQuerierQueryTables migration by yourself.
+
+If you want to study the initialization process of MetaQuerier in detail, check init.rb file.
+
+User documentation will be soon disponible, there you would be able to understand how can MetaQuerier can be used
+once the plugin installed.
+
+==Credits
+
+ This project is created by Sergio Espeja as part of his work in Institut Universitari de Lingüística Aplicada of Universitat Pompeu Fabra and in bee.com.es.
+
+The development of this project is being done by Sergio Espeja with the collaboration of Jorge L. Cangas.
+
+MetaRails uses SQL DSL library developed mainly by Jay Fields.
+
+MetaRails is released under GPL License.
+Rails is released under the MIT license.
+Ruby under the Ruby License. 
