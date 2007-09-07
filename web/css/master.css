@@ -19,3 +19,16 @@ h2 {
     font-size: 0.8em;
     font-family: arial;
 }
+
+.image {
+    text-align: center;
+    font-size: 15px;
+    font-family: georgia;
+    font-weight: bold;
+    background-color: #ffc;
+    width: 530px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}

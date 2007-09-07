@@ -18,20 +18,53 @@
     is to make any kind of query to a database in a RubyOnRails application with zero
     configuration.
 </p>
+<div class="image">
+<img src="http://farm2.static.flickr.com/1067/774811969_2858515e0d.jpg"/><br/>
+<small><em>Building a query</em></small>
+</div>
 <p>
     MetaQuerier detects the structure of the application models.
     Shows a diagram of the application and offers a custom form for building queries and
     browsing its data.
 </p>
+<div class="image">
+<img src="http://farm2.static.flickr.com/1113/775687160_2d21201b70.jpg"/>
+<small><em>Saving a query</em></small>
+</div>
+<p>
+	It also permits save and load queries, and parametrice them allowing made conditions
+	fixed or variables.<br/>
+	If you save a query with variable conditions then when you run this query MetaQuerier
+	ask you for the condition value to assign.
+</p>
+<div class="image">
+<img src="http://farm2.static.flickr.com/1114/775687094_4da91ccfae.jpg"/>
+<small><em>Running the query</em></small>
+</div>
+<p>
+	Shows the result in HTML and permits export it to CSV, text separated by tabs, XML or Excel.
+</p>
+<div class="image">
+<img src="http://farm2.static.flickr.com/1159/775687022_0d5162d882.jpg"/>
+<small><em>Query result in HTML</em></small>
+</div>
+<p>
+	Integrates itself with <a href="http://technoweenie.stikipad.com/plugins/show/Acts+as+Authenticated">ActAsAuthenticated plugin</a>.
+</p>
+<p>
+	Manages different profiles that can be used to define different zones of the application database. This
+	functionality helps the user defining queries.
+</p>
+
 
 <h2>Install</h2>
     <p>
-     Prerequisites: In order to show graphs of the application structure, MetaQuerier needs <a href="http://www.graphviz.org">Graphviz</a>.
+     Prerequisites: In order to show graphs of the application database structure, MetaQuerier needs <a href="http://www.graphviz.org">Graphviz</a>.
     </p>
     <ol> <li>From the rails application root directory:
     <pre><code>script/plugin install 
 svn://rubyforge.org/var/svn/meta-rails/plugins/meta_querier</code></pre></li>
-    <li>Reload your server and point your browser to the "/mega_querier" folder of your application, for example:
+    <li>Reload your server and point your browser to the "/meta_querier" folder of your application, for example:
     <pre><code>http://localhost:3000/meta_querier</code></pre></li>
     </ol>
     <p>
@@ -42,20 +75,21 @@ svn://rubyforge.org/var/svn/meta-rails/plugins/meta_querier</code></pre></li>
     <pre><code>MetaQuerierUseActAsAuth = false</code></pre>    
     </p>
 
-<h2>Caution!</h2>
-<p>
-    MetaQuerier is in alpha version and still haves security issues
-    be careful and not use it in production environments.
-</p>
-<p>
-    We are fixing a bug that can be a backdoor for code injection.
-</p>
+<h2>Documentation</h2>
+	<ul>
+		<li><a href="/doc/developer/meta_querier">Developer Documentation</a></li>
+		<li>User Documentation</li>
+	</ul>
+
 <h2>Future Features</h2>
     <ul>
-        <li>My Queries: Manage common queries in order to access them fast.</li>
-        <li>Database Regions: Divide the database in multiple regions for better browsing of large databases.</li>
-        <li>Export query data to CSV and XML</li>
+        <li><strike>My Queries: Manage common queries in order to access them fast.</strike></li>
+        <li><strike>Database Regions: Divide the database in multiple regions for better browsing of large databases.</strike></li>
+        <li>Export query data to <strike>CSV and</strike> XML</li>
+        <li>Support for "order by" in queries.</li>
         <li>Generate the queries clicking directly in the database diagram instead of using provided forms.</li>
+        <li>Improve notification and general feeling.</li>
+        <li>Search for routes between models automatically.</li>
     </ul>
 
 <h2>More information</h2>
@@ -89,7 +123,12 @@ svn://rubyforge.org/var/svn/meta-rails/plugins/meta_querier</code></pre></li>
         The development of this project is being done by Sergio Espeja with the collaboration of Jorge L. Cangas.
     </p>
     <p>
-        MetaRails is released under GPL License. Rails is released under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a>.
+        MetaRails uses <a href="http://sqldsl.rubyforge.org/">SQL DSL</a> library developed mainly by <a href="http://www.jayfields.com">Jay Fields</a>.
+		Inspiration for database diagram generation comes from <a href="http://rav.rubyforge.org/">Rails Application Visualizer</a> project.
+    </p>
+    <p>
+        MetaRails is released under GPL License.<br/>
+		Rails is released under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT license</a>.<br/>
         Ruby under the <a href="http://www.ruby-lang.org/en/LICENSE.txt">Ruby License</a>.
     </p>
 
