@@ -45,9 +45,15 @@ If you want to study the initialization process of MetaQuerier in detail, check 
 User documentation will be soon disponible, there you would be able to understand how can MetaQuerier can be used
 once the plugin installed.
 
+==Generate documentation
+
+In order to generate this developer documentation you can execute:
+
+  rake rdoc
+
 ==Credits
 
- This project is created by Sergio Espeja as part of his work in Institut Universitari de Lingüística Aplicada of Universitat Pompeu Fabra and in bee.com.es.
+Project created by Sergio Espeja as part of his work in Institut Universitari de Linguistica Aplicada of Universitat Pompeu Fabra and in bee.com.es.
 
 The development of this project is being done by Sergio Espeja with the collaboration of Jorge L. Cangas.
 
