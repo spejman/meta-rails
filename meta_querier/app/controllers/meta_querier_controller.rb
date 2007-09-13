@@ -144,6 +144,7 @@ class MetaQuerierController < ApplicationController
       else
         @meta_querier_query = session[:my_query]
         @meta_querier_query.update_attributes(params[:meta_querier_query])
+        @meta_querier_query.meta_querier_query_conditions = []
       end
       @meta_querier_query.query = @actual_query
       @meta_querier_query.save!
