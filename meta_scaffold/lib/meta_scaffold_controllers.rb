@@ -44,11 +44,12 @@ module MetaRails
         self.active_scaffold_config.configure do |conf|
           #conf.list.label = desired_columns.collect(&:to_s).join(",")
           actual_cols = []; conf.list.columns.each{|c| actual_cols << c.name}
-          used_columns = actual_cols - desired_columns
-          conf.list.columns.exclude(used_columns)
-          conf.show.columns.exclude(used_columns)
-          conf.update.columns.exclude(used_columns)
-          conf.create.columns.exclude(used_columns)  
+          un_used_columns = actual_cols - desired_columns
+          conf.list.columns.exclude(un_used_columns)
+          conf.show.columns.exclude(un_used_columns)
+          conf.update.columns.exclude(un_used_columns)
+          conf.create.columns.exclude(un_used_columns)  
+          conf.subform.columns.exclude(un_used_columns)  
         end
       end
       

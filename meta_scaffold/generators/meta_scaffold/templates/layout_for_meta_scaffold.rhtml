@@ -24,7 +24,7 @@ Profile: <%%= select_tag "profile", options_for_select( [["ALL"]*2] + @avaliable
 <br/><br/>
 </div>
 <% if File.exist?(File.join(RAILS_ROOT, "vendor/plugins/meta_querier")) %>
-<%%= link_to("<img src='/meta_querier/get_image?model=#{@meta_scaffold_class_name}&session_profile_cache=#{session[:profile]}' maxwidth='800' border='0' />", :controller => "/meta_querier", :action => "get_image", :model => @meta_scaffold_class_name, :session_profile_cache => session[:profile]) if @meta_scaffold_class_name %>
+<%%= link_to("<img src='/meta_querier/get_image?model=#{@meta_scaffold_class_name}&extension=.png&session_profile_cache=#{session[:profile]}' maxwidth='800' border='0' />", :controller => "/meta_querier", :action => "get_image", :extension => ".png", :model => @meta_scaffold_class_name, :session_profile_cache => session[:profile]) if @meta_scaffold_class_name %>
 <% end %>
 
 <p style="color: green"><%%= flash[:notice] %></p>
