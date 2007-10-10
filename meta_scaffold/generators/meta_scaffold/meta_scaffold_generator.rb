@@ -10,40 +10,41 @@ class MetaScaffoldGenerator < Rails::Generator::Base
   attr_accessor :file_name, :scaffold_method
   
   def initialize(*runtime_args)
-     super(*runtime_args)
-     @file_name = args[0]
-     raise "Filename of database schema file not given." unless @file_name
+    super(*runtime_args)
 
+    @file_name = args[0]
+    raise "Filename of database schema file not given." unless @file_name
      
-#     @scaffold_method = args[1]
-     @scaffold_method = "active_scaffold" #unless @scaffold_method
+    # The only scaffold method supported is active_scaffold.
+    # @scaffold_method = args[1]
+    @scaffold_method = "active_scaffold" #unless @scaffold_method
      
-     @hasto_create_migrations = true
-     @hasto_create_models = true
-     @hasto_create_from_db = false
-     @incremental = false
+    @hasto_create_migrations = true
+    @hasto_create_models = true
+    @hasto_create_from_db = false
+    @incremental = false
      
-     args[1..-1].each do |arg|
+    args[1..-1].each do |arg|
       case arg
-        when "nomigrations"
-          @hasto_create_migrations = false
-        when "nomodels"
-          @hasto_create_models = false
-          @hasto_create_migrations = false
-        when "nocontrollers"
-          @scaffold_method = nil
-        when "fromdb"
-          @hasto_create_from_db = true
-#          hasto_create_models = false
-          @hasto_create_migrations = false
-          @incremental = false
-        when "incremental"
-          @incremental = true
-          @hasto_create_from_db = false
-        else
-          raise "Wrong parameter: #{arg}"
+      when "nomigrations"
+        @hasto_create_migrations = false
+      when "nomodels"
+        @hasto_create_models = false
+        @hasto_create_migrations = false
+      when "nocontrollers"
+        @scaffold_method = nil
+      when "fromdb"
+        @hasto_create_from_db = true
+        #          hasto_create_models = false
+        @hasto_create_migrations = false
+        @incremental = false
+      when "incremental"
+        @incremental = true
+        @hasto_create_from_db = false
+      else
+        raise "Wrong parameter: #{arg}"
       end
-     end
+    end
   end
 
   def manifest
@@ -77,37 +78,50 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       
       m.directory  File.join('db/migrate')
       classes.each_with_index do |class_def, index|        
-        # add foreign keys
+        # Add foreign keys:
+        
+        # The class that has belongs_to must create attribute "#{target_model}_id" for 
+        # the relations has_many <--> belongs_to or has_one <--> belongs_to.
+        # 
+        # Now store this relations into fks variable and later pass as a parameter to
+        # the migration.rb template
         fks = []
-        class_def[1]["class_ass"].select { |ass| (ass.has_key? "belongs_to" or ass.has_key? "has_one") }.each do |v_cont|
+        class_def[1]["class_ass"].select { |ass| (ass.has_key? "belongs_to") }.each do |v_cont|
           fk_class_name = v_cont.values[0].tableize.singularize
           fks << fk_class_name
         end
 
         habtm = []
+        # In has_and_belongs_to_many relations a auxiliar table must be used to connect
+        # the two models the name of this table must be a composition of the two classes
+        # names. The class that is first in alphabetical order must be the first in the composition
+        # and the other the second. Example: songs <-- has_and_belongs_to_many --> instruments, its
+        # auxiliar table must be instruments_songs
+        # 
+        # Now store this relations in habtm variable to later pass as a parameter to the migration.rb
+        # template only once (when we found the first model in alphabetical order).
         class_def[1]["class_ass"].select { |ass| ass.has_key? "has_and_belongs_to_many" }.each do |v_cont|
           fk_class_name = v_cont.values[0].tableize.singularize
           habtm << fk_class_name if class_def[0] < fk_class_name          
         end
 
-      
+        # Generate the migration
         m.template 'migration.rb', File.join('db/migrate', "#{next_migration_string(index+1)}_create_#{class_def[0].tableize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
-                        :class_attr => class_def[1]["class_attr"] || [],
-                        :add => class_def[1]["add"] || [],
-                        :remove => class_def[1]["remove"] || [],
-                        :modify => class_def[1]["modify"] || [],
-                        :fks => fks, :habtm => habtm } if @hasto_create_migrations
+          :class_attr => class_def[1]["class_attr"] || [],
+          :add => class_def[1]["add"] || [],
+          :remove => class_def[1]["remove"] || [],
+          :modify => class_def[1]["modify"] || [],
+          :fks => fks, :habtm => habtm } if @hasto_create_migrations
+        
+        # Generate the model
         m.template 'model.rb', File.join('app/models', "#{class_def[0].tableize.singularize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
-                        :class_ass => class_def[1]["class_ass"]} if @hasto_create_models
+          :class_ass => class_def[1]["class_ass"]} if @hasto_create_models
 
       end
 
-      # Check for class naming collisions.
-      #m.class_collisions class_path, class_name, "#{class_name}WorkerTest"
-
-
+      # Run the migrations
       if @hasto_create_migrations
         m.puts "Begin migration ******"
         if RUBY_PLATFORM =~ /mswin32/
@@ -120,8 +134,9 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         m.puts "End migration ******"
       end
       
+      # Run the scaffold and copy necessary files
       if @scaffold_method
-        #m.directory  File.join('public/stylesheets/meta_rails')        
+
         class_names = classes.collect {|class_name, class_def| class_name }
   
         if @scaffold_method == "active_scaffold"
@@ -131,16 +146,16 @@ class MetaScaffoldGenerator < Rails::Generator::Base
           m.directory File.join('app/controllers/meta_scaffold_models')
           class_names.each do |class_name|
             m.template 'active_scaffold_controller.rb', File.join('app/controllers/meta_scaffold_models', "#{class_name.tableize}_controller.rb"),
-            :assigns => { :class_name => class_name.tableize }                      
+              :assigns => { :class_name => class_name.tableize }                      
           end
           m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "meta_scaffold.rhtml"),
-                     :assigns => { :class_names => class_names, :is_active_scaffold => true }
+            :assigns => { :class_names => class_names, :is_active_scaffold => true }
           m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "meta_scaffold_info.rhtml"),
-                     :assigns => { :class_names => class_names, :is_active_scaffold => false }
+            :assigns => { :class_names => class_names, :is_active_scaffold => false }
         else
           class_names.each {|class_name| m.generate([@scaffold_method, class_name]) }
           m.template 'layout_for_meta_scaffold.rhtml', File.join('app/views/layouts', "application.rhtml"),
-                     :assigns => { :class_names => class_names, :is_active_scaffold => false }
+            :assigns => { :class_names => class_names, :is_active_scaffold => false }
 
           #m.generate([@scaffold_method, class_names].compact.flatten)
         end
@@ -153,16 +168,18 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         m.file File.join('../files/', 'meta_scaffold_info_controller.rb'), File.join('app/controllers','meta_scaffold_info_controller.rb')
         m.directory  File.join('app/views/meta_scaffold_info')
         m.template 'index.rhtml', File.join('app/views/meta_scaffold_info/index.rhtml'),
-                      :assigns => { :class_names => class_names }, :collision => :force        
+          :assigns => { :class_names => class_names }, :collision => :force        
         m.file File.join('../files/', 'meta_scaffold_info_controller_test.rb'), File.join('test/functional','meta_scaffold_info_controller_test.rb')
         
         # Singleton used for comunicate controllers with models.
         m.file File.join('../files/', 'metarails_singleton.rb'), File.join('app/models','metarails_singleton.rb')
+      
       end
 
     end
   end
 
+  # Returns the current migration number of the application (as a integer).
   def current_migration_number
     Dir.glob("db/migrate/[0-9]*.rb").inject(0) do |max, file_path|
       n = File.basename(file_path).split('_', 2).first.to_i
@@ -170,6 +187,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
     end
   end
 
+  # Get the filename of the next migration
   def next_migration_string(index, padding = 3)
     "%.#{padding}d" % (current_migration_number + index)
   end
@@ -179,6 +197,9 @@ class MetaScaffoldGenerator < Rails::Generator::Base
     Rails::Generator::Scripts::Generate.new.run(args)
   end
   
+  # Checks for the klasses struct cosistency. Evaluates if:
+  #  - There is no reserved words colision.
+  #  - RoR infletions are correct (a.singular = a.singular.singular and so on).
   def check_consitency(klasses)
     return false if klasses.nil? or klasses.empty?
     
@@ -186,12 +207,12 @@ class MetaScaffoldGenerator < Rails::Generator::Base
     klasses_eq_reserved_words = check_for_reserved_words(klasses.keys)
 
     raise "Models with names equals to reserved words: " + klasses_eq_reserved_words.join(", ") \
-      unless klasses_eq_reserved_words.empty?
+    unless klasses_eq_reserved_words.empty?
     
     # Check for errors in Ruby on Rails inflection
     klasses_with_diff_sig_to_pl = check_for_incorrect_inflection(klasses.keys)
     raise "Models with incorrect Ruby on Rails inflection: " + klasses_with_diff_sig_to_pl.join(", ") \
-      unless klasses_with_diff_sig_to_pl.empty?
+    unless klasses_with_diff_sig_to_pl.empty?
 
     return true
   end
