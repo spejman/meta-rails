@@ -97,7 +97,8 @@ class MetaQuerierController < ApplicationController
     else
       @model_names = @klasses_struct.keys
     end
-    image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.new(@model_names.join("#")).to_s + ".png"
+    extension = params[:extension] || ".pdf"
+    image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.new(@model_names.join("#")).to_s + extension
     image_path = "#{RAILS_ROOT}/public#{image_filename}"
     # Create the image only if not exists
     unless File.exists? image_path
@@ -386,11 +387,16 @@ class MetaQuerierController < ApplicationController
     @actual_query = session[:actual_query]
     session[:my_query].query = @actual_query
     session[:my_query].save if session[:my_query].history
-    if @actual_query
-      @ar_base = ActiveRecord::Base.connection.select_all(get_sql_for_query(@actual_query, @activerecord_columns))
-      session[:ar_base] = @ar_base
+    if is_query_valid_for_run(@actual_query, @activerecord_columns)
+      if @actual_query
+        @ar_base = ActiveRecord::Base.connection.select_all(get_sql_for_query(@actual_query, @activerecord_columns))
+        session[:ar_base] = @ar_base
+      end
+      render :partial => "run_query", :layout => "run_query"
+    else
+      #TODO: format the error in HTML
+      render :text => "Query must have attributes to show for run it."
     end
-    render :partial => "run_query", :layout => "run_query"
   end
   
   # Returns query results in  txt (csv or tab separated values)

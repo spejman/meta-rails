@@ -57,7 +57,7 @@ class ReceiveAny < BlankSlate #:nodoc:
   alias ^ is_not_null
   
   def method_missing(sym, *args)
-    raise ArgumentError.new("#{self.to_sql} is not specified as a table in your from statement") unless @builder.tables.include?(self.to_sql.to_sym)
+    #raise ArgumentError.new("#{self.to_sql} is not specified as a table in your from statement") unless @builder.tables.include?(self.to_sql.to_sym)
     @to_sql << ".#{sym.to_s}"
     self
   end

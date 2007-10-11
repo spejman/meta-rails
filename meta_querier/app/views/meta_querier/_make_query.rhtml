@@ -1,4 +1,4 @@
-<div style="float:left; width: 50%;">
+<div id="buildquery_div" style="float:left; width: 50%;">
 <h2>Build Query</h2>
 <%= render :partial => "query_management_menu" %>
 
@@ -25,7 +25,9 @@
 	<% end %>
 <% end %>
 </div>
-<div style="float:left; margin-left:10px; margin-top:30px;width:43%">
+<span onclick="javascript: $('datamap_iframe').style.width='90%'; $('buildquery_div').hide();"> << </span> |
+<span onclick="javascript: $('datamap_iframe').style.width='43%'; $('buildquery_div').show();"> >> </span>
+<div id="datamap_iframe" style="float:left; margin-left:10px; margin-top:30px;width:43%">
 <iframe 
 src ="<%= url_for :controller => "/meta_querier", :action => "get_image", :session_profile_cache => session[:profile] %>"
 width="100%" height="800">

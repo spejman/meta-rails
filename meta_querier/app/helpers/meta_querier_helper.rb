@@ -53,6 +53,11 @@ module MetaQuerierHelper
     delete_model_in_query(query.select {|aq| aq[:model] == actual_node[0] &&  aq[:wide] == actual_node[1] }[0][:join], route)
   end
   
+  # Checks if the query is runnable or not and returns true/false.
+  def is_query_valid_for_run(actual_query, columns)
+    return !get_fields_for_select(actual_query, columns).empty?
+  end
+  
 # CREATE SQL Helpers
   
   # Returns the SQL string corresponding to the query struct in actual_query
@@ -116,17 +121,40 @@ module MetaQuerierHelper
       unless tables[join_type].empty?
 
         tables[join_type].each do |join_table|
-          if ((@activerecord_associations[query[:model]].keys.include? "#{join_table[0].singularize.underscore}") \
-                && (@activerecord_associations[query[:model]]["#{join_table[0].singularize.underscore}"] == "belongs_to")) \
-              || ((@activerecord_associations[join_table[0].classify].keys.include? query[:model].singularize.underscore) \
-                && (@activerecord_associations[join_table[0].classify][query[:model].singularize.underscore] != "belongs_to"))               
-            left_prefix = "#{join_table[0].singularize.underscore}_id"; right_prefix = "id"
+          # join_table --> [string_class_name, string_sql_alias_for_table, "table_name as string_sql_alias_for_table"]
+          # Example:
+          # ["Sense", "t_Lexicon_0__LexicalEntry_0__SyntacticBehaviour_0__Sense_0",
+          # "senses as t_Lexicon_0__LexicalEntry_0__SyntacticBehaviour_0__Sense_0"]
+          logger.debug "query_model --> #{query[:model]}: " + @activerecord_associations[query[:model]].to_json
+          logger.debug "join_table --> #{join_table[0].classify}: " + @activerecord_associations[join_table[0].classify].to_json
+          if (@activerecord_associations[query[:model]]["#{join_table[0].pluralize.underscore}"] == "has_and_belongs_to_many") \
+              || (@activerecord_associations[join_table[0].classify][query[:model].pluralize.underscore] == "has_and_belongs_to_many")
+            left_prefix = "#{join_table[0].singularize.underscore}_id"; right_prefix = "#{query[:model].singularize.underscore}_id"
+            join_table_name = if query[:model].tableize < join_table[0].tableize
+              "#{query[:model].tableize}_#{join_table[0].tableize}"
+            else
+              "#{join_table[0].tableize}_#{query[:model].tableize}"
+            end
+            str_join_0 = "#{key}.id == #{join_table_name}.#{right_prefix}"
+            str_join_1 = "#{join_table[1]}.id == #{join_table_name}.#{left_prefix}"
+            check_for_code_injection(str_join_0)
+            check_for_code_injection(str_join_1)
+            st.send("#{join_type}_join")[join_table_name.to_sym].on { eval str_join_0 }
+            st.send("#{join_type}_join")[join_table[2]].on { eval str_join_1 }
           else
-            left_prefix = "id"; right_prefix = "#{query[:model].singularize.underscore}_id"
+            if ((@activerecord_associations[query[:model]].keys.include? "#{join_table[0].singularize.underscore}") \
+                  && (@activerecord_associations[query[:model]]["#{join_table[0].singularize.underscore}"] == "belongs_to")) \
+                || ((@activerecord_associations[join_table[0].classify].keys.include? query[:model].singularize.underscore) \
+                  && (@activerecord_associations[join_table[0].classify][query[:model].singularize.underscore] != "belongs_to"))               
+              left_prefix = "#{join_table[0].singularize.underscore}_id"; right_prefix = "id"
+            else
+              left_prefix = "id"; right_prefix = "#{query[:model].singularize.underscore}_id"
+            end
+            str_join = "#{key}.#{left_prefix} == #{join_table[1]}.#{right_prefix}"
+            check_for_code_injection(str_join)
+            st.send("#{join_type}_join")[join_table[2]].on { eval str_join }
           end
-          str_join = "#{key}.#{left_prefix} == #{join_table[1]}.#{right_prefix}"
-          check_for_code_injection(str_join)
-          st.send("#{join_type}_join")[join_table[2]].on { eval str_join }
+          
         end
         
       end     
