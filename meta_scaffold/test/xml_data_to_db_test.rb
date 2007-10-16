@@ -14,12 +14,13 @@ require 'test/unit'
 require "rubygems"
 require "yaml"
 require "active_support"
-require '../lib/xml_data_to_db.rb'
-include REXML
+require File.dirname(__FILE__) + "/meta_rails_classes_for_testing.rb"
+require File.dirname(__FILE__) + '/../lib/xml_data_to_db.rb'
 include MetaRails::XmlDataToDb
 
+
 class XmlDataToDbTest < Test::Unit::TestCase
-   
+    
   def test_foo
     # assert_equal("foo", bar)
 
@@ -85,6 +86,67 @@ EOF
     YAML.load(File.open(File.join(File.dirname(__FILE__),'klass_struct.yml')).read)
   end
   
+  def test_insert_xml_data_into_db
+    
+    root_obj = insert_xml_data_into_db(Document.new(xml_data).root, klass_struct)
+    
+    assert_equal Lexicon, root_obj.class, "Incorrect root object"
+    assert root_obj.saved?, "Root class not saved"
+    assert_equal LexicalEntry, root_obj.lexical_entries.first.class, "Incorrect first class"
+    assert_equal 1, root_obj.lexical_entries.size, "Incorrect number of lexical entries"
+    
+    lexical_entry = root_obj.lexical_entries.first
+    assert lexical_entry.saved?, "Object not saved. Error saving 1st level objects."
+    assert_equal Feat, lexical_entry.feats.first.class, "Error with has_many relations"
+    assert_equal 1, lexical_entry.feats.size, "Error with has_many relations"
+    assert_equal "partOfSpeech", lexical_entry.feats.first.att, "Error assigning attribute values"
+    assert_equal "verb", lexical_entry.feats.first.val, "Error assigning attribute values"
+    assert_equal root_obj, lexical_entry.lexicon
+    
+    assert_equal Lemma, lexical_entry.lemmas.first.class, "Error with has_many relations"
+    assert_equal 1, lexical_entry.lemmas.size, "Error with has_many relations"
+    assert_equal "writtenForm", lexical_entry.lemmas.first.feats.first.att, "Error assigning attribute values"
+    assert_equal "test", lexical_entry.lemmas.first.feats.first.val, "Error assigning attribute values"
+    
+    assert_equal SyntacticBehaviour, lexical_entry.syntactic_behaviours.first.class
+    assert_equal 1, lexical_entry.syntactic_behaviours.size
+    
+    syntactic_behaviour = lexical_entry.syntactic_behaviours.first
+    assert_equal SubcategorizationFrameSet, syntactic_behaviour.subcategorization_frame_sets.first.class
+    assert_equal 1, syntactic_behaviour.subcategorization_frame_sets.size, "Error with has_many relations"
+    
+    sfs = syntactic_behaviour.subcategorization_frame_sets.first    
+    assert_equal "FS_TR_3.2", sfs.identifier, "Error getting the ids"
+    assert_equal SubcategorizationFrame, sfs.subcategorization_frames.first.class
+    assert_equal 2, sfs.subcategorization_frames.size, "Error with has_many relations taken usign ids relations"
+    assert_equal root_obj, sfs.lexicon
+    
+    sf_1_1 = sfs.subcategorization_frames.select {|sf| sf.identifier == "F_TR_1.1" }.first
+    assert_not_nil sf_1_1
+    assert_empty sf_1_1.syntactic_arguments, "Error assigning related objects to empty relations"
+    assert_equal root_obj, sf_1_1.lexicon
+    
+    sf_3_2_1 = sfs.subcategorization_frames.select {|sf| sf.identifier == "F_TR_3.2.1" }.first
+    assert_not_nil sf_3_2_1
+    assert_equal 2, sf_3_2_1.syntactic_arguments.size, "Error assing multiple related objects inside the parent tags"
+    assert_equal SyntacticArgument, sf_3_2_1.syntactic_arguments.first.class, "Error assing multiple related objects inside the parent tags"
+    assert_equal root_obj, sf_3_2_1.lexicon
+    
+    sa_sub_sn = sf_3_2_1.syntactic_arguments.select {|sa| sa.identifier == "synArg_Sub_SN"}.first
+    assert_not_nil sa_sub_sn
+    assert_equal 2, sa_sub_sn.feats.size, "Error assing multiple related objects inside the parent tags"
+        
+    sa_ob_inf_de = sf_3_2_1.syntactic_arguments.select {|sa| sa.identifier == "synArg_Ob_Inf_De"}.first
+    assert_not_nil sa_ob_inf_de
+    assert_equal 3, sa_ob_inf_de.feats.size, "Error assing multiple related objects inside the parent tags"
+    assert_equal [["function", "direct object"], ["introducer", "de"], ["syntacticConstituent", "OCompl"]], sa_ob_inf_de.feats.collect {|f| [f.att, f.val]}.sort_by{|i| i[0]}
+    
+  end
+  
+  def assert_empty(array, message = nil)
+    assert array.empty?, message
+  end
+  
   def test_check_if_xml_is_consistent_with_db
     
     names = []
@@ -135,5 +197,6 @@ EOF
     assert_equal model_ids, get_xml_model_ids(Document.new(xml_data).root)
     
   end
+  
   
 end
