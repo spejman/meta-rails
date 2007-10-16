@@ -179,9 +179,15 @@ class MetaQuerierControllerTest < Test::Unit::TestCase
   end
 
   def test_get_image
-    get :get_image
+    get(:get_image, {:extension => ".png"})
     
     image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.new(assigns(:model_names).join("#")).to_s + ".png"
+    assert_redirected_to image_filename
+    assert File.exists?(File.join("#{RAILS_ROOT}/public", image_filename))
+
+    get :get_image #, :extension => ".pdf" # by default returns PDF
+    
+    image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.new(assigns(:model_names).join("#")).to_s + ".pdf"
     assert_redirected_to image_filename
     assert File.exists?(File.join("#{RAILS_ROOT}/public", image_filename))
     
