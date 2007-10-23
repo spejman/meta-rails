@@ -34,9 +34,9 @@ def dtd_to_mscff_yaml(filename)
       next if relation == "EMPTY" # case like <!ELEMENT DC EMPTY>
       case relation[-1].chr
         when "*"
-          {"has_many" => relation[0..-2]}
+          {"has_many" => relation[0..-2].pluralize}
         when "+"
-          {"has_many" => relation[0..-2]}
+          {"has_many" => relation[0..-2].pluralize}
         when "?"
           {"has_one" => relation[0..-2]}
         else
@@ -71,7 +71,7 @@ def dtd_to_mscff_yaml(filename)
       # because they can be duplicated.
       #
       if att_definition[0] == "id"
-        h_yaml[attribute[0]]["class_attr"]["id"] = :string
+        h_yaml[attribute[0]]["class_attr"]["identifier"] = :string
         next
       end
       
@@ -90,7 +90,7 @@ def dtd_to_mscff_yaml(filename)
           # If exists a class with this name then has_many
           if h_yaml[att_definition[0].singularize.camelize]
             #h_yaml[attribute[0]]["class_ass"] << {"has_many" => att_definition[0]}
-            h_yaml[attribute[0]]["class_ass"] << {"has_and_belongs_to_many" => att_definition[0]}
+            h_yaml[attribute[0]]["class_ass"] << {"has_and_belongs_to_many" => att_definition[0].pluralize}
           else
             #TODO: this must raise an error because is unable to determite the relation!!
             h_yaml[attribute[0]]["class_attr"][att_definition[0]] = :string

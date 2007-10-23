@@ -98,7 +98,7 @@ class MetaQuerierController < ApplicationController
       @model_names = @klasses_struct.keys
     end
     extension = params[:extension] || ".pdf"
-    image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.new(@model_names.join("#")).to_s + extension
+    image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.hexdigest(@model_names.join("#")).to_s + extension
     image_path = "#{RAILS_ROOT}/public#{image_filename}"
     # Create the image only if not exists
     unless File.exists? image_path

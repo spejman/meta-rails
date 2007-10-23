@@ -3,8 +3,12 @@ require "fileutils"
 require File.join(File.dirname(__FILE__), "/../../lib/dtd_to_mscff_yaml.rb")
 require 'check_consistency.rb'
 require "infer_db_model"
+require "incremental_model"
+
 include MetaRails::InferDbModel
 
+META_SCAFFOLD_GENERATOR_HOOK_FILE = File.join File.dirname(__FILE__), (("../"*5) + "lib/meta_scaffold_generator_hook.rb")
+require META_SCAFFOLD_GENERATOR_HOOK_FILE if File.exists? META_SCAFFOLD_GENERATOR_HOOK_FILE
 
 class MetaScaffoldGenerator < Rails::Generator::Base
   attr_accessor :file_name, :scaffold_method
@@ -75,6 +79,12 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       
       # Adding needed relations for building migrations and models
       classes = add_relations_to_klasses(classes)
+      
+      # Here the meta_scaffold generator tries to execute the hook if is defined
+      # to execute it you must define a method called meta_scaffold_generator_classes_hook(classes).
+      # You can use the atomatically loaded file RAILS_ROOT/lib/meta_scaffold_generator_hook.rb to
+      # define it.
+      classes = meta_scaffold_generator_classes_hook(classes) if defined?(meta_scaffold_generator_classes_hook) == "method"      
       
       m.directory  File.join('db/migrate')
       classes.each_with_index do |class_def, index|        
