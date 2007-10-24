@@ -19,9 +19,8 @@ class MetaScaffoldGenerator < Rails::Generator::Base
     @file_name = args[0]
     raise "Filename of database schema file not given." unless @file_name
      
-    # The only scaffold method supported is active_scaffold.
-    # @scaffold_method = args[1]
-    @scaffold_method = "active_scaffold" #unless @scaffold_method
+    # By default don't scaffold
+    @scaffold_method = nil
      
     @hasto_create_migrations = true
     @hasto_create_models = true
@@ -35,8 +34,8 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       when "nomodels"
         @hasto_create_models = false
         @hasto_create_migrations = false
-      when "nocontrollers"
-        @scaffold_method = nil
+      when "withcontrollers"
+        @scaffold_method = "active_scaffold"
       when "fromdb"
         @hasto_create_from_db = true
         #          hasto_create_models = false
@@ -127,7 +126,7 @@ class MetaScaffoldGenerator < Rails::Generator::Base
         # Generate the model
         m.template 'model.rb', File.join('app/models', "#{class_def[0].tableize.singularize}.rb"),
           :assigns => { :class_name => class_def[0].tableize,
-          :class_ass => class_def[1]["class_ass"]} if @hasto_create_models
+          :class_ass => class_def[1]["class_ass"], :scaffold_method => @scaffold_method } if @hasto_create_models
 
       end
 

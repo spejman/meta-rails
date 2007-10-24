@@ -1,4 +1,7 @@
 require "fileutils"
+# Assume that RAILS_ROOT is current directory unless RAILS_ROOT is defined
+# or exists the vendor/plugins/meta_scaffold path from current directory.
+RAILS_ROOT = "." if (!defined?(RAILS_ROOT) && !Dir["vendor/plugins/meta_scaffold"].empty?)
 
 # Install the css file
 destination = File.join(RAILS_ROOT, "public/stylesheets/meta_rails")
