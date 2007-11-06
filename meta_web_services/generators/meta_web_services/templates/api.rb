@@ -39,5 +39,6 @@ class MetaWebServicesWs::<%= ws_name.camelize.pluralize %>Api < ActionWebService
 	:returns => [[<%= habtm_klass.underscore.classify %>]]    
   <% end -%>
 
+  <%= extra_methods %>
 
 end

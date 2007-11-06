@@ -1,8 +1,25 @@
 #require "rubygems"
 require "active_support"
 
-RESERVED_MIGRATION_WORDS = ["id"]
+RESERVED_MIGRATION_WORDS = []#["id"]
 
+# Converts a DTD to YAML format following meta_scaffold conventions, example:
+# 
+#       LexicalResource: 
+#        class_attr: 
+#          dtdVersion: :string
+#        class_ass: 
+#        - has_many: transfer_axis
+#        - has_many: feats
+#        - has_many: example_axis
+#        - has_one: global_information
+#        - has_many: lexicons
+#        - has_many: sense_axis
+#
+# Conventions:
+#   - if "id" is used as an attribute name then it will be changed to "identifier",
+#   and will be of string data type.
+#   
 def dtd_to_mscff_yaml(filename)
   file_content = File.open(filename, "r").readlines.join
   
@@ -17,9 +34,9 @@ def dtd_to_mscff_yaml(filename)
       next if relation == "EMPTY" # case like <!ELEMENT DC EMPTY>
       case relation[-1].chr
         when "*"
-          {"has_many" => relation[0..-2]}
+          {"has_many" => relation[0..-2].pluralize}
         when "+"
-          {"has_many" => relation[0..-2]}
+          {"has_many" => relation[0..-2].pluralize}
         when "?"
           {"has_one" => relation[0..-2]}
         else
@@ -42,6 +59,23 @@ def dtd_to_mscff_yaml(filename)
     h_yaml[attribute[0]]["class_attr"] ||= {}
     attr_groups.each do |att_definition|
       next if RESERVED_MIGRATION_WORDS.include? att_definition[0]
+      
+      # 
+      # MetaScaffold CONVENTION if "id" is declared then create "identifier" column.
+      # 
+      # This is because the internal identifiers are managed with "id" columns, and
+      # they work better as integer with autoincrement. Then if the user what to use
+      # its own ids they will be "identifier" columns.
+      # 
+      # In large databases we can have problems if we let the user set the identifiers
+      # because they can be duplicated.
+      #
+      if att_definition[0] == "id"
+        h_yaml[attribute[0]]["class_attr"]["identifier"] = :string
+        next
+      end
+      
+      # Switch depending the data type of the attribute.
       case att_definition[1]
         when "CDATA"
           h_yaml[attribute[0]]["class_attr"][att_definition[0]] = :string
@@ -56,7 +90,7 @@ def dtd_to_mscff_yaml(filename)
           # If exists a class with this name then has_many
           if h_yaml[att_definition[0].singularize.camelize]
             #h_yaml[attribute[0]]["class_ass"] << {"has_many" => att_definition[0]}
-            h_yaml[attribute[0]]["class_ass"] << {"has_and_belongs_to_many" => att_definition[0]}
+            h_yaml[attribute[0]]["class_ass"] << {"has_and_belongs_to_many" => att_definition[0].pluralize}
           else
             #TODO: this must raise an error because is unable to determite the relation!!
             h_yaml[attribute[0]]["class_attr"][att_definition[0]] = :string
@@ -67,53 +101,5 @@ def dtd_to_mscff_yaml(filename)
 
   return h_yaml
 end
-
-  #TODO: move this method to ../generators/meta_scaffold/meta_scaffold_generator.rb
-  def add_relations_to_klasses(klasses)
-    klasses.each do |klass_name, klass_info|
-      puts "* " + klass_name
-      # getting classes related with has_many
-      klass_info["class_ass"].select{|r| r["has_many"]}.map{|r| r.values}.flatten.each do |t_klass|
-        puts "--> " + t_klass
-        puts ""
-        target_klass = check_mode_klass_exists(klasses, t_klass, klass_name)
-
-        # check if habtm
-        if klasses[target_klass]["class_ass"].select{|r| r["has_many"]}.map{|r| r.values}.flatten.include? klass_name
-            klasses[target_klass]["class_ass"].delete( {"has_many" => klass_name})
-            klasses[klass_name]["class_ass"].delete( {"has_many" => target_klass})
-            klasses[target_klass]["class_ass"] << {"has_and_belongs_to_many" => klass_name}
-            klasses[klass_name]["class_ass"] << {"has_and_belongs_to_many" => target_klass}
-        # TODO: make a special case with has_one
-        # check if target class must have belongs_to
-        elsif !klasses[target_klass]["class_ass"].select{|r| r["belongs_to"]}.map{|r| r.values}.flatten.include? klass_name
-            klasses[target_klass]["class_ass"] << { "belongs_to" => klass_name }
-            puts "Added #{klass_name} to #{target_klass}"
-        end
-      end
-      
-      klass_info["class_ass"].select{|r| r["has_one"]}.map{|r| r.values}.flatten.each do |t_klass|
-        target_klass = check_mode_klass_exists(klasses, t_klass, klass_name)
-        
-        if !klasses[target_klass]["class_ass"].select{|r| r["belongs_to"]}.map{|r| r.values}.flatten.include? klass_name
-            klasses[target_klass]["class_ass"] << { "belongs_to" => klass_name }
-            puts "Added #{klass_name} to #{target_klass}"
-        end
-      end
-      
-    end # klasses.each
-  end
-
-def check_mode_klass_exists(klasses, t_klass, klass_name) 
-    target_klass = nil
-        if klasses.keys.include? t_klass.singularize
-          target_klass = t_klass.singularize
-        elsif klasses.keys.include? t_klass.pluralize
-          target_klass = t_klass.pluralize
-        else
-          raise "Class \"#{t_klass}\" related with \"#{klass_name}\", don't exists. Please check if is misspelled" unless klasses[target_klass]
-        end
-   return target_klass
-end
-
+  
 #dtd_to_mscff_yaml("test/dtd_for_nlp.dtd")

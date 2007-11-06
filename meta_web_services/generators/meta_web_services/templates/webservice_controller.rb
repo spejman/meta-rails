@@ -13,9 +13,13 @@ class MetaWebServicesWs::<%= ws_name.camelize.pluralize %>Controller < Applicati
 
   def new(<%= attr_list %>)
    <% fks.each do |fk| -%>
-	   <%= fk %>_id = nil if <%= fk %>_id < 0
-	   raise "<%= fk %> invalid" unless <%= fk %>_id.nil? or <%= fk.underscore.classify %>.find(<%= fk %>_id)
-	 <% end -%>
+         if <%= fk %>_id < 0
+	   <%= fk %> = nil
+         else
+           <%= fk %> = <%= fk.underscore.classify %>.find(<%= fk %>_id)
+	   raise "<%= fk %> invalid" unless <%= fk %>
+         end
+   <% end -%>
 	   k = <%= klass %>.new(<%= attr_hash %>)
 	   k.save
 	   return k
@@ -23,6 +27,14 @@ class MetaWebServicesWs::<%= ws_name.camelize.pluralize %>Controller < Applicati
 
   def update(id, <%= attr_list %>)
     k = <%= klass %>.find id
+   <% fks.each do |fk| -%>
+         if <%= fk %>_id < 0
+	   <%= fk %> = nil
+         else
+           <%= fk %> = <%= fk.underscore.classify %>.find(<%= fk %>_id)
+	   raise "<%= fk %> invalid" unless <%= fk %>
+         end
+   <% end -%>
     raise "<%= klass %> with id #{id} not found" unless k
     k.attributes = {<%= attr_hash %>}
     k.update
@@ -64,5 +76,7 @@ class MetaWebServicesWs::<%= ws_name.camelize.pluralize %>Controller < Applicati
     k.<%= habtm_klass.underscore.pluralize %>
   end  
   <% end -%>
+  
+  <%= extra_methods %>
   
 end
