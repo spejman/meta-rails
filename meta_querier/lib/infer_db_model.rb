@@ -36,6 +36,8 @@ module MetaRails
         ar_db_reserved_words += ["sitealizer"] if File.exist?(File.join(RAILS_ROOT, "vendor/plugins/sitealizer"))
         # Don't include metaquerier query management tables
         ar_db_reserved_words += [MetaQuerierQuery.table_name, MetaQuerierQueryCondition.table_name]
+        # Don't include metaquerier hook defined tables
+        ar_db_reserved_words += META_QUERIER_HOOK_TABLES if defined? META_QUERIER_HOOK_TABLES
         
         klasses = {}
         
