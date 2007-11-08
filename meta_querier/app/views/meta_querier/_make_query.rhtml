@@ -15,12 +15,13 @@
 	-->
 	    <br />
 	    <% @actual_query.each do |aq| %>
-	        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => [] } %>
+                <% opts = { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => [] }%>
+                <%= render :partial => choose_partial_render_querier_class_form(opts), :locals => opts %>
 	    <% end %>
 	    
 	<% else %>
 	    Where do you want to begin:<br />
-	    <%= select :query, :model, @activerecord_classes %><br />
+	    <%= select :query, :model, @activerecord_classes.sort %><br />
 	    <%= submit_tag "Choose begin model" %>
 	<% end %>
 <% end %>

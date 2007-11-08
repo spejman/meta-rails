@@ -64,3 +64,22 @@ ul.meta-querier-menu li {
     border-left: 1px solid #7FcF00;*/
     border: 1px solid #7FcF00;
 }
+
+#notification {
+	position: fixed;
+	margin-left: 0px;
+        left: 0px;
+        bottom: 0;
+	padding: 0;
+	height: 20px;
+	margin: 0;
+	width: 100%;
+	background-color: #FFFF99;
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.3em;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	padding-top: 25px;
+        padding-bottom: 5px;
+}

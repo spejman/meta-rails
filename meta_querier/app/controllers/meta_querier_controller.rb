@@ -16,6 +16,9 @@ require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_help
 include MetaQuerierHelper
 include MetaRails::InferDbModel
 
+META_QUERIER_GENERATOR_HOOK_FILE = File.join File.dirname(__FILE__), (("../"*5) + "lib/meta_querier_hook.rb")
+require META_QUERIER_GENERATOR_HOOK_FILE if File.exists? META_QUERIER_GENERATOR_HOOK_FILE
+
 # Ruby on Rails Controller that loads itself at /meta_querier url
 # of the application.
 # 
@@ -71,6 +74,8 @@ class MetaQuerierController < ApplicationController
       @activerecord_associations[klass_name] = {}
       values["class_ass"].map{|e| e.to_a.flatten}.each {|rel| @activerecord_associations[klass_name][rel[1]] = rel[0]}
     end
+    @actual_query = session[:actual_query]
+    meta_querier_activerecord_associations_hook if defined?(meta_querier_activerecord_associations_hook) == "method"
   end
 
 # ACTIONS
@@ -81,6 +86,9 @@ class MetaQuerierController < ApplicationController
     @actual_query = session[:actual_query]
     session[:my_query] ||= MetaQuerierQuery.new(:name => "Query #{Time.now}")
     @my_query = session[:my_query]
+    # Meta querier hook that can modify @actual_query using recieved params and @activerecord_columns depending on @actual_query
+    #meta_querier_actual_query_from_params_hook(params) if defined?(meta_querier_actual_query_from_params_hook) == "method"
+    meta_querier_activerecord_associations_hook if defined?(meta_querier_activerecord_associations_hook) == "method"
 
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns) if session[:actual_query]
   end
@@ -199,7 +207,7 @@ class MetaQuerierController < ApplicationController
     session[:actual_query] ||= []
     @actual_query = session[:actual_query]
     @my_query = session[:my_query]
-    @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
+    #@q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
     opts = {}
     opts[:conditions] = [ "history = ?", params[:history] ] if params[:history]
     opts[:order] = "created_at desc"
@@ -223,14 +231,13 @@ class MetaQuerierController < ApplicationController
     
     # Select attribute checks. ATENTION: must be done before get join conditions
     # otherwise will unselect the attributes of new created joins.
+    each_model_with_route(@actual_query) do |actual_q, route|
+        actual_q[:select] = {}
+    end    
     if params[:select_columns]
       each_model_with_route(@actual_query) do |actual_q, route|
-        if params[:select_columns][route]
-          actual_q[:select].keys.each do |column_name|
-            actual_q[:select][column_name] = params[:select_columns][route].include? column_name
-          end
-        else
-          actual_q[:select].keys.each {|column_name| actual_q[:select][column_name] = false } unless actual_q[:select].empty?
+        params[:select_columns][route].each do |column_name|
+          actual_q[:select][column_name] = true          
         end
       end
     end
@@ -295,7 +302,10 @@ class MetaQuerierController < ApplicationController
       end # params[:conditions_column].each
 
     end # if params[:conditions_column] and (params[:conditions_op_string] or params...
-        
+    
+    # Meta querier hook that can modify @actual_query using recieved params and @activerecord_columns depending on @actual_query
+    meta_querier_actual_query_from_params_hook(params) if defined?(meta_querier_actual_query_from_params_hook) == "method"
+    meta_querier_activerecord_associations_hook if defined?(meta_querier_activerecord_associations_hook) == "method"
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
 
     render :partial => "make_query"
@@ -314,6 +324,10 @@ class MetaQuerierController < ApplicationController
     cond_position[:conditions].delete_at(params[:condition_index].to_i)
     cond_position[:conditions][0][:cond_type] = nil unless cond_position[:conditions].empty?
     init
+    # Meta querier hook that can modify @actual_query using recieved params and @activerecord_columns depending on @actual_query
+    meta_querier_actual_query_from_params_hook(params) if defined?(meta_querier_actual_query_from_params_hook) == "method"
+    meta_querier_activerecord_associations_hook if defined?(meta_querier_activerecord_associations_hook) == "method"
+
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
 
     render :partial => "make_query"
@@ -329,6 +343,9 @@ class MetaQuerierController < ApplicationController
     init
     logger.debug @actual_query.to_json
     @actual_query = nil and session[:actual_query] = nil if @actual_query.empty?
+    # Meta querier hook that can modify @actual_query using recieved params and @activerecord_columns depending on @actual_query
+    meta_querier_actual_query_from_params_hook(params) if defined?(meta_querier_actual_query_from_params_hook) == "method"
+    meta_querier_activerecord_associations_hook if defined?(meta_querier_activerecord_associations_hook) == "method"
     @q_sql = get_sql_for_query(@actual_query, @activerecord_columns)
 
     render :partial => "make_query"  
@@ -389,6 +406,10 @@ class MetaQuerierController < ApplicationController
     session[:my_query].save if session[:my_query].history
     if is_query_valid_for_run(@actual_query, @activerecord_columns)
       if @actual_query
+    # Meta querier hook that can modify @actual_query using recieved params and @activerecord_columns depending on @actual_query
+#    meta_querier_actual_query_from_params_hook(params) if defined?(meta_querier_actual_query_from_params_hook) == "method" # don't needed because there's no @actual_query change
+    meta_querier_activerecord_associations_hook if defined?(meta_querier_activerecord_associations_hook) == "method"
+
         @ar_base = ActiveRecord::Base.connection.select_all(get_sql_for_query(@actual_query, @activerecord_columns))
         session[:ar_base] = @ar_base
       end

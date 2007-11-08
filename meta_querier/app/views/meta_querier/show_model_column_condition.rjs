@@ -19,8 +19,8 @@ elsif @c_type == "date".to_sym
   page[@key+"_dt"].show();
   page[@key+"_tf"].hide();
 else
-  page[@key+"_op_integer"].show();
-  page[@key+"_op_string"].hide();  
+  page[@key+"_op_string"].show();
+  page[@key+"_op_integer"].hide();
   page[@key+"_dt"].hide();
   page[@key+"_tf"].show();
 end

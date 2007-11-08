@@ -88,7 +88,7 @@
             %>
             <div id="div-join-<%= key %>" style="display:none;">
             <a name="#">Join with:</a><br />
-            <%= select :join, "#{key}", join_posibilities, { :include_blank => true }  %>
+            <%= select :join, "#{key}", join_posibilities.sort, { :include_blank => true }  %>
             <%= select :join_type, "#{key}", %w{inner left right}, { :include_blank => false, :default => "inner" }  %>
             <%= submit_tag "Add join" %><br />
             </div>
@@ -98,7 +98,8 @@
 <% unless actual_query[:join].empty? %>
 <em><a name="#">Actual Joins:</a></em>
     <% actual_query[:join].each do |aq| %>
-        <%= render :partial => "query_builder_model", :locals => { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => model_route.dup, :parent => model } %>
+        <% opts = { :actual_query => aq, :deep => aq[:deep], :wide => aq[:wide], :model_route => model_route.dup, :parent => model } %>
+        <%= render :partial => choose_partial_render_querier_class_form(opts), :locals => opts %>
     <% end %>
 <% end %>
 </div>

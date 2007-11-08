@@ -280,4 +280,19 @@ module MetaQuerierHelper
     raise "Possible code injection attack in: #{instruction}"
   end
   
+ # META QUERIER HOOK
+  PATH_FROM_META_QUERIER_VIEWS_TO_RAILS_VIEWS = "../../../../../app/views"
+  # This function tries to found meta_querier_partial_render_class_form_hook function, if
+  # defined it returns the path to the returned partial assuming its in the default rails
+  # views folder.
+  def choose_partial_render_querier_class_form(opts = {})
+    default_partial = "query_builder_model"    
+    if defined?(meta_querier_partial_render_class_form_hook) == "method"
+      mq_hook_partial = meta_querier_partial_render_class_form_hook(opts)      
+      return "#{PATH_FROM_META_QUERIER_VIEWS_TO_RAILS_VIEWS}/#{mq_hook_partial}" if mq_hook_partial
+    end
+      
+    return default_partial    
+  end
+  
 end
