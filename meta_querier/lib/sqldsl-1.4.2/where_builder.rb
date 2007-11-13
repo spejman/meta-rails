@@ -141,6 +141,11 @@ class WhereBuilder
     sql_parts << "#{lval.to_sql} #{operator} (#{rval.to_sql})"
   end
   
+  
+  def add_clause(arg)
+    sql_parts << arg
+  end
+  
   protected
   def sql_parts #:nodoc:
     @sql_parts ||= []

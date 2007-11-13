@@ -4,7 +4,7 @@
     <% @query.meta_querier_query_conditions.each do |mqqc| %>
         <% qc_key = "#{mqqc.route}___#{mqqc.position}" %>
         <div class="meta-querier-model">
-        <%= mqqc.description %>:<br/>
+                <%= mqqc.description %>:<br/>
 		<% if mqqc.is_select %>
 			<% s_model = mqqc.route.split("__")[-1].split("_")[0].constantize
 			   s_route = get_route(mqqc.route)

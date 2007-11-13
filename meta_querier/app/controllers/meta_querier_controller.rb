@@ -268,7 +268,7 @@ class MetaQuerierController < ApplicationController
       params[:conditions_column].each do |key, column_name|
         column_type = params[:conditions_c_type][key]
 
-        if column_type == "string"
+        if (column_type == "string") || column_type.blank?
           conditions_op = params[:conditions_op_string][key]
         else
           conditions_op = params[:conditions_op_integer][key]
@@ -359,6 +359,7 @@ class MetaQuerierController < ApplicationController
     init
 
     @c_type = @activerecord_columns[model][column]
+    @c_type = "string" if @c_type.blank?
     @key = params[:key]
   end
 

@@ -62,10 +62,14 @@ module MetaQuerierHelper
   
   # Returns the SQL string corresponding to the query struct in actual_query
   def get_sql_for_query(actual_query, columns)
-
+    
+    meta_querier_init_get_sql_for_query_hook(actual_query, columns) if defined?(meta_querier_init_get_sql_for_query_hook) == "method"
+    
     return "" if actual_query.nil? or actual_query.empty?
 
     fields = get_fields_for_select(actual_query, columns)
+    meta_querier_fields_get_sql_for_query_hook(actual_query, columns) if defined?(meta_querier_fields_get_sql_for_query_hook) == "method"
+    
     st = Select[fields]
     
     tables = []
@@ -79,7 +83,13 @@ module MetaQuerierHelper
 
     st.from[tables]
     add_joins_to_sql_for_query(actual_query[0], key, st)
-    add_where_to_sql_for_query(actual_query[0], key, st, true)
+    meta_querier_joins_get_sql_for_query_hook(actual_query, key, st) if defined?(meta_querier_joins_get_sql_for_query_hook) == "method"
+    
+    is_first = add_where_to_sql_for_query(actual_query[0], key, st, true)
+    meta_querier_where_get_sql_for_query_hook(actual_query, key, st, is_first) if defined?(meta_querier_where_get_sql_for_query_hook) == "method"
+    
+    meta_querier_end_get_sql_for_query_hook(st, actual_query, columns) if defined?(meta_querier_end_get_sql_for_query_hook) == "method"
+    
     st.to_sql
   end
 
