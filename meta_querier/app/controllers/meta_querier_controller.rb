@@ -236,6 +236,7 @@ class MetaQuerierController < ApplicationController
     end    
     if params[:select_columns]
       each_model_with_route(@actual_query) do |actual_q, route|
+        next unless params[:select_columns][route]
         params[:select_columns][route].each do |column_name|
           actual_q[:select][column_name] = true          
         end
@@ -302,6 +303,11 @@ class MetaQuerierController < ApplicationController
       end # params[:conditions_column].each
 
     end # if params[:conditions_column] and (params[:conditions_op_string] or params...
+    
+    if params[:configuration]
+      @actual_query[0][:conf] ||= {}
+      @actual_query[0][:conf][:number_lines] = params[:configuration][:number_lines]
+    end
     
     # Meta querier hook that can modify @actual_query using recieved params and @activerecord_columns depending on @actual_query
     meta_querier_actual_query_from_params_hook(params) if defined?(meta_querier_actual_query_from_params_hook) == "method"
