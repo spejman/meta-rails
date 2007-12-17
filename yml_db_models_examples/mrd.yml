@@ -1,4 +1,4 @@
-LexicalResource:
+lexical_resource:
   class_attr:
     dtdVersion: :string
   class_ass:  
@@ -6,7 +6,7 @@ LexicalResource:
   label:
     dtdVersion
   
-Lexicon:
+lexicon:
   class_attr:
   class_ass:
   - belongs_to: lexical_resource
@@ -15,7 +15,7 @@ Lexicon:
   label:
     self.feats.first.val unless self.feats.empty?
 
-LexicalEntry:
+lexical_entry:
   class_attr:
   class_ass:
   - belongs_to: lexicon
@@ -26,7 +26,7 @@ LexicalEntry:
   label:
     self.word_forms.collect(&:to_label).join(", ")
 
-WordForm:
+word_form:
   class_attr:
   class_ass:
   - belongs_to: lexical_entry
@@ -34,7 +34,7 @@ WordForm:
   label:
     self.feats.first.val
     
-Sense:
+sense:
   class_attr:
   class_ass:
   - belongs_to: lexical_entry  
@@ -43,7 +43,7 @@ Sense:
   label:
     self.feats.first.val
 
-Definition:
+definition:
   class_attr:
     text: :string
   class_ass:
@@ -51,7 +51,7 @@ Definition:
   label:
     text
 
-SyntacticBehaviour:
+syntactic_behaviour:
   class_attr:
   class_ass:
   - belongs_to: lexical_entry  
@@ -61,7 +61,7 @@ SyntacticBehaviour:
     self.feats.first.val + " [sn:" + self.senses.collect(&:to_label).join(", ")+"]"
   
 
-Feat:
+feat:
   class_attr:
     att: :string
     val: :string
