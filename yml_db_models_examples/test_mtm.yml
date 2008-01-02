@@ -1,0 +1,15 @@
+author:
+  class_attr:
+    name: :string
+  class_ass:  
+  - has_and_belongs_to_many: works
+  label:
+    name
+  
+work:
+  class_attr:
+    title: :string
+  class_ass:
+  - has_and_belongs_to_many: authors
+  label:
+    title
