@@ -28,8 +28,11 @@
     permit developers to use only the DRY magic that they need.
     </p>
     <p>
-    At the moment MetaRails is in heavy preliminar development but we are advancing fast and we expect
-    release a beta version soon.
+    You can use each functionality of MetaRails as Ruby on Rails plugins as you can see at the next section.
+    </p>
+    <p>
+    There is a google group for MetaRails questions, bugs and other issues:
+    <a href="http://groups.google.com/group/meta-rails">http://groups.google.com/group/meta-rails</a>
     </p>
 
 <h2>Architecture</h2>
@@ -38,10 +41,16 @@
         MetaRails is divided in four parts:
     </p>
     <ul>
-        <li><b>MetaRails gem</b>, script build as a ruby gem that simplify instalation and creation of new MetaRails applications</li>
-        <li><b>Meta Scaffold</b>, rails plugin that creates the database and view-insert-modify views (scaffold). </li>
-        <li><b><a href="meta_querier.html">Meta Querier</a></b>, rails plugin that permits any kind of queries to the database and export them to multiples formats.</li>
-        <li><b>Meta WebServices</b>, rails plugin that inferes webservices for the database.</li>
+        <li><b>MetaRails gem</b>, script build as a ruby gem that simplify instalation and creation of new MetaRails applications.</li>
+        <li><b>Meta Scaffold</b>, rails plugin that creates the database and view-insert-modify views (scaffold). 
+            <em>script/plugin install svn://rubyforge.org/var/svn/meta-rails/plugins/meta_scaffold</em>
+        </li>
+        <li><b><a href="meta_querier.html">Meta Querier</a></b>, rails plugin that permits any kind of queries to the database and export them to multiples formats.
+            <em>script/plugin install svn://rubyforge.org/var/svn/meta-rails/plugins/meta_querier</em>
+        </li>
+        <li><b>Meta WebServices</b>, rails plugin that inferes webservices for the database.
+        <em>script/plugin install svn://rubyforge.org/var/svn/meta-rails/plugins/meta_web_services</em>
+        </li>
     </ul>
 
 <h2>More information</h2>
