@@ -1,0 +1,4 @@
+<%= link_to "new", :controller => "meta_querier", :action => "new" %> |
+<%= link_to "list", :controller => "meta_querier", :action => "list" %>
+<%= ( " | " + link_to("edit query", :controller => "meta_querier", :action => "edit", :id => @query) ) if (@query && (params[:action] != "edit"))%>
+<%= ( " | " + link_to("Run query", :controller => "meta_querier_runner", :action => "run", :id => @query) ) if @query %>

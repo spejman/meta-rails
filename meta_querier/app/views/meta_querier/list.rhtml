@@ -1,0 +1,15 @@
+<%= render :partial => "menu" %>
+
+<div class="meta-querier-model">
+<% @queries.each do |query|%>
+<div class="meta-querier-model">
+    <%= link_to "Run", {:controller => "meta_querier_runner", :action => "run", :id => query.id }, :popup => true %> |
+    <%= link_to "Edit", :action => "edit", :id => query.id %> |
+    <%= link_to "Copy", :action => "copy", :id => query.id %> |
+    <%= link_to "Delete",  {:action => "delete", :id => query.id }, :confirm => "This action will delete permanently the query.\n Are you sure?" %>
+    <br/>
+    <%= render :partial => "query", :locals => {:query => query} %>
+</div>
+<% end %>
+</div>
+

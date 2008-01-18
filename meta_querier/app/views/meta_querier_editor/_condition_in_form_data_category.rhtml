@@ -1,0 +1,7 @@
+<% if @data_category.has_possible_values? %>
+  <%= hidden_field_tag "condition[operation]", "==" %> ==
+  <%= select_tag "condition[value]", options_for_select(@data_category.possible_values) %>  
+    <%= render :partial => "condition_in_form_common" %>
+<% else %>
+  <%= render :partial => "condition_in_form_default" %>
+<% end%>

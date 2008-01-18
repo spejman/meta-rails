@@ -1,0 +1,17 @@
+<% form_tag url_for(:controller => "meta_querier_editor", :action => "add_join") do %>
+  <%= hidden_field_tag :id, @query.id %>
+  
+  
+  <% possible_classes = (parent_model.nil? ? @activerecord_classes.sort : parent_model.possible_associations.keys.sort) %>
+  
+   
+  <%= select_tag "join[model_name]", options_for_select( possible_classes.collect{|pc| [pc.underscore.humanize, pc]} ) %>
+  <%= hidden_field_tag "join[position]", (rand*5000) %>
+  <% if parent_model.nil? %>    
+    <%= submit_tag "Choose begin model"%>
+  <% else %>
+    <%= hidden_field_tag "join[parent_id]", parent_model.id %>
+    <%= submit_tag "Add join"%>
+  <% end %>
+    
+<% end %>

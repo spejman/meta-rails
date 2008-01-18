@@ -18,9 +18,9 @@ class AddMetaQuerierQueryTables < ActiveRecord::Migration
     end
   
     create_table(MetaQuerierQueryCondition.table_name) do |t|
-      t.column :route, :text
       t.column :description, :text
-      t.column :position, :integer # Position in node[:conditions] array
+      t.column :model_id, :text
+      t.column :condition_index, :integer
       t.column :is_select, :boolean, :default => false
       t.column :meta_querier_query_id, :integer, :limit => 10, :default => 0, :null => false
       t.column :created_at,     :datetime

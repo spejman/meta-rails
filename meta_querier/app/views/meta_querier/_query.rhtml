@@ -1,0 +1,7 @@
+<ul>
+<li>Name: <%= query.name %></li>
+<% if !query.description.nil? && !query.description.blank? %> <li>Description: <%= query.description %></li> <% end %>
+<li>Query: 
+<%= query.query.class if query.query %>
+</li>
+</ul>

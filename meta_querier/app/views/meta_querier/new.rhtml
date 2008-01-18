@@ -1,0 +1,10 @@
+<%= render :partial => "menu" %>
+
+<% form_tag url_for( :action => "new" ) do %>
+  Query Name:<br/>
+  <%= text_field :query, :name %><br/>
+  Query Description:<br/>
+  <%= text_area :query, :description, :cols => 30, :rows => 5 %><br/>
+  <%= hidden_field :user_id, current_user.id if (defined? current_user) && !current_user.nil? %>
+  <%= submit_tag "Create new query" %>
+<% end %>

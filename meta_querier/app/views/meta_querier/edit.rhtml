@@ -1,0 +1,43 @@
+<%= render :partial => "menu" %>
+<h2>Edit Query: <%= @query.name %></h2>
+<p><%= @query.description %></p>
+
+<a onclick="javascript: $('debug-info').toggle();">DEBUG INFO</a>
+<div id="debug-info" style="display: none">
+<p><%= @meta_query.to_sql %></p>
+</div>
+
+<a onclick="javascript: $('mas-debug-info').toggle();">MAS DEBUG INFO</a>
+<div id="mas-debug-info" style="display: none">
+<%= @activerecord_associations.to_json %>
+</div>
+
+<div id="query-builder"  style="float:left; margin-left:10px; margin-top:30px;width:53%">
+<% if @meta_query.root.empty? %>
+  Where do you want to begin:<br />
+<% else %>
+  <% @meta_query.root.each do |model| %>
+    <%= render :partial => "model", :locals => {:model => model} %>
+  <% end%>  
+<% end %>
+  <%= render :partial => "form_for_join", :locals => {:parent_model => nil} %>
+</div>
+
+<div id="datamap-div" style="float:left; margin-left:10px; margin-top:30px;width:43%">
+  <a onclick="javascript: $('datamap-div').style.width='90%'; $('query-builder').hide(); return false;"> << </a> |
+  <a onclick="javascript: $('datamap-div').style.width='43%'; $('query-builder').show(); return false;"> >> </a>
+  Fileformat: <a onclick="javascript: $('datamap-iframe').src='<%= url_for :controller => "/meta_querier_db_visualizer",
+            :action => "index", :format => "pdf", :session_profile_cache => session[:profile] %>'; return false;"> PDF </a> |
+  <a onclick="javascript: $('datamap-iframe').src='<%= url_for :controller => "/meta_querier_db_visualizer",
+            :action => "index", :format => "png", :session_profile_cache => session[:profile] %>'; return false;"> PNG </a>
+
+
+<iframe id="datamap-iframe"
+src ="<%= url_for :controller => "/meta_querier_db_visualizer", :action => "index",
+                  :format => MetaQuerierDbVisualizerController::DEFAULT_EXTENSION,
+                  :session_profile_cache => session[:profile] %>"
+width="100%" height="800">
+</iframe>
+</div>
+
+<div style="clear: both"></div>

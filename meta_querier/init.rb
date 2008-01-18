@@ -16,5 +16,7 @@ else
 end
 config.controller_paths << controller_path
 
-require "meta_querier"
+Mime::Type.register "image/png", :png unless defined? Mime::PNG
+Mime::Type.register "application/pdf", :pdf unless defined? Mime::PDF
 
+require "meta_querier"

@@ -1,0 +1,13 @@
+<% form_tag url_for(:action => "run") do %>
+<table>
+  <% @query.meta_querier_query_conditions.each do |mqqc| %>
+    <tr>
+      <td><%= mqqc.description %></td>
+      <td>
+        <%= text_field_tag "conditions[#{mqqc.model_id}][#{mqqc.condition_index}]" %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+<%= submit_tag "Run query"%>
+<% end %>

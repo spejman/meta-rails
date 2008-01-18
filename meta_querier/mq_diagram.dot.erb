@@ -51,7 +51,7 @@ digraph G {
           <% model_associations(model).keys.each do |assoc| %>
             <% unless model_associations(model)[assoc] == "belongs_to" %>
               <% to = assoc.classify %>
-              "<%= model %>" -> "<%= to %>" [ label = "<%= assoc.humanize.downcase %>" ];
+              "<%= model %>" -> "<%= to %>";
             <% end %>
           <% end %>
         <% end %>
