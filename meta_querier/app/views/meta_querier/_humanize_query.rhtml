@@ -1,4 +1,0 @@
-<% actual_query.each do |aq|%>
- Model: <%= aq[:model] %><br />
- <%= ("Joins: " + render(:partial => "humanize_query", :locals => {:actual_query => aq[:model][:join] })) if aq[:model][:join] %><br />
-<% end %>

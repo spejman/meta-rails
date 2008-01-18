@@ -1,5 +1,0 @@
-<ul>
-<li>Name: <%= query.name %></li>
-<% if !query.description.nil? && !query.description.blank? %> <li>Description: <%= query.description %></li> <% end %>
-<li>Query: <%= render :partial => "humanize_query", :locals => {:actual_query => query.query } if query.query %></li>
-</ul>
