@@ -1,15 +1,22 @@
 <%= render :partial => "menu" %>
 
-<div class="meta-querier-model">
+<h2>Queries List</h2>
+
 <% @queries.each do |query|%>
 <div class="meta-querier-model">
-    <%= link_to "Run", {:controller => "meta_querier_runner", :action => "run", :id => query.id }, :popup => true %> |
-    <%= link_to "Edit", :action => "edit", :id => query.id %> |
-    <%= link_to "Copy", :action => "copy", :id => query.id %> |
-    <%= link_to "Delete",  {:action => "delete", :id => query.id }, :confirm => "This action will delete permanently the query.\n Are you sure?" %>
+    <div class="model_name">
+    <% if query.query.runnable? %>
+    <%= link_to "#{icon :application_lightning} Run", {:controller => "meta_querier_runner", :action => "run", :id => query.id }, :popup => true %> |
+    <% else %>
+      <%= icon :error %> Not Runnable |
+    <% end %>
+    <%= link_to "#{icon :application_edit} Edit", :action => "edit", :id => query.id , :profile => query.profile%> |
+    <%= link_to "#{icon :application_double} Copy", :action => "copy", :id => query.id %> |
+    <%= link_to "#{icon :cross} Delete",  {:action => "delete", :id => query.id }, :confirm => "This action will delete permanently the query.\n Are you sure?" %>
     <br/>
+  </div>
     <%= render :partial => "query", :locals => {:query => query} %>
 </div>
 <% end %>
-</div>
+
 

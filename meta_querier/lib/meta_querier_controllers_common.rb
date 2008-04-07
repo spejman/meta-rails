@@ -11,6 +11,9 @@ require "fileutils"
 require "meta_querier"
 require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_helper.rb"
 
+require "meta_rails_common"
+include MetaRails
+
 include MetaQuerierHelper
 include MetaRails::InferDbModel
 
@@ -24,10 +27,12 @@ if File.exists? META_QUERIER_HOOK_FILE
 end
 
 class MetaQuerierControllersCommon < ApplicationController
-include MetaQuerierHook
+  include MetaQuerierHook
+  helper "data_categories_browser"
+  
   self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/views/"
   
-  layout "application", :except => ["run_query_txt", "run_query_excel"]
+  layout select_layout("meta_query"), :except => ["run_query_txt", "run_query_excel"]
 
   
   # See inject_hook_code for more information about this around filter.

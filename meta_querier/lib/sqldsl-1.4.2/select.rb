@@ -80,6 +80,10 @@ class Select < SqlStatement
   def #{join_type}_join
     JoinBuilder.new(self, "#{join_type}")
   end
+
+  def #{join_type}_outer
+    JoinBuilder.new(self, "#{join_type}_outer")
+  end
     EOF
     
   end

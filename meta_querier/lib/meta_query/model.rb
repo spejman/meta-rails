@@ -1,4 +1,5 @@
 module MetaQuery
+
 class Model
     attr_reader :id, :parent_id, :model_name, :position, :possible_columns,
                 :possible_associations, :joins, :hidden
@@ -18,6 +19,11 @@ class Model
       @fields = []
       
       generate_id!
+    end
+    
+    def next_id
+      @@secuence_number ||= 0
+      @@secuence_number += 1
     end
     
     def name; @model_name; end
@@ -48,6 +54,10 @@ class Model
     
     # Returns the table name
     def table_name; @model_name.tableize; end
+    
+    def visible_joins
+      @joins.select {|j| !j.hidden }
+    end
     
     # Adds a new model as a join into the current model
     def add_join(model, join_type)
@@ -101,9 +111,11 @@ class Model
     private
     # Creates a uniq id for the current model
     def generate_id!
-      suffix = @parent_id ? "#{@parent_id}_" : ""
-      @id = suffix + @model_name.classify + "_#{@position[0]}_#{@position[1]}"
-      @id = @id.downcase
+#      suffix = @parent_id ? "#{@parent_id}_" : ""
+#      @id = suffix + @model_name.classify + "_#{@position[0]}_#{@position[1]}"
+#      @id = "a_" + MD5.md5(@id.downcase).to_s[3..6]
+       @id = "#{@model_name.classify.downcase}_#{next_id}"
+      
       #TODO: convert the string into a hash code in order to minimize the sql lenght. 
     end
   end

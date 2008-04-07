@@ -9,8 +9,12 @@
       @parent_model = parent_model
     end
     
+    def column_identifier
+      "#{parent_model.id}.\"#{column_name}\""
+    end
+    
     def to_sql
-      "#{parent_model.id}.#{column_name} as #{as_name}"
+      "#{column_identifier} as '#{as_name}'"
     end
   end
   end

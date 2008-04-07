@@ -10,10 +10,7 @@
 <% form_tag :action => params[:action] do -%>
 <%= link_to "Meta Scaffold", :controller => "/meta_scaffold_info" if File.exists?("#{RAILS_ROOT}/app/controllers/meta_scaffold_info_controller.rb") %> |
 <%= link_to_remote( "Clear Models Images Cache", :update => "notification-div", :url => { :action => :clear_models_images_cache }, :confirm => "This will erase all the cache, forcing the reload of all Models Images.\n Are you sure?" ) %> |
-<% unless @avaliable_profiles.empty? %>
-Profile: <%= select_tag "profile", options_for_select( [["ALL"]*2] + @avaliable_profiles.collect{|pr| [pr]*2 }, session[:profile] ) %>
-<%= submit_tag "change" %>
-<% end -%>
+
 <% end -%>
 <br/><br/>
 </div>

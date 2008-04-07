@@ -23,13 +23,14 @@ class MetaQuerierDbVisualizerController < MetaQuerierControllersCommon
     else
       @model_names = @klasses_struct.keys
     end
-    extension = ".#{DEFAULT_EXTENSION}"
+    extension = session[:extension] || "#{DEFAULT_EXTENSION}"
     respond_to do |format|
-      format.png { extension = ".png"}
-      format.pdf { extension = ".pdf"}
+      format.png { extension = "png"}
+      format.pdf { extension = "pdf"}
     end
+    session[:extension] = extension
     
-    image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.hexdigest(@model_names.join("#")).to_s + extension
+    image_filename = "/images/meta_rails/meta_querier/" + Digest::MD5.hexdigest(@model_names.join("#")).to_s + "." + extension
     image_path = "#{RAILS_ROOT}/public#{image_filename}"
     # Create the image only if not exists
     unless File.exists? image_path

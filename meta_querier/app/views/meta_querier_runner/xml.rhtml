@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<items>
+<% @ar_base.each do |row| -%>
+  <item>
+    <%= @meta_query.fields.collect {|f| "<#{f.as_name}>#{row[f.as_name.gsub(".", "_")]}</#{f.as_name}>"} %>
+  </item>
+<% end -%>
+</items>

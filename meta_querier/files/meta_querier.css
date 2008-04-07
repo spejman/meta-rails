@@ -54,15 +54,15 @@ ul.meta-querier-menu li {
 .meta-querier-model {
     margin-top: 12px;
     margin-bottom: 6px;
-    margin-left: 0px;
-    margin-right: 3px;
-    padding:0.5em 1.5em;
+    margin-left: 10px;
+    margin-right: 2px;
+    padding: 0 0 0 0;
     /* padding-left: 5px;
         padding-right: 5px; */
 /*    border-top: 1px solid #7FcF00;
     border-bottom: 1px solid #7FcF00;
     border-left: 1px solid #7FcF00;*/
-    border: 1px solid #7FcF00;
+    border: 1px solid #005CB8;
 }
 
 #notification {
@@ -82,4 +82,44 @@ ul.meta-querier-menu li {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	padding-top: 25px;
         padding-bottom: 5px;
+}
+
+#meta_querier-menu {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.hidden_element{
+display:none;
+}
+
+.model_name {
+    font-weight: bold;
+    background-color: #AFD0F5;
+    padding: 5 5 5 15;
+    border: 1px solid #005CB8;
+}
+
+.section, .subsection {
+    margin-left: 30px;
+}
+
+.section_header {
+    font-weight: bold;
+    padding: 5 5 5 25;
+    border-bottom: 1px solid #005CB8;
+    margin-bottom: 15px;
+    margin-left: -15px;
+}
+
+.subsection_header {
+    font-style: italic;
+    padding: 5 5 5 25;
+    border-bottom: 1px dotted #005CB8;
+    margin-left: -15px;
+    margin-bottom: 15px;
+}
+
+.action-icon {
+    cursor: pointer;
 }

@@ -15,6 +15,7 @@ module MetaQuery
     end
     
     def parametrized?
+      return (@parametrizable == "true") if @parametrizable.class == String
       @parametrizable
     end
     alias parametrizable? parametrized?
@@ -40,7 +41,7 @@ module MetaQuery
     end
     
     def to_sql
-      "#{parent_model.id}.#{column_name} #{operation} #{sql_value}"
+      "#{parent_model.id}.\"#{column_name}\" #{operation} #{sql_value}"
     end
     
   end

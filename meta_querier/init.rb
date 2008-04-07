@@ -18,5 +18,9 @@ config.controller_paths << controller_path
 
 Mime::Type.register "image/png", :png unless defined? Mime::PNG
 Mime::Type.register "application/pdf", :pdf unless defined? Mime::PDF
+Mime::SET << Mime::CSV 
+Mime::Type.register "text/csv", :csv unless defined? Mime::CSV
+Mime::Type.register "application/excel", :xls unless defined? Mime::XLS
+Mime::Type.register "text/tab-separated-values", :tsv unless defined? Mime::TSV
 
 require "meta_querier"

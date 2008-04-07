@@ -1,6 +1,14 @@
 <%= render :partial => "menu" %>
 
+<h2>New Query</h2>
+
 <% form_tag url_for( :action => "new" ) do %>
+
+  <% unless @avaliable_profiles.empty? %>
+  Profile: <br />
+    <%= select_tag "query[profile]", options_for_select( [["ALL"]*2] + @avaliable_profiles.collect{|pr| [pr]*2 }, session[:profile] ) %><br/>
+  <% end -%>
+<br />
   Query Name:<br/>
   <%= text_field :query, :name %><br/>
   Query Description:<br/>

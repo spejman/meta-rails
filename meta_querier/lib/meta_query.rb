@@ -2,6 +2,7 @@ require "sqldsl-1.4.2/sqldsl.rb"
 
 require "rubygems"
 require "active_support"
+require "md5"
 
 
 module MetaQuery

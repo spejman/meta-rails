@@ -1,17 +1,16 @@
 <% form_tag url_for(:controller => "meta_querier_editor", :action => "add_join") do %>
   <%= hidden_field_tag :id, @query.id %>
-  
-  
-  <% possible_classes = (parent_model.nil? ? @activerecord_classes.sort : parent_model.possible_associations.keys.sort) %>
-  
-   
-  <%= select_tag "join[model_name]", options_for_select( possible_classes.collect{|pc| [pc.underscore.humanize, pc]} ) %>
+  <% klasses_without_datacats = @activerecord_classes.select{|ac| ac[-4..-1] != "Feat" } -%>
+  <% possible_associations_without_datacats = parent_model.possible_associations.keys.collect {|pa| pa.classify}.select{|ac| ac[-4..-1] != "Feat" } unless parent_model.nil? -%>
+  <% possible_classes = (parent_model.nil? ? klasses_without_datacats.sort : possible_associations_without_datacats) -%>  
+  Select a box 
+  <%= select_tag "join[model_name]", options_for_select( possible_classes.collect{|pc| [pc.classify, pc]} ) %>
   <%= hidden_field_tag "join[position]", (rand*5000) %>
-  <% if parent_model.nil? %>    
-    <%= submit_tag "Choose begin model"%>
-  <% else %>
+  <% if parent_model.nil? -%>
+    <%= submit_tag "Choose begin box"%>
+  <% else -%>
     <%= hidden_field_tag "join[parent_id]", parent_model.id %>
-    <%= submit_tag "Add join"%>
-  <% end %>
+    <%= icon_submit_tag :brick_add, "add box" %>
+  <% end -%>
     
-<% end %>
+<% end -%>

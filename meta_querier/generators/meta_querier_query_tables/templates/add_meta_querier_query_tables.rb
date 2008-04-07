@@ -11,6 +11,7 @@ class AddMetaQuerierQueryTables < ActiveRecord::Migration
       t.column :name, :string
       t.column :query, :text
       t.column :description, :text
+      t.column :profile, :string
       t.column :history, :boolean, :default => true
       t.column :user_id, :integer, :limit => 10, :default => 0, :null => true
       t.column :created_at,     :datetime
@@ -21,6 +22,7 @@ class AddMetaQuerierQueryTables < ActiveRecord::Migration
       t.column :description, :text
       t.column :model_id, :text
       t.column :condition_index, :integer
+      t.column :data_type, :string
       t.column :is_select, :boolean, :default => false
       t.column :meta_querier_query_id, :integer, :limit => 10, :default => 0, :null => false
       t.column :created_at,     :datetime

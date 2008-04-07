@@ -1,43 +1,61 @@
 <%= render :partial => "menu" %>
-<h2>Edit Query: <%= @query.name %></h2>
-<p><%= @query.description %></p>
+<h2>Edit Query (profile: <%= @query.profile || 'ALL'%>) </h2>
 
-<a onclick="javascript: $('debug-info').toggle();">DEBUG INFO</a>
-<div id="debug-info" style="display: none">
-<p><%= @meta_query.to_sql %></p>
-</div>
+<% form_tag url_for( :action => "update_query_info" ) do %>
+  <%= hidden_field_tag :id, @query.id %>
+  Name:<br/>
+  <%= text_field :query, :name, :value => @query.name %><br/>
+  Description:<br/>
+  <%= text_area :query, :description, :cols => 30, :rows => 5, :value => @query.description%><br/>
+  <%# hidden_field :user_id, current_user.id if (defined? current_user) && !current_user.nil? %>
+  <%= submit_tag "Update" %>
+<% end %>
 
-<a onclick="javascript: $('mas-debug-info').toggle();">MAS DEBUG INFO</a>
-<div id="mas-debug-info" style="display: none">
-<%= @activerecord_associations.to_json %>
-</div>
 
 <div id="query-builder"  style="float:left; margin-left:10px; margin-top:30px;width:53%">
 <% if @meta_query.root.empty? %>
   Where do you want to begin:<br />
+  <%= render :partial => "form_for_join", :locals => {:parent_model => nil} %>
 <% else %>
   <% @meta_query.root.each do |model| %>
-    <%= render :partial => "model", :locals => {:model => model} %>
-  <% end%>  
-<% end %>
-  <%= render :partial => "form_for_join", :locals => {:parent_model => nil} %>
+    <%= render :partial => "model", :locals => {:model => model, :parent_model => nil, :unfold => (model.id == @editing_model_id)} %>
+  <% end%>
+  <%= render :partial => "order" %>
+<% end %>  
 </div>
 
 <div id="datamap-div" style="float:left; margin-left:10px; margin-top:30px;width:43%">
-  <a onclick="javascript: $('datamap-div').style.width='90%'; $('query-builder').hide(); return false;"> << </a> |
-  <a onclick="javascript: $('datamap-div').style.width='43%'; $('query-builder').show(); return false;"> >> </a>
-  Fileformat: <a onclick="javascript: $('datamap-iframe').src='<%= url_for :controller => "/meta_querier_db_visualizer",
-            :action => "index", :format => "pdf", :session_profile_cache => session[:profile] %>'; return false;"> PDF </a> |
+  <b>Graph size:</b>
+  <span onclick="javascript: $('datamap-div').style.width='90%'; $('query-builder').hide(); return false;"> <%= icon :resultset_first, "Make graph full screen", :class => "action-icon" %> </span>
+  <span onclick="javascript: $('datamap-div').style.width='43%'; $('query-builder').show(); return false;"> <%= icon :resultset_last, "Make graph half screen", :class => "action-icon" %> </span>
+  <b>Fileformat:</b>
   <a onclick="javascript: $('datamap-iframe').src='<%= url_for :controller => "/meta_querier_db_visualizer",
-            :action => "index", :format => "png", :session_profile_cache => session[:profile] %>'; return false;"> PNG </a>
+            :action => "index", :format => "pdf", :session_profile_cache => session[:profile] %>'; return false;"> <%= icon :page_white_acrobat, "View graph in PDF format", :class => "action-icon" %></a>
+  <a onclick="javascript: $('datamap-iframe').src='<%= url_for :controller => "/meta_querier_db_visualizer",
+            :action => "index", :format => "png", :session_profile_cache => session[:profile] %>'; return false;"> <%= icon :page_white_picture, "View graph in PNG format", :class => "action-icon"  %></a>
 
 
 <iframe id="datamap-iframe"
 src ="<%= url_for :controller => "/meta_querier_db_visualizer", :action => "index",
-                  :format => MetaQuerierDbVisualizerController::DEFAULT_EXTENSION,
+                  :format => session[:extension] || MetaQuerierDbVisualizerController::DEFAULT_EXTENSION,
                   :session_profile_cache => session[:profile] %>"
 width="100%" height="800">
 </iframe>
 </div>
 
 <div style="clear: both"></div>
+
+
+<% if @editing_model_id %>
+<script type="text/javascript">
+//<![CDATA[
+   $('<%= dom_id @editing_model_id %>-model').show();
+   <% if params[:context] -%>
+   <%= "$('#{dom_id @editing_model_id}-#{params[:context]}-content').show();" if params[:context] != "models" %>
+   <% end -%>
+   $('<%= dom_id @editing_model_id %>').scrollTo();
+   new Effect.Highlight('<%= dom_id @editing_model_id %>');
+//]]>
+</script>
+<% end %>
+

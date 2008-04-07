@@ -2,21 +2,15 @@ module MetaQuery
 
   class Query
     
-    attr_reader :root
+    attr_reader :root, :order_by, :fields
     
-    def initialize(json_data = nil)
-      unless json_data
+    def initialize
       @root = []
       @models_by_key = {}
-      else
-        create_from_json(json_data, self)
-      end
+      @order_by = []
+      @fields = []
     end
-    
-    def self.create_from_json(json_data, query = Query.new)
-      return query
-    end
-    
+        
     def dump
       Marshal.dump(self)
     end
@@ -24,7 +18,12 @@ module MetaQuery
     def load(dump_string)
       Marshal.load(dump_string)
     end
-            
+    
+    # True if the query has the minimum values in order to be runnable.
+    def runnable?
+      !self.models.empty? && !self.fields.empty?
+    end
+    
     # Adds a model to the query, creates the join between the new model and
     # the parent model. Finally, returns the new model object.
     # In order to generate the sql, possible_columns and possible_associations must be
@@ -63,9 +62,26 @@ module MetaQuery
               model" if model.fields.any? {|f| f.as_name == as_name}
       end
       model = get_model model_id
-      model.add_field column_name, as_name, field_type      
+      @fields << model.add_field(column_name, as_name, field_type)
     end
 
+    def add_order_by(field_key, direction = "asc")
+      @order_by << [field_key, direction]
+    end
+
+    def remove_order_by(order_by_index)
+      @order_by.delete_at order_by_index
+    end
+    
+    def get_field(field_key)
+      each_model do |model|
+        model.fields.each do |field|
+          return field if field.as_name == field_key
+        end
+      end
+      nil
+    end
+    
     # Sets a parametrized condition value, raises QueryException if the condition
     # is not parametrizable.
     def set_parametrized_condition_value(model_id, condition_index, value)
@@ -80,11 +96,19 @@ module MetaQuery
       model_to_remove = get_model(model_id)
       raise "Model with model_id #{model_id} doesn't exist" if model_to_remove.nil?
       
-      # remove model joins
-      model_to_remove.joins.each {|j| remove_model j}
+      removed_models = [model_to_remove]
       
+      # remove model joins (we must copy the joins list because remove_model changes
+      # the join list and then the "each" don't go though all the join models)
+      joins = model_to_remove.joins.dup
+      joins.each {|j| removed_models += remove_model j; join_size -= 1 }
+      
+      # remove its fields
+      model_to_remove.fields.each {|f| @fields.delete f}
+      # remove its order by fields     
+      model_to_remove.fields.each {|f| @order_by.delete_if {|ob| ob[0] == f.as_name} }
       # remove itself
-      @models_by_key.delete model_id
+      @models_by_key.delete(model_id)
       
       # if the model has parents remove it from its join list.
       parent = get_model(model_to_remove.parent_id) 
@@ -92,6 +116,7 @@ module MetaQuery
       
       # if the model is root remove it form the root array
       @root.delete model_to_remove if model_to_remove.is_root?
+      return removed_models
     end
     
     # Removes the condition with given index from the given model. Returns the
@@ -105,20 +130,20 @@ module MetaQuery
     # removed field.
     def remove_field(model_id, field_index)
       model = get_model model_id
-      model.remove_field field_index
+      @fields.delete model.remove_field(field_index)
     end
 
     
     # Go through all the models of the query (unordered).
     def each_model
-      @models_by_key.values.each do |model| 
+      models.each do |model|
         yield(model)
       end
     end
     
     # Returns a array with all the models
     def models
-      @models_by_key.values
+      @models_by_key.values.sort_by {|m| m.id.split("_")[-1]}
     end
     
     # Returns the model identified by model_id
@@ -147,10 +172,11 @@ module MetaQuery
       from_tables = all_from_tables.collect {|table| table[0].to_sym.as table[1].to_sym}
       st.from[from_tables]
       
-      joins = all_joins_sql.sort_by {|j| j[1].to_s.size} # order by key size bigger key --> deeper in the query ...
+      joins = all_joins_sql#.sort_by {|j| j[1].to_s.size} # order by key size bigger key --> deeper in the query ...
 #      raise all_joins_sql.to_json
       joins.each do |join_def|
-        st.inner_join[join_def[1]]
+        st.left_join[join_def[1]]
+       # st.send(:"#{join_def[0].gsub(" ", "_")}")[join_def[1]]
        # raise join_def[2]
         st.on { eval join_def[2] }
       end
@@ -177,7 +203,13 @@ module MetaQuery
         end
       end
       
-      st.to_sql
+      sql = st.to_sql
+      
+      if @order_by && !@order_by.empty?
+        sql += " ORDER BY " + @order_by.collect {|ob| "\"#{ob[0].gsub(".", "_")}\" #{ob[1]}"}.join(", ")
+      end
+      
+      return sql
     end
         
     private
@@ -197,10 +229,7 @@ module MetaQuery
     # Returns a array with all the fields and its "as" values in this form:
     # [ "model_id.field_name_1 as field_as_1" , ..., "model_id.field_name_N as field_as_N" ]
     def all_fields_sql
-      fields = []; each_model do |model|
-        fields += model.fields.collect {|f| f.to_sql }
-      end
-      fields
+      fields.collect {|f| f.to_sql }
     end
         
     def all_joins_sql      
@@ -213,6 +242,7 @@ module MetaQuery
             join_type = join_model.join_type #TODO: think if is the correct join type
             join_table = habtm_join_table.to_sym.as(habtm_join_id.to_sym)
             join_condition = "#{model.id}.id == #{habtm_join_id}.#{model.model_name.underscore}_id"
+            join_condition += " and #{join_model.conditions.collect {|cond| cond.to_sql }.join(" and ")}" unless join_model.conditions.empty?
             check_for_code_injection(join_condition)
             joins << [join_type, join_table, join_condition]
             
@@ -226,8 +256,12 @@ module MetaQuery
           else
             join_type = join_model.join_type
             join_table = join_model.table_name.to_sym.as(join_model.id.to_sym)
+            
             join_condition = "#{model.id}." + (model.belongs_to?(join_model.model_name) ? "#{join_model.model_name.underscore.singularize}_id" : "id") \
               + " == #{join_model.id}." + (join_model.belongs_to?(model.model_name) ? "#{model.model_name.underscore.singularize}_id" : "id")
+            join_condition += " and #{join_model.conditions.collect {|cond| cond.to_sql }.join(" and ")}" if join_model.hidden && !join_model.conditions.empty?
+            #dc_conditions = model.conditions.select {|cond| cond.is_data_category? }
+
             check_for_code_injection(join_condition)
             joins << [join_type, join_table, join_condition]
           end
@@ -238,6 +272,7 @@ module MetaQuery
     
     def all_sql_conditions
       conditions = []; each_model do |model|
+        next if model.hidden
         model.conditions.each do |cond|
           cond_declaration = cond.to_sql
           check_for_code_injection(cond_declaration)
