@@ -1,0 +1,18 @@
+<h2>Meta Bulk Data Operations</h2>
+<h3>Insert data to the database from XML</h3>
+<% form_tag({:action => "insert_xml_data"}, {:multipart => true}) do %>
+  <p>
+    This operation will insert all the given XML data into the database.<br/>
+    The XML data must be compliant with the database model, otherwise an error will be raised.<br/>
+    CAUTION: If the data already exist in the database, this operation will duplicate it.<br/>
+  </p>
+  <%= file_field_tag :xml_file %>
+  <%= submit_tag  "Insert XML data" %>
+
+<% end %>
+
+<h3>Get all the data in XML from db</h3>
+<p>
+    For this operation you can use the <%= link_to "Querier", :controller => "meta_querier" %> 
+    and use the export XML data output option.
+</p>
