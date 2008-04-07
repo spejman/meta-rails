@@ -1,1 +1,30 @@
- * Into a branch.
+== Meta Rails ==
+ One of the killer features of Ruby on Rails is DRY (Don't Repeat 
+Yourself), this is absolutelly true but when you work a lot with RoR you 
+feel that something could be still more DRY. This is the motivation of 
+MetaRails.
+
+Mainly, MetaRails is a generator of simple database based web 
+applications. Given a db schema it generates automaticly the database, 
+the view-insert-modify views for each table of the database or model of 
+the application, and inferes the webservices that may play with the 
+database data.
+
+Well, but not all the web applications are simple database web 
+applications, we know this and because of this we are developing the 
+proyect in a modular way using plugins in order to permit developers to 
+use only the DRY magic that they need.
+
+You can use each functionality of MetaRails as Ruby on Rails plugins as 
+you can see at the next section.
+
+There is a google group for MetaRails questions, bugs and other issues: 
+http://groups.google.com/group/meta-rails
+
+=Architecture=
+ * Meta Rails common
+ * Meta Querier
+ * Meta Forms
+ * Meta Scaffold
+ * Meta Bulk Data
+ * Meta Web Services
