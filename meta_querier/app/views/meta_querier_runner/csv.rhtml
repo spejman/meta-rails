@@ -1,2 +1,0 @@
-<%= @meta_query.fields.collect {|f| "\"#{f.as_name}\"" }.join(@separator) %>
-<%= @ar_base.collect {|row| @meta_query.fields.collect {|f| "\"#{row[f.as_name.gsub(".", "_")]}\"" }.join(@separator) }.join("\n") %>

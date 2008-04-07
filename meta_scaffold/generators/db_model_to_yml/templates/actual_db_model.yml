@@ -1,1 +1,0 @@
-<%= klasses.to_yaml %>
