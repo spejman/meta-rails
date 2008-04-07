@@ -1,0 +1,38 @@
+
+<% h_class = "hidden_element" if form_table.hidden? %>
+<div class="meta-querier-model <%=h_class%>">
+  <h3 class="<%=h_class%>"> <%=form_table.name %> </h3>
+  <p class="<%=h_class%>"> <%=form_table.description %></p>
+  
+  
+
+  <% current_table_index = @table_index +=1 %>  
+ 
+  <%= hidden_field_tag "form_tables_by_index[#{@table_index}]", form_table.id %>  
+  <%= hidden_field_tag "parent_index[#{@table_index}]", parent_index if @table_index > 0 %>
+  <%= hidden_field_tag "new_objects[#{@table_index}][#{form_table.table_name}][id]", form_table.default_id_value %>
+  
+  <%form_table.table_attributes.each do |attr|%>
+    <% unless form_table.default_id_value %>
+      <%=render :partial => 'render_table_attribute', :locals => {:attr => attr, 
+                                                                  :form_table => form_table, 
+                                                                  :table_index => @table_index,
+                                                                  :last_call_params => last_call_params, :default_obj => nil} %> 
+    <% else%>
+    <% default = form_table.table_name.classify.constantize.find form_table.default_id_value %>
+    <%=render :partial => 'render_table_attribute', :locals => {:attr => attr, 
+                                                                  :form_table => form_table, 
+                                                                  :table_index => @table_index,
+                                                                  :last_call_params => last_call_params, :default_obj => default } %> 
+    <% end %>
+  <% end %>
+  
+
+  <%form_table.child_tables.each do |table|%>
+    <%=render :partial => 'render_form_table', :locals => {:form_table => table, 
+                                                            :parent_index => current_table_index,
+                                                            :last_call_params => last_call_params } %> 
+  <% end %>
+  
+
+</div>

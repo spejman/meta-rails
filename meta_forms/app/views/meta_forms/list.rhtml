@@ -1,0 +1,15 @@
+
+<%= render :partial => "menu" %>
+
+<h2>Forms List</h2>
+Found <%= @forms.size %> forms.<br/>
+<ul>
+<% @forms.each do |form| %>
+<li><%= link_to form.name, :action => "execute", :id => form %>
+        [<%= link_to "edit", :action => "edit", :id => form %>, <%= link_to "execute", :action => "execute", :id => form %>, 
+                <%= link_to image_tag("meta_rails/cross.png", :title=> "remove", :border => 0, :align => "top"),
+                {:action => "delete_form", :id => form},
+                :confirm => "This will delete the form and all its related information. Are you sure?" %>]
+</li>
+<% end %>
+</ul>

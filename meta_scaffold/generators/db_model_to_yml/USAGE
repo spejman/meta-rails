@@ -1,0 +1,6 @@
+Description:
+
+Example:
+    ./script/generate db_model_to_yml
+
+    This will generate the db/actual_db_model.yml file with the yaml representation of the actual database and models.

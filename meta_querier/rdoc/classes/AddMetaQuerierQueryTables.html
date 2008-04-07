@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>Class: AddMetaQuerierQueryTables</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+
+    <script language="JavaScript" type="text/javascript">
+    // <![CDATA[
+
+        function toggleSource( id )
+        {
+          var elem
+          var link
+
+          if( document.getElementById )
+          {
+            elem = document.getElementById( id )
+            link = document.getElementById( "l_" + id )
+          }
+          else if ( document.all )
+          {
+            elem = eval( "document.all." + id )
+            link = eval( "document.all.l_" + id )
+          }
+          else
+            return false;
+
+          if( elem.style.display == "block" )
+          {
+            elem.style.display = "none"
+            link.innerHTML = "show source"
+          }
+          else
+          {
+            elem.style.display = "block"
+            link.innerHTML = "hide source"
+          }
+        }
+
+        function openCode( url )
+        {
+          window.open( url, "SOURCE_CODE", "width=400,height=400,scrollbars=yes" )
+        }
+      // ]]>
+    </script>
+  </head>
+
+  <body>
+  <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'><tr>
+  <td class="file-title"><span class="file-title-prefix">Class</span><br />AddMetaQuerierQueryTables</td>
+  <td align="right">
+    <table cellspacing=0 cellpadding=2>
+      <tr valign="top">
+        <td>In:</td>
+        <td>
+<a href="../files/generators/meta_querier_query_tables/templates/add_meta_querier_query_tables_rb.html">generators/meta_querier_query_tables/templates/add_meta_querier_query_tables.rb</a>
+        </td>
+      </tr>
+    <tr>
+      <td>Parent:</td>
+      <td>
+ActiveRecord::Migration
+     </td>
+   </tr>
+         </table>
+        </td>
+        </tr>
+      </table>
+ <!-- banner header -->
+
+  <div id="bodyContent">
+      <div id="content">
+
+  <div class="description"><p>
+Migration that creates <a href="MetaQuerier.html">MetaQuerier</a> tables
+needed for saving Queries and its conditions.
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="#M000022">down</a></li>
+  <li><a href="#M000021">up</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Class methods</div>
+<div class="method">
+  <div class="title">
+    <a name="M000022"></a><b>down</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000022_source')" id="l_M000022_source">show source</a> ]</p>
+  <div id="M000022_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File generators/meta_querier_query_tables/templates/add_meta_querier_query_tables.rb, line 31</span>
+31:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">down</span>
+32:     <span class="ruby-identifier">drop_table</span> <span class="ruby-constant">MetaQuerierQueryCondition</span>.<span class="ruby-identifier">table_name</span>
+33:     <span class="ruby-identifier">drop_table</span> <span class="ruby-constant">MetaQuerierQuery</span>.<span class="ruby-identifier">table_name</span>    
+34:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000021"></a><b>up</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000021_source')" id="l_M000021_source">show source</a> ]</p>
+  <div id="M000021_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File generators/meta_querier_query_tables/templates/add_meta_querier_query_tables.rb, line 9</span>
+ 9:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">up</span>
+10:     <span class="ruby-identifier">create_table</span>(<span class="ruby-constant">MetaQuerierQuery</span>.<span class="ruby-identifier">table_name</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span>
+11:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:name</span>, <span class="ruby-identifier">:string</span>
+12:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:query</span>, <span class="ruby-identifier">:text</span>
+13:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:description</span>, <span class="ruby-identifier">:text</span>
+14:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:history</span>, <span class="ruby-identifier">:boolean</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>
+15:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:user_id</span>, <span class="ruby-identifier">:integer</span>, <span class="ruby-identifier">:limit</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">10</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">:null</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>
+16:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:created_at</span>,     <span class="ruby-identifier">:datetime</span>
+17:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:updated_at</span>,     <span class="ruby-identifier">:datetime</span>
+18:     <span class="ruby-keyword kw">end</span>
+19:   
+20:     <span class="ruby-identifier">create_table</span>(<span class="ruby-constant">MetaQuerierQueryCondition</span>.<span class="ruby-identifier">table_name</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span>
+21:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:route</span>, <span class="ruby-identifier">:text</span>
+22:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:description</span>, <span class="ruby-identifier">:text</span>
+23:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:position</span>, <span class="ruby-identifier">:integer</span> <span class="ruby-comment cmt"># Position in node[:conditions] array</span>
+24:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:is_select</span>, <span class="ruby-identifier">:boolean</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
+25:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:meta_querier_query_id</span>, <span class="ruby-identifier">:integer</span>, <span class="ruby-identifier">:limit</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">10</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">:null</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
+26:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:created_at</span>,     <span class="ruby-identifier">:datetime</span>
+27:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> <span class="ruby-identifier">:updated_at</span>,     <span class="ruby-identifier">:datetime</span>
+28:     <span class="ruby-keyword kw">end</span>
+29:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>
+
+    </body>
+</html>

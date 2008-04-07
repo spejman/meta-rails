@@ -1,0 +1,117 @@
+<div class="meta-querier-model">
+  <% @form_table = form_table %>
+  <ul>
+    <% form_tag url_for(:action => "update_form_table", :id => form_table) do %>
+      <%= hidden_field_tag :form_id, @form.id %>
+      <li><b>Table name:</b> <%= form_table.table_name %>
+        <%= link_to image_tag("meta_rails/cross.png", :title=> "remove", :border => 0, :align => "top"),
+          {:action => "delete_form_table", :id => form_table, :form_id => @form.id},
+          :confirm => "This will delete the model and all its related childs and attributes.\n Are you sure?" %>
+      </li>
+    
+      <li><b>Name:</b><br/>
+        <%= text_field :form_table, :name %>
+      </li>
+      <li><b>Description:</b><br/>
+        <%= text_area :form_table, :description, :cols => 30, :rows => 5 %>
+      </li>
+      <li><b>Hidden </b><%= check_box :form_table, :hidden, {:checked => form_table.hidden} %></li>
+      <li><b>Set default value for this hidden element </b><%= check_box :form_table, :default_id_value,
+                {:checked => !form_table.default_id_value.nil?, :onclick => "$('select-default-value-#{form_table.id}').toggle()" } %></li>
+      <li id="<%= "select-default-value-#{form_table.id}" %>" style="display: <%= form_table.default_id_value.nil? ? "none" : "inherit" %>;">
+      <%= "<b>Default value selected:</b> #{render(:partial => "default_value", :locals => {:value => form_table.fech_default_value}) } <br/>" if form_table.default_id_value %>
+      <%= link_to_remote "select default value", :update => "divfor-default-value-#{form_table.id}",
+        :url => { :controller => "meta_forms_show_values", :id => form_table.table_name,
+                  :submit_to => { :controller => "meta_forms",
+                                  :action => "save_table_default_value",
+                                  :form_id => @form.id,
+                                  :id => form_table.id },
+                  :update => "divfor-default-value-#{form_table.id}"
+                }  %>
+      </li>
+      <div id="<%= "divfor-default-value-#{form_table.id}"%>"></div>
+  
+      <%= submit_tag "Update model" %>
+    <% end %>
+    <% dcs = [] -%>
+    <li>
+      <b><%= form_table.table_attributes.size %> attributes</b><br/>
+      <% form_tag url_for( :action => "update_table_attributes", :form_id => @form.id) do %>
+        <table>
+          <tr>
+            <th>attribute name <small>(in table)</small></th>
+            <th>name <small>(shown in form)</small></th>
+            <th>field type</th>
+            <th>hidden?</th>
+            <th>compulsory?</th>
+            <th>default</th>
+            <th></th>
+          </tr>
+          
+          <% form_table.table_attributes.each do |f_attr| -%>
+            <% (dc = DataCategory.find f_attr.attr_name.to_i) and (dcs << dc) if f_attr.field_type == "data_category" %>
+            <tr>
+              <% if f_attr.field_type == "data_category"%>
+              <td><%= dc.name %></td>
+              <td><%= text_field_tag "table_attributes[#{f_attr.id}][name]", f_attr.name || dc.name %></td>
+              <% else %>
+                <td><%= f_attr.attr_name %></td>
+                <td><%= text_field_tag "table_attributes[#{f_attr.id}][name]", f_attr.name || f_attr.attr_name %></td>
+              <% end %>
+              <td><%= text_field_tag "table_attributes[#{f_attr.id}][field_type]", f_attr.field_type, :disabled => true %></td>
+              <td>
+                <%= check_box_tag "table_attributes[#{f_attr.id}][hidden]", "1", f_attr.hidden %>
+                <%= hidden_field_tag "table_attributes[#{f_attr.id}][hidden]", "0" %>
+              </td>
+              <td>
+                <%= check_box_tag "table_attributes[#{f_attr.id}][compulsory]", "1", f_attr.compulsory %>
+                <%= hidden_field_tag "table_attributes[#{f_attr.id}][compulsory]", "0" %>
+              </td>
+              <% if f_attr.field_type == "data_category"%>
+              <td><%= data_category_field_tag "table_attributes[#{f_attr.id}][default_value]",
+                                              dc,
+                                              f_attr.default_value, true %></td>                
+              <% else %>
+              <td><%= text_field_tag "table_attributes[#{f_attr.id}][default_value]", f_attr.default_value %></td>
+              <% end %>
+              <td>
+                <%= link_to image_tag("meta_rails/cross.png", :title=> "remove", :border => 0, :align => "top"),
+                  {:action => "delete_table_attribute", :id => f_attr.id, :form_id => @form.id},
+                  :confirm => "This will delete the attribute for this model. Are you sure?" %>
+              </td>
+            </tr>
+          <% end -%>
+        </table>          
+        <%= submit_tag "update model attributes" %>
+      <% end %>
+      
+      <% missing_attr = @activerecord_columns[form_table.table_name].keys - form_table.table_attributes.collect {|ta| ta.attr_name } %>
+      <% missing_attr += (DataCategory.get_possible_datacats_for_class(form_table.table_name).collect {|dc| dc.name} - dcs.collect {|dc| dc.name }) %>
+      <% unless missing_attr.empty? %>
+      <div>
+        <% form_tag url_for( :action => "add_removed_attr_to_form_table", :id => form_table ) do %>    
+          <%= hidden_field_tag :form_id, @form.id %>
+          <%= select_tag :attr_name, options_for_select(missing_attr.sort) %>
+          <%= submit_tag "add removed attribute" %>
+        <% end %>
+      </div>
+    <% end %>
+      
+    </li>
+    <li><b>Relate model</b>
+    <% form_tag url_for( :action => "add_related_form_table", :id => form_table ) do %>    
+      <%= hidden_field_tag :form_id, @form.id %>
+      <% join_posibilities = @activerecord_associations[form_table.table_name.classify].keys.collect {|k| k.to_s.classify } - ["#{form_table.table_name.classify}Feat"]%>
+      <%= select :form_table, :table_name, join_posibilities.sort %>
+      <%= submit_tag "add related model" %>
+    <% end %>
+    </li>
+  </ul>
+<% @form_table = nil %>
+<% unless form_table.child_tables.empty? %>
+  <h4><%= form_table.child_tables.size %> Related model<%="s" if form_table.child_tables.size > 1 %></h4>
+<% form_table.child_tables.each do |child_table| %>
+  <%= render :partial => "form_table", :locals => {:form_table => child_table} %>
+<% end %>
+<% end %>
+</div>

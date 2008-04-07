@@ -1,0 +1,19 @@
+<% form_tag url_for(:action => "run") do %>
+<table>
+  <% @query.meta_querier_query_conditions.each do |mqqc| %>
+    <tr>
+      <td><%= mqqc.description %></td>
+      <td>
+        <% if mqqc.data_type == "data_category" %>
+            <% parent_model = @query.query.get_model mqqc.model_id %>
+            <% data_category_id = parent_model.data_categories_ids[parent_model.conditions[mqqc.condition_index].column_name] %>
+            <%= data_category_field_tag "conditions[#{mqqc.model_id}][#{mqqc.condition_index}]", DataCategory.find(data_category_id) %>
+        <% else %>
+            <%= text_field_tag "conditions[#{mqqc.model_id}][#{mqqc.condition_index}]" %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+<%= submit_tag "Run query"%>
+<% end %>

@@ -1,0 +1,17 @@
+<% klass_data_categories = value.feats.collect {|f| f.data_category } -%>
+<table>
+  <tr>
+    <th><%= (value.attribute_names - ["id"]).join("</th>\n<th>")%></th>
+    <th><%= klass_data_categories.collect {|dc| dc.name}.join("</th>\n<th>")%></th>
+  </tr>
+<tr>
+  <% (value.attribute_names - ["id"]).each do |att_name| -%>    
+    <td><%= value.attributes[att_name] %></td>
+  <% end -%> 
+  <% dc_hash = {}; klass_data_categories.each {|dc| dc_hash[dc.id] = dc.name } -%>
+  <% value_feats = value.feats_hash(dc_hash) -%>
+  <% klass_data_categories.each  do |dc| -%>    
+    <td><%= value_feats[dc.name] %></td>
+  <% end -%>  
+</tr>
+</table>

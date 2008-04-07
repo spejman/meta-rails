@@ -1,0 +1,535 @@
+--- 
+TransformSet: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: morphological_features
+  - has_many: feats
+  - belongs_to: paradigm_pattern
+  - has_many: process_ruby_reserveds
+SynsetRelation: 
+  class_attr: 
+    targets: :string
+  class_ass: 
+  - belongs_to: synset
+  - has_many: feats
+SenseAxisRelation: 
+  class_attr: 
+    targets: :string
+  class_ass: 
+  - has_many: feats
+  - belongs_to: sense_axis
+MweNode: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: mwe_pattern
+  - has_and_belongs_to_many: mwe_edges
+  - has_one: mwe_lex
+LexicalResource: 
+  class_attr: 
+    dtdVersion: :string
+  class_ass: 
+  - has_many: transfer_axis
+  - has_many: feats
+  - has_many: example_axis
+  - has_one: global_information
+  - has_many: lexicons
+  - has_many: sense_axis
+Feat: 
+  class_attr: 
+    att: :string
+    val: :string
+  class_ass: 
+  - belongs_to: attribute_valuation
+  - belongs_to: syntactic_behaviour
+  - belongs_to: transform_class
+  - belongs_to: monolingual_external_ref
+  - belongs_to: semantic_definition
+  - belongs_to: form_representation
+  - belongs_to: synset
+  - belongs_to: morphological_feature
+  - belongs_to: sense
+  - belongs_to: stem_or_root
+  - belongs_to: derived_form
+  - belongs_to: transfer_axis
+  - belongs_to: predicate_relation
+  - belongs_to: example_axis_relation
+  - belongs_to: example_axis
+  - belongs_to: mwe_node
+  - belongs_to: semantic_argument
+  - belongs_to: prefix_slot
+  - belongs_to: predicative_representation
+  - belongs_to: logical_operation
+  - belongs_to: lemma
+  - belongs_to: lexical_entry
+  - belongs_to: word_form
+  - belongs_to: mwe_pattern
+  - belongs_to: paradigm_pattern
+  - belongs_to: syn_arg_map
+  - belongs_to: transform_set
+  - belongs_to: statement
+  - belongs_to: target_test
+  - belongs_to: subcategorization_frame_set
+  - belongs_to: sense_example
+  - belongs_to: transfer_axis_relation
+  - belongs_to: global_information
+  - belongs_to: list_of_component
+  - belongs_to: mwe_edge
+  - belongs_to: affix
+  - belongs_to: lexeme_property
+  - belongs_to: syn_sem_arg_map
+  - belongs_to: mwe_lex
+  - belongs_to: sense_axis_relation
+  - belongs_to: infix_slot
+  - belongs_to: component
+  - belongs_to: constraint_set
+  - belongs_to: condition
+  - belongs_to: process_ruby_reserved
+  - belongs_to: affix_allomorph
+  - belongs_to: lexical_resource
+  - belongs_to: source_test
+  - belongs_to: interlingual_external_ref
+  - belongs_to: semantic_predicate
+  - belongs_to: subcategorization_frame
+  - belongs_to: synset_relation
+  - belongs_to: syntactic_argument
+  - belongs_to: suffix_slot
+  - belongs_to: referred_root
+  - belongs_to: sense_axis
+  - belongs_to: constraint
+  - belongs_to: syn_sem_correspondence
+  - belongs_to: lexicon
+  - belongs_to: sense_relation
+ExampleAxis: 
+  class_attr: 
+    examples: :string
+  class_ass: 
+  - has_many: feats
+  - has_many: example_axis_relations
+  - belongs_to: lexical_resource
+MonolingualExternalRef: 
+  class_attr: {}
+
+  class_ass: 
+  - belongs_to: synset
+  - belongs_to: sense
+  - has_many: feats
+LogicalOperation: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: attribute_valuations
+  - has_many: feats
+  - has_and_belongs_to_many: constraints
+  - belongs_to: constraint
+ListOfComponent: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: components
+  - has_many: feats
+  - belongs_to: lexical_entry
+Lemma: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: lexical_entry
+  - has_many: form_representations
+DerivedForm: 
+  class_attr: 
+    targets: :string
+  class_ass: 
+  - has_many: feats
+  - belongs_to: lexical_entry
+  - has_many: form_representations
+Definition: 
+  class_attr: 
+    text: :string
+  class_ass: 
+  - belongs_to: sense
+MweEdge: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - has_and_belongs_to_many: mwe_nodes
+Lexicon: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: subcategorization_frame_sets
+  - has_many: constraint_sets
+  - has_many: semantic_predicates
+  - has_many: feats
+  - has_many: synsets
+  - has_many: syn_sem_correspondences
+  - has_many: lexical_entries
+  - has_many: transform_classes
+  - has_many: paradigm_patterns
+  - belongs_to: lexical_resource
+  - has_many: subcategorization_frames
+  - has_many: mwe_patterns
+GlobalInformation: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: lexical_resource
+SynArgMap: 
+  class_attr: 
+    arg1: :integer
+    arg2: :integer
+  class_ass: 
+  - has_many: feats
+  - belongs_to: subcategorization_frame_set
+SenseRelation: 
+  class_attr: 
+    targets: :string
+  class_ass: 
+  - belongs_to: sense
+  - has_many: feats
+SemanticDefinition: 
+  class_attr: {}
+
+  class_ass: 
+  - belongs_to: synset
+  - belongs_to: sense
+  - has_many: feats
+  - has_many: statements
+  - belongs_to: semantic_predicate
+SemanticArgument: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: semantic_predicate
+LexicalEntry: 
+  class_attr: 
+    mwePattern: :integer
+  class_ass: 
+  - has_many: derived_forms
+  - has_many: referred_roots
+  - has_many: feats
+  - has_many: senses
+  - has_one: lemma
+  - has_one: list_of_component
+  - has_many: syntactic_behaviours
+  - has_many: word_forms
+  - has_and_belongs_to_many: paradigm_patterns
+  - has_many: stem_or_roots
+  - belongs_to: lexicon
+AffixAllomorph: 
+  class_attr: {}
+
+  class_ass: 
+  - has_and_belongs_to_many: conditions
+  - has_many: feats
+  - has_many: form_representations
+  - belongs_to: affix
+SubcategorizationFrame: 
+  class_attr: 
+    inherit: :string
+  class_ass: 
+  - has_many: syntactic_arguments
+  - has_many: feats
+  - has_one: lexeme_property
+  - belongs_to: lexicon
+Statement: 
+  class_attr: {}
+
+  class_ass: 
+  - belongs_to: semantic_definition
+  - has_many: feats
+TransformClass: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: lexicon
+TransferAxis: 
+  class_attr: 
+    synBehaviours: :string
+  class_ass: 
+  - has_many: transfer_axis_relations
+  - has_many: feats
+  - has_many: source_tests
+  - has_many: target_tests
+  - belongs_to: lexical_resource
+PrefixSlot: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: affixes
+  - has_many: feats
+  - belongs_to: paradigm_pattern
+PredicativeRepresentation: 
+  class_attr: 
+    predicate: :integer
+    correspondences: :string
+  class_ass: 
+  - belongs_to: sense
+  - has_many: feats
+ParadigmPattern: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: affixes
+  - has_many: transform_sets
+  - has_many: feats
+  - has_many: prefix_slots
+  - has_many: infix_slots
+  - has_many: suffix_slots
+  - belongs_to: lexicon
+SynSemCorrespondence: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: syn_sem_arg_maps
+  - has_many: feats
+  - belongs_to: lexicon
+SourceTest: 
+  class_attr: 
+    synBehaviours: :string
+  class_ass: 
+  - belongs_to: transfer_axis
+  - has_many: feats
+ProcessRubyReserved: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: morphological_features
+  - has_many: conditions
+  - has_many: feats
+  - belongs_to: transform_set
+FormRepresentation: 
+  class_attr: {}
+
+  class_ass: 
+  - belongs_to: stem_or_root
+  - belongs_to: derived_form
+  - has_many: feats
+  - belongs_to: lemma
+  - belongs_to: word_form
+  - belongs_to: affix
+  - belongs_to: affix_allomorph
+  - belongs_to: referred_root
+WordForm: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: lexical_entry
+  - has_many: form_representations
+TargetTest: 
+  class_attr: 
+    synBehaviours: :string
+  class_ass: 
+  - belongs_to: transfer_axis
+  - has_many: feats
+SyntacticBehaviour: 
+  class_attr: {}
+
+  class_ass: 
+  - has_and_belongs_to_many: subcategorization_frame_sets
+  - has_many: feats
+  - has_and_belongs_to_many: senses
+  - belongs_to: lexical_entry
+  - has_and_belongs_to_many: subcategorization_frames
+SyntacticArgument: 
+  class_attr: 
+    target: :integer
+  class_ass: 
+  - has_many: feats
+  - belongs_to: subcategorization_frame
+SynSemArgMap: 
+  class_attr: 
+    synFeature: :string
+    semFeature: :string
+  class_ass: 
+  - has_many: feats
+  - belongs_to: syn_sem_correspondence
+StemOrRoot: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: morphological_features
+  - has_many: feats
+  - belongs_to: lexical_entry
+  - has_many: form_representations
+Sense: 
+  class_attr: 
+    synset: :integer
+    inherit: :string
+  class_ass: 
+  - has_many: feats
+  - has_many: predicative_representations
+  - belongs_to: lexical_entry
+  - has_many: sense_examples
+  - has_many: sense_relations
+  - has_many: semantic_definitions
+  - has_many: monolingual_external_refs
+  - has_many: definitions
+InfixSlot: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: affixes
+  - has_many: feats
+  - belongs_to: paradigm_pattern
+ExampleAxisRelation: 
+  class_attr: 
+    targets: :string
+  class_ass: 
+  - has_many: feats
+  - belongs_to: example_axis
+Constraint: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - has_many: logical_operations
+  - belongs_to: constraint_set
+Component: 
+  class_attr: 
+    entry: :integer
+  class_ass: 
+  - has_many: feats
+  - belongs_to: list_of_component
+TransferAxisRelation: 
+  class_attr: 
+    targets: :string
+  class_ass: 
+  - belongs_to: transfer_axis
+  - has_many: feats
+Synset: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - has_many: synset_relations
+  - has_many: monolingual_external_refs
+  - has_many: semantic_definitions
+  - belongs_to: lexicon
+SuffixSlot: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: affixes
+  - has_many: feats
+  - belongs_to: paradigm_pattern
+SubcategorizationFrameSet: 
+  class_attr: 
+    inherit: :string
+  class_ass: 
+  - has_many: syn_arg_maps
+  - has_many: feats
+  - has_and_belongs_to_many: subcategorization_frames
+  - belongs_to: lexicon
+SenseAxis: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - has_and_belongs_to_many: synsets
+  - has_and_belongs_to_many: senses
+  - has_many: sense_axis_relations
+  - has_many: interlingual_external_refs
+  - belongs_to: lexical_resource
+ReferredRoot: 
+  class_attr: 
+    targets: :string
+  class_ass: 
+  - has_many: feats
+  - belongs_to: lexical_entry
+  - has_many: form_representations
+PredicateRelation: 
+  class_attr: 
+    targets: :string
+  class_ass: 
+  - has_many: feats
+  - belongs_to: semantic_predicate
+MweLex: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: mwe_node
+LexemeProperty: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: subcategorization_frame
+InterlingualExternalRef: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: sense_axis
+MorphologicalFeature: 
+  class_attr: {}
+
+  class_ass: 
+  - belongs_to: stem_or_root
+  - has_many: feats
+  - belongs_to: transform_set
+  - belongs_to: affix
+  - belongs_to: process_ruby_reserved
+ConstraintSet: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - has_many: constraints
+  - belongs_to: lexicon
+Condition: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: affix
+  - belongs_to: process_ruby_reserved
+AttributeValuation: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - belongs_to: logical_operation
+Affix: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: conditions
+  - has_many: morphological_features
+  - belongs_to: prefix_slot
+  - has_many: feats
+  - has_many: form_representations
+  - belongs_to: paradigm_pattern
+  - belongs_to: infix_slot
+  - belongs_to: suffix_slot
+  - has_many: affix_allomorphs
+SenseExample: 
+  class_attr: {}
+
+  class_ass: 
+  - belongs_to: sense
+  - has_many: feats
+SemanticPredicate: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: semantic_arguments
+  - has_many: predicate_relations
+  - has_many: feats
+  - has_many: semantic_definitions
+  - belongs_to: lexicon
+MwePattern: 
+  class_attr: {}
+
+  class_ass: 
+  - has_many: feats
+  - has_many: mwe_nodes
+  - belongs_to: lexicon

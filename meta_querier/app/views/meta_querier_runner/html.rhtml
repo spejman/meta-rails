@@ -1,0 +1,37 @@
+<%= render :partial => "/meta_querier/menu" %>
+
+<% if @ar_base %>
+<h2>Query Result for <%= @query.name %></h2>
+<p><%= @query.description %></p>
+
+  <ul>
+  <% @query.meta_querier_query_conditions.each do |mqqc| -%>
+  <% condition = @meta_query.get_model(mqqc.model_id).conditions[mqqc.condition_index] -%>
+  <li><%= mqqc.description %> = <%= condition.value %></li>
+  <% end -%>
+</ul>
+  
+<% if @ar_base.empty? %>
+    This query has no data [<%= Time.now %>]
+<% else @ar_base and !@ar_base.empty? %>
+<b><%= @ar_base.size %></b> fields [<%= Time.now %>]<br/>
+<b>Export to:</b> 
+<%= link_to icon(:page_excel), :action => "run", :format => :xls, :conditions => params[:conditions] %> |
+<%= link_to "XML", :action => "run", :format => :xml, :conditions => params[:conditions] %> |
+<%= link_to "CSV", :action => "run", :format => :csv, :conditions => params[:conditions] %> |
+<%= link_to "TSV", :action => "run", :format => :tsv, :conditions => params[:conditions] %>
+
+
+<table class="meta-querier" border="1" cellspacing="0" >
+<tr>
+    <th><%= @meta_query.fields.collect {|f| f.as_name}.join("</th><th>") %></th>
+</tr>
+    <% @ar_base.each do |row| %>
+        <tr>
+        <td><%= @meta_query.fields.collect {|f| row[f.as_name.gsub(".", "_")]}.join("</td><td>") %></td>
+        </tr>
+    <% end %>
+
+</table>
+<% end %>
+<% end %>

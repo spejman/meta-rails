@@ -1,0 +1,98 @@
+<% unless model.hidden %>
+<div id="<%= dom_id model %>" class="meta-querier-model">
+    <div class="model_name">
+      <% model_name = model.name.underscore.humanize %>
+      <%= toggle_icon_with_text :table, model_name, "Show/hide model", "#{dom_id model}-model" %> |
+      <%= show_icon_with_text :tab_edit, "#{print_size model.fields}", "Show/hide fields", "#{dom_id model}-fields", "#{dom_id model}-fields-content", "#{dom_id model}-model" %> |
+      <%= show_icon_with_text :table_row_delete, "#{print_size model.conditions}", "Show/hide conditions", "#{dom_id model}-conditions", "#{dom_id model}-conditions-content", "#{dom_id model}-model" %> |
+      <%= show_icon_with_text :brick_link, "#{print_size model.visible_joins}", "Show/hide joins", "#{dom_id model}-joins", "#{dom_id model}-joins-content", "#{dom_id model}-model" %> |
+      <%= link_to icon(:cancel, "remove model"),
+                  {:controller => "meta_querier_editor", :action => "remove_join", :id => @query, :model_id => model.id, :parent_model_id => (parent_model.id if parent_model) },
+                  :confirm => "Remove #{model_name} from the query?" %>
+  </div>
+    <div id="<%= "#{dom_id model}-model" %>" style="display: none;">
+  <% unless model.possible_columns.empty? %>
+    <div class="section" id="<%= "#{dom_id model}-fields" %>">
+      <div class="section_header">
+        
+        <%= toggle_icon_with_text :tab_edit, "Select attributes for the box #{model_name} (#{print_size(model.fields, "Attribute")})", "Show/hide fields", "#{dom_id model}-fields-content" %>
+      </div>
+      <div class="section_content" id="<%= "#{dom_id model}-fields-content" %>" style="display: none;">
+        <% unless model.fields.empty? %>
+                <% model.fields.each_with_index do |field, index| %>
+                          <%= field.column_name %> as <%= field.as_name %>
+                          <%= link_to icon(:cross, "remove field"),
+                                      { :controller => "meta_querier_editor", :action => "remove_field", :id => @query, :model_id => model.id, :field_index => index },
+                                      :confirm => "Remove the attribute #{field.column_name} from #{model_name}?" %><br/>
+                <% end %>
+        <% else %>
+          No attributes selected<br/>
+        <% end %>
+        <br/>
+
+        <div class="subsection">
+            <div class="subsection_header">add attribute</div>
+        <% model.possible_columns.each do |field_name, field_type| %>
+                  <% form_tag url_for(:controller => "meta_querier_editor", :action => "add_field",
+                                              :id => @query, :model_id => model.id) do %>
+                            <%= hidden_field_tag "field[column_name]", field_name %>
+                            <%= hidden_field_tag "field[field_type]", field_type %>
+                            <%= field_name %> as <%= text_field_tag "field[as_name]", field_name %>                        
+                            <%= icon_submit_tag :add, "add field" %>
+                  <% end %>
+        <% end %>
+        </div>
+      </div>
+    </div>
+  <% end  # Fields if %>
+  
+  <% unless model.possible_columns.empty? %>
+    <div class="section" id="<%= "#{dom_id model}-conditions" %>">
+    <div class="section_header">
+        <%= toggle_icon_with_text :table_row_delete, "Fix conditions on the values (#{print_size(model.conditions, "Conditions")})", "Show/hide conditions", "#{dom_id model}-conditions-content" %>
+    </div>
+    <div class="section_content" id="<%= "#{dom_id model}-conditions-content" %>" style="display: none;">
+    <% model.conditions.each_with_index do |condition, index|%>
+        <%= condition.condition_type %>
+        <%= condition.column_name %>
+        <%= condition.operation %>
+        <%= condition.value %>
+        <%= "<em>[parametrizable]</em>" if condition.parametrizable %>
+        <%= link_to icon(:cross, "remove condition"),
+                        {:controller => "meta_querier_editor", :action => "remove_condition", :id => @query, :model_id => model.id, :condition_index => index},
+                        :confirm => "Remove this condition from #{model_name}?" %><br/>
+        <br/>
+    <% end %>  
+        <div class="subsection">
+        <div class="subsection_header">add condition</div>
+    <% form_tag url_for(:controller => "meta_querier_editor", :action => "add_condition",
+                                :id => @query, :model_id => model.id) do %>
+            <%= select_tag "condition[condition_type]", options_for_select(["AND", "OR"]) unless model.conditions.empty? %>                    
+            <%= select_tag "condition[column_name]", options_for_select([""] + model.possible_columns.keys, ""), { :id => "condition_column_name-#{model.id}"} %>
+            <%= observe_field "condition_column_name-#{model.id}",
+                    :url => { :controller => "meta_querier_editor", :action => "condition_change_in_form",
+                              :model_id => model.id, :id => @query.id },
+                    :update => "condition_div-#{model.id}",
+                    :on => "change", :with => "'column_name=' + value" %>
+            <span id="condition_div-<%= model.id %>">
+            </span>
+    <% end %>
+    </div>
+  </div>
+  </div>
+  <% end # Conditions if %>
+  <div class="section" id="<%= "#{dom_id model}-joins" %>">
+    <div class="section_header">
+    <%= toggle_icon_with_text :brick_link, "Join with another box? (#{print_size(model.visible_joins, "Joins")})", "Show/hide joins", "#{dom_id model}-joins-content" %>
+    </div>
+    <div class="section_content" id="<%= "#{dom_id model}-joins-content" %>" style="display: none;">
+      <%= render :partial => "form_for_join", :locals => {:parent_model => model} %>
+    </div>
+    </div>
+  </div>
+        <% model.joins.each do |join_model| %>
+                  <%= render :partial => "model", :locals => {:model => join_model, :parent_model => model, :unfold => (model.id == @editing_model_id)} %>
+        <% end %>  
+
+  </div>
+<% end %>

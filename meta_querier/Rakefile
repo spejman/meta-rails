@@ -1,0 +1,62 @@
+require 'rake'
+require 'rake/testtask'
+require 'rake/rdoctask'
+require "highline"
+require 'net/ssh'
+require 'net/sftp'
+
+RDOC_LOCAL_SUBDIR = 'rdoc'
+RDOC_REMOTE_SUBDIR = 'doc/developer/' + 'meta_querier/'
+REMOTE_SERVER = "meta-rails.rubyforge.org"
+
+desc 'Default: run unit tests.'
+task :default => :test
+
+desc 'Test the meta_querier plugin.'
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib'
+  t.pattern = 'test/**/*_test.rb'
+  t.verbose = true
+end
+
+desc 'Generate documentation for the meta_querier plugin.'
+Rake::RDocTask.new(:rdoc) do |rdoc|
+  rdoc.rdoc_dir = RDOC_LOCAL_SUBDIR
+  rdoc.title    = 'MetaQuerier Developer Documentation'
+  rdoc.template    = 'jamis'
+  rdoc.options << '--line-numbers' << '--inline-source'
+  rdoc.rdoc_files.include('README')
+  rdoc.rdoc_files.include('lib/*.rb') # only document first lib subdir
+  rdoc.rdoc_files.include('app/**/*.rb')
+  rdoc.rdoc_files.include('generators/**/*.rb')
+end
+
+desc "Uploads the documentation"
+task :upload_doc do
+  h = HighLine.new
+  username = h.ask("Username") {|q| q.default = "spejman" }
+  password = h.ask("Password") {|q| q.echo = "*" }
+
+  begin
+  Net::SSH.start(REMOTE_SERVER, username, password) do |ssh|    
+    Dir['#{RDOC_LOCAL_SUBDIR}/**/*'].each do |file|      
+      
+      next if File.stat(file).directory?
+      
+      remote_file = file.gsub(RDOC_LOCAL_SUBDIR + "/", RDOC_REMOTE_SUBDIR)
+      local_file_changed = File.stat(file).mtime > Time.at(sftp.stat(remote_file).mtime)
+
+      if local_file_changed
+        sftp.put_file file, remote_file
+        puts "#{file} --> #{remote_file}"
+      else
+        puts "skipping #{file}"
+      end
+      
+    end    
+  end
+  rescue Exception => e
+    puts e.to_s
+    puts e.backtrace.join("\n")
+  end
+end

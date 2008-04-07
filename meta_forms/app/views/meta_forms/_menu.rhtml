@@ -1,0 +1,6 @@
+<div id="meta_querier-menu">
+<%= link_to "#{icon :application_form_add} New", :controller => "meta_forms", :action => "create_form", :id => nil %> |
+<%= link_to "#{icon :application_cascade} List", :controller => "meta_forms", :action => "list" %>
+<%= ( " | " + link_to_unless_current("#{icon :application_form_edit} Edit", :controller => "meta_forms", :action => "edit", :id => @form) ) if @form %>
+<%= ( " | " + link_to("#{icon :application_form_magnify} Run form", :controller => "meta_forms", :action => "execute", :id => @form) ) if @form %>
+</div>

@@ -1,0 +1,26 @@
+
+<%= render :partial => "menu" %>
+
+<h2>Form: <%= @form.name %></h2>
+<p><%= @form.description %></p>
+
+  <%form_tag url_for(:action => :save_form_data, :form_id => @form.id)  do -%>
+    <%@table_index = -1%>
+    
+  
+  <% if @form.initial_table.nil? %>
+  <div class="meta-querier-model">
+    This form cannot be displayed. A beginning model is required. 
+    
+    <%=link_to "Select One", {:action => :edit, :id => @form.id}%>.
+  </div>
+  <% else %>
+
+  
+  <%= render :partial => "render_form_table", :locals => {:form_table => @form.initial_table, 
+                                                           :parent_index => 0,
+                                                           :last_call_params => @last_call_params} %>
+
+  <%= submit_tag 'Save data' %>
+  <% end -%>
+<% end -%>

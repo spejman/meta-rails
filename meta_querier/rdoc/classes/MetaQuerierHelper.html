@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>Module: MetaQuerierHelper</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+
+    <script language="JavaScript" type="text/javascript">
+    // <![CDATA[
+
+        function toggleSource( id )
+        {
+          var elem
+          var link
+
+          if( document.getElementById )
+          {
+            elem = document.getElementById( id )
+            link = document.getElementById( "l_" + id )
+          }
+          else if ( document.all )
+          {
+            elem = eval( "document.all." + id )
+            link = eval( "document.all.l_" + id )
+          }
+          else
+            return false;
+
+          if( elem.style.display == "block" )
+          {
+            elem.style.display = "none"
+            link.innerHTML = "show source"
+          }
+          else
+          {
+            elem.style.display = "block"
+            link.innerHTML = "hide source"
+          }
+        }
+
+        function openCode( url )
+        {
+          window.open( url, "SOURCE_CODE", "width=400,height=400,scrollbars=yes" )
+        }
+      // ]]>
+    </script>
+  </head>
+
+  <body>
+  <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'><tr>
+  <td class="file-title"><span class="file-title-prefix">Module</span><br />MetaQuerierHelper</td>
+  <td align="right">
+    <table cellspacing=0 cellpadding=2>
+      <tr valign="top">
+        <td>In:</td>
+        <td>
+<a href="../files/app/helpers/meta_querier_helper_rb.html">app/helpers/meta_querier_helper.rb</a>
+        </td>
+      </tr>
+         </table>
+        </td>
+        </tr>
+      </table>
+ <!-- banner header -->
+
+  <div id="bodyContent">
+      <div id="content">
+
+  <div class="description"><table>
+<tr><td valign="top">Author:</td><td>Sergio Espeja
+
+</td></tr>
+<tr><td valign="top">Copyright:</td><td>Copyright (c) 2007 Sergio Espeja
+
+</td></tr>
+<tr><td valign="top">License:</td><td>GPL License
+
+</td></tr>
+<tr><td valign="top">More Information:</td><td><a href="http://meta-rails.rubyforge.org">meta-rails.rubyforge.org</a>
+
+</td></tr>
+</table>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="#M000036">add_columns_select_for_query</a></li>
+  <li><a href="#M000032">add_joins_to_sql_for_query</a></li>
+  <li><a href="#M000035">add_new_condition_for_query</a></li>
+  <li><a href="#M000034">add_new_model_for_query</a></li>
+  <li><a href="#M000033">add_where_to_sql_for_query</a></li>
+  <li><a href="#M000039">adecuate_conditions_value</a></li>
+  <li><a href="#M000040">check_for_code_injection</a></li>
+  <li><a href="#M000029">delete_model_in_query</a></li>
+  <li><a href="#M000027">each_model_with_route</a></li>
+  <li><a href="#M000028">get_conditions</a></li>
+  <li><a href="#M000031">get_fields_for_select</a></li>
+  <li><a href="#M000025">get_route</a></li>
+  <li><a href="#M000030">get_sql_for_query</a></li>
+  <li><a href="#M000038">model_condition_html</a></li>
+  <li><a href="#M000037">model_name</a></li>
+  <li><a href="#M000026">search_model_in_query</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div class="method">
+  <div class="title">
+    <a name="M000036"></a><b>add_columns_select_for_query</b>(columns)
+  </div>
+  <div class="description">
+  <p>
+Returns a hash with keys equal to given array of names (that are expected
+to be column names), and for each postion its value is true.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000036_source')" id="l_M000036_source">show source</a> ]</p>
+  <div id="M000036_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 212</span>
+212:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_columns_select_for_query</span>(<span class="ruby-identifier">columns</span>)
+213:     <span class="ruby-identifier">hash</span> = {}; <span class="ruby-identifier">columns</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">k</span><span class="ruby-operator">|</span> <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">k</span>] = <span class="ruby-keyword kw">true</span>}
+214:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">hash</span>
+215:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000032"></a><b>add_joins_to_sql_for_query</b>(query, key, st)
+  </div>
+  <div class="description">
+  <p>
+Adds joins to the SQL query st (builded with sqldsl), using the information
+of query struct.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000032_source')" id="l_M000032_source">show source</a> ]</p>
+  <div id="M000032_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 102</span>
+102:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_joins_to_sql_for_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">key</span>, <span class="ruby-identifier">st</span>)
+103:     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;add_joins_to_sql_for_query 0 - #{key}&quot;</span>
+104:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:join</span>].<span class="ruby-identifier">empty?</span>
+105:     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;add_joins_to_sql_for_query 1 - #{key}&quot;</span>
+106: 
+107:     <span class="ruby-identifier">tables</span> = {<span class="ruby-identifier">:inner</span> =<span class="ruby-operator">&gt;</span> [], <span class="ruby-identifier">:left</span> =<span class="ruby-operator">&gt;</span> [], <span class="ruby-identifier">:right</span> =<span class="ruby-operator">&gt;</span> []}
+108:     <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:join</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">query_n</span><span class="ruby-operator">|</span>
+109:       <span class="ruby-identifier">key_tmp</span> = <span class="ruby-identifier">key</span>; <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;__&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">key_tmp</span>.<span class="ruby-identifier">blank?</span>
+110:       <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;#{query_n[:model]}_#{query_n[:wide]}&quot;</span>
+111:       <span class="ruby-identifier">tables</span>[<span class="ruby-identifier">query_n</span>[<span class="ruby-identifier">:join_type</span>].<span class="ruby-identifier">to_sym</span>] <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">query_n</span>[<span class="ruby-identifier">:model</span>], <span class="ruby-identifier">key_tmp</span>, <span class="ruby-identifier">query_n</span>[<span class="ruby-identifier">:model</span>].<span class="ruby-identifier">tableize</span>.<span class="ruby-identifier">to_sym</span>.<span class="ruby-identifier">as</span>(<span class="ruby-identifier">key_tmp</span>.<span class="ruby-identifier">to_sym</span>)]   
+112:     <span class="ruby-keyword kw">end</span>
+113:     
+114:     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-identifier">tables</span>.<span class="ruby-identifier">to_json</span>
+115:     [<span class="ruby-identifier">:inner</span>, <span class="ruby-identifier">:right</span>, <span class="ruby-identifier">:left</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">join_type</span><span class="ruby-operator">|</span>
+116:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">tables</span>[<span class="ruby-identifier">join_type</span>].<span class="ruby-identifier">empty?</span>
+117: 
+118:         <span class="ruby-identifier">tables</span>[<span class="ruby-identifier">join_type</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">join_table</span><span class="ruby-operator">|</span>
+119:           <span class="ruby-keyword kw">if</span> ((<span class="ruby-ivar">@activerecord_associations</span>[<span class="ruby-identifier">query</span>[<span class="ruby-identifier">:model</span>]].<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">include?</span> <span class="ruby-node">&quot;#{join_table[0].singularize.underscore}&quot;</span>) \
+120:                 <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-ivar">@activerecord_associations</span>[<span class="ruby-identifier">query</span>[<span class="ruby-identifier">:model</span>]][<span class="ruby-node">&quot;#{join_table[0].singularize.underscore}&quot;</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;belongs_to&quot;</span>)) \
+121:               <span class="ruby-operator">||</span> ((<span class="ruby-ivar">@activerecord_associations</span>[<span class="ruby-identifier">join_table</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">classify</span>].<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:model</span>].<span class="ruby-identifier">singularize</span>.<span class="ruby-identifier">underscore</span>) \
+122:                 <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-ivar">@activerecord_associations</span>[<span class="ruby-identifier">join_table</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">classify</span>][<span class="ruby-identifier">query</span>[<span class="ruby-identifier">:model</span>].<span class="ruby-identifier">singularize</span>.<span class="ruby-identifier">underscore</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;belongs_to&quot;</span>))               
+123:             <span class="ruby-identifier">left_prefix</span> = <span class="ruby-node">&quot;#{join_table[0].singularize.underscore}_id&quot;</span>; <span class="ruby-identifier">right_prefix</span> = <span class="ruby-value str">&quot;id&quot;</span>
+124:           <span class="ruby-keyword kw">else</span>
+125:             <span class="ruby-identifier">left_prefix</span> = <span class="ruby-value str">&quot;id&quot;</span>; <span class="ruby-identifier">right_prefix</span> = <span class="ruby-node">&quot;#{query[:model].singularize.underscore}_id&quot;</span>
+126:           <span class="ruby-keyword kw">end</span>
+127:           <span class="ruby-identifier">str_join</span> = <span class="ruby-node">&quot;#{key}.#{left_prefix} == #{join_table[1]}.#{right_prefix}&quot;</span>
+128:           <span class="ruby-identifier">check_for_code_injection</span>(<span class="ruby-identifier">str_join</span>)
+129:           <span class="ruby-identifier">st</span>.<span class="ruby-identifier">send</span>(<span class="ruby-node">&quot;#{join_type}_join&quot;</span>)[<span class="ruby-identifier">join_table</span>[<span class="ruby-value">2</span>]].<span class="ruby-identifier">on</span> { <span class="ruby-identifier">eval</span> <span class="ruby-identifier">str_join</span> }
+130:         <span class="ruby-keyword kw">end</span>
+131:         
+132:       <span class="ruby-keyword kw">end</span>     
+133:     <span class="ruby-keyword kw">end</span>
+134: 
+135:     <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:join</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">query_n</span><span class="ruby-operator">|</span>
+136:       <span class="ruby-identifier">key_tmp</span> = <span class="ruby-identifier">key</span>; <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;__&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">key_tmp</span>.<span class="ruby-identifier">blank?</span>
+137:       <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;#{query_n[:model]}_#{query_n[:wide]}&quot;</span>
+138:       <span class="ruby-identifier">add_joins_to_sql_for_query</span>(<span class="ruby-identifier">query_n</span>, <span class="ruby-identifier">key_tmp</span>, <span class="ruby-identifier">st</span>)
+139:     <span class="ruby-keyword kw">end</span>
+140:     
+141:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000035"></a><b>add_new_condition_for_query</b>(column_name, op, value, cond_type = nil)
+  </div>
+  <div class="description">
+  <p>
+Returns an empty struct of a condition for a query (to build actual_query)
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000035_source')" id="l_M000035_source">show source</a> ]</p>
+  <div id="M000035_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 202</span>
+202:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_new_condition_for_query</span>(<span class="ruby-identifier">column_name</span>, <span class="ruby-identifier">op</span>, <span class="ruby-identifier">value</span>, <span class="ruby-identifier">cond_type</span> = <span class="ruby-keyword kw">nil</span>)
+203:     { <span class="ruby-identifier">:column</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">column_name</span>, <span class="ruby-comment cmt"># Name of the column where the condition will be applied</span>
+204:       <span class="ruby-identifier">:op</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">op</span>, <span class="ruby-comment cmt"># Opetarion of the condition (=, &lt;, &gt;, like, etc ...)</span>
+205:       <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">value</span>, <span class="ruby-comment cmt"># Value the must take the condition</span>
+206:       <span class="ruby-identifier">:cond_type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">cond_type</span> <span class="ruby-comment cmt"># If there are concatenated condition which type is (and, or)</span>
+207:     }
+208:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000034"></a><b>add_new_model_for_query</b>(model, select, deep, wide, join_type = nil, join = [], conditions = [])
+  </div>
+  <div class="description">
+  <p>
+Returns an empty struct of a model for a query (to build actual_query)
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000034_source')" id="l_M000034_source">show source</a> ]</p>
+  <div id="M000034_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 190</span>
+190:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_new_model_for_query</span>(<span class="ruby-identifier">model</span>, <span class="ruby-identifier">select</span>, <span class="ruby-identifier">deep</span>, <span class="ruby-identifier">wide</span>, <span class="ruby-identifier">join_type</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">join</span> = [], <span class="ruby-identifier">conditions</span> = [])
+191:     { <span class="ruby-identifier">:model</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">model</span>, <span class="ruby-comment cmt"># Model being queried</span>
+192:       <span class="ruby-identifier">:select</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">select</span>, <span class="ruby-comment cmt"># Columns of the model that will be shown in the query</span>
+193:       <span class="ruby-identifier">:deep</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">deep</span>,  <span class="ruby-comment cmt"># (struct internal counter)</span>
+194:       <span class="ruby-identifier">:wide</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">wide</span>,  <span class="ruby-comment cmt"># (struct internal counter)</span>
+195:       <span class="ruby-identifier">:join_type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">join_type</span>,  <span class="ruby-comment cmt"># Join relation with its parent</span>
+196:       <span class="ruby-identifier">:join</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">join</span>,  <span class="ruby-comment cmt"># Own join relations</span>
+197:       <span class="ruby-identifier">:conditions</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">conditions</span> <span class="ruby-comment cmt"># Model conditions to be applied</span>
+198:     }
+199:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000033"></a><b>add_where_to_sql_for_query</b>(query, key, st, is_first = false)
+  </div>
+  <div class="description">
+  <p>
+Adds where clauses to the SQL query st (builded with sqldsl), using the
+information of query struct.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000033_source')" id="l_M000033_source">show source</a> ]</p>
+  <div id="M000033_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 145</span>
+145:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_where_to_sql_for_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">key</span>, <span class="ruby-identifier">st</span>, <span class="ruby-identifier">is_first</span> = <span class="ruby-keyword kw">false</span>)
+146:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:conditions</span>].<span class="ruby-identifier">empty?</span>
+147:         <span class="ruby-identifier">cond</span> = <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:conditions</span>].<span class="ruby-identifier">dup</span>
+148:         <span class="ruby-identifier">or_conds</span> = <span class="ruby-identifier">cond</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">c</span>[<span class="ruby-identifier">:cond_type</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;OR&quot;</span> }.<span class="ruby-identifier">sort_by</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">cond</span>.<span class="ruby-identifier">index</span> <span class="ruby-identifier">c</span> }
+149:     
+150:           <span class="ruby-identifier">conds_grouped_by_ors</span> = []
+151:           <span class="ruby-identifier">or_conds</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">or_cond</span><span class="ruby-operator">|</span>
+152:             <span class="ruby-identifier">conds_grouped_by_ors</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">cond</span>.<span class="ruby-identifier">slice!</span>(<span class="ruby-value">0</span><span class="ruby-operator">..</span>(<span class="ruby-identifier">cond</span>.<span class="ruby-identifier">index</span>(<span class="ruby-identifier">or_cond</span>)<span class="ruby-operator">-</span><span class="ruby-value">1</span>))
+153:           <span class="ruby-keyword kw">end</span>
+154:           <span class="ruby-identifier">conds_grouped_by_ors</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">cond</span>
+155:     
+156:     
+157:         <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-identifier">conds_grouped_by_ors</span>.<span class="ruby-identifier">to_json</span>
+158:         
+159:         <span class="ruby-identifier">str_cond</span> = <span class="ruby-identifier">conds_grouped_by_ors</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">cond</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;#{key}.#{cond[:column]} #{cond[:op]} #{cond[:value]}&quot;</span> }
+160:         <span class="ruby-identifier">str_cond</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">str</span><span class="ruby-operator">|</span> <span class="ruby-identifier">check_for_code_injection</span>(<span class="ruby-identifier">str</span>)} <span class="ruby-comment cmt"># Check for code injection</span>
+161:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">is_first</span>
+162:           <span class="ruby-identifier">st</span>.<span class="ruby-identifier">where</span> { <span class="ruby-identifier">eval</span> <span class="ruby-identifier">str_cond</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;;&quot;</span>) }
+163:           <span class="ruby-identifier">is_first</span> = <span class="ruby-keyword kw">false</span>
+164:         <span class="ruby-keyword kw">else</span>
+165:           <span class="ruby-identifier">st</span>.<span class="ruby-identifier">and</span> { <span class="ruby-identifier">eval</span> <span class="ruby-identifier">str_cond</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;;&quot;</span>) }
+166:         <span class="ruby-keyword kw">end</span>
+167:         <span class="ruby-identifier">conds_grouped_by_ors</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">cond_grouped</span><span class="ruby-operator">|</span>
+168:           <span class="ruby-identifier">str_cond</span> = <span class="ruby-identifier">cond_grouped</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">cond</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;#{key}.#{cond[:column]} #{cond[:op]} #{cond[:value]}&quot;</span> }
+169:           <span class="ruby-identifier">str_cond</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">str</span><span class="ruby-operator">|</span> <span class="ruby-identifier">check_for_code_injection</span>(<span class="ruby-identifier">str</span>)} <span class="ruby-comment cmt"># Check for code injection</span>
+170:           <span class="ruby-identifier">st</span>.<span class="ruby-identifier">or</span> { <span class="ruby-identifier">eval</span> <span class="ruby-identifier">str_cond</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;;&quot;</span>) }    
+171:         <span class="ruby-keyword kw">end</span>  
+172:     <span class="ruby-keyword kw">end</span>
+173:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">is_first</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:join</span>].<span class="ruby-identifier">empty?</span>
+174: 
+175:     <span class="ruby-comment cmt"># Actualize is_first to know if is the first condition or</span>
+176:     <span class="ruby-comment cmt"># not. This is necessary in order to put AND to the sql query.</span>
+177:     <span class="ruby-identifier">is_first</span> = <span class="ruby-identifier">is_first</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:conditions</span>].<span class="ruby-identifier">empty?</span>
+178:     <span class="ruby-identifier">query</span>[<span class="ruby-identifier">:join</span>].<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">query_n</span>, <span class="ruby-identifier">q_index</span><span class="ruby-operator">|</span>
+179:       <span class="ruby-identifier">key_tmp</span> = <span class="ruby-identifier">key</span>; <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;__&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">key_tmp</span>.<span class="ruby-identifier">blank?</span>
+180:       <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;#{query_n[:model]}_#{query_n[:wide]}&quot;</span>    
+181:       <span class="ruby-identifier">is_first</span> = <span class="ruby-identifier">add_where_to_sql_for_query</span>(<span class="ruby-identifier">query_n</span>, <span class="ruby-identifier">key_tmp</span>, <span class="ruby-identifier">st</span>, <span class="ruby-identifier">is_first</span>)
+182: <span class="ruby-comment cmt">#      is_first = is_first &amp;&amp; query_n[:conditions].empty?</span>
+183:     <span class="ruby-keyword kw">end</span>    
+184:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">is_first</span>
+185:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000039"></a><b>adecuate_conditions_value</b>(conditions_value, conditions_op, column_type)
+  </div>
+  <div class="description">
+  <p>
+Formats with correct SQL format the conditions value
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000039_source')" id="l_M000039_source">show source</a> ]</p>
+  <div id="M000039_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 233</span>
+233:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">adecuate_conditions_value</span>(<span class="ruby-identifier">conditions_value</span>, <span class="ruby-identifier">conditions_op</span>, <span class="ruby-identifier">column_type</span>)
+234:     <span class="ruby-identifier">conditions_value</span> = <span class="ruby-value str">&quot;%&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">conditions_value</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;%&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">conditions_op</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;=~&quot;</span>
+235:     <span class="ruby-identifier">conditions_value</span> = <span class="ruby-value str">&quot;\&quot;&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">conditions_value</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;\&quot;&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">column_type</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;string&quot;</span>
+236:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conditions_value</span>
+237:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000040"></a><b>check_for_code_injection</b>(instruction)
+  </div>
+  <div class="description">
+  <p>
+Checks a if string tries to do a code injection hack having in mind that
+this string will be used into a eval() call begining and ending it with
+&quot;.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  &quot;\&quot;; File.rm('../config/*'); \&quot;&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000040_source')" id="l_M000040_source">show source</a> ]</p>
+  <div id="M000040_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 247</span>
+247:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">check_for_code_injection</span>(<span class="ruby-identifier">instruction</span>)
+248:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">instruction</span>.<span class="ruby-identifier">class</span> <span class="ruby-operator">==</span> <span class="ruby-constant">String</span>
+249:     <span class="ruby-identifier">ci</span> = <span class="ruby-identifier">instruction</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">&quot;\\&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>)
+250:     <span class="ruby-identifier">ci</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-value str">&quot;\&quot;&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>)
+251:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">ci</span>.<span class="ruby-identifier">count</span>(<span class="ruby-value str">&quot;\&quot;&quot;</span>) <span class="ruby-operator">==</span> <span class="ruby-value">0</span>)    
+252:     <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Possible code injection attack in: #{instruction}&quot;</span>
+253:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000029"></a><b>delete_model_in_query</b>(query, route)
+  </div>
+  <div class="description">
+  <p>
+Search the model in the query and deletes it
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000029_source')" id="l_M000029_source">show source</a> ]</p>
+  <div id="M000029_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 46</span>
+46:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete_model_in_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">route</span>)
+47:     <span class="ruby-identifier">route</span> <span class="ruby-operator">||=</span> []
+48:     <span class="ruby-comment cmt"># final case of recursive search</span>
+49:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">query</span>.<span class="ruby-identifier">delete_if</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">aq</span><span class="ruby-operator">|</span> <span class="ruby-identifier">aq</span>[<span class="ruby-identifier">:model</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">route</span>[<span class="ruby-value">0</span>][<span class="ruby-value">0</span>] <span class="ruby-operator">&amp;&amp;</span>  <span class="ruby-identifier">aq</span>[<span class="ruby-identifier">:wide</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">route</span>[<span class="ruby-value">0</span>][<span class="ruby-value">1</span>] } <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">route</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+50: 
+51:     <span class="ruby-comment cmt"># recursive search</span>
+52:     <span class="ruby-identifier">actual_node</span> = <span class="ruby-identifier">route</span>.<span class="ruby-identifier">shift</span>  
+53:     <span class="ruby-identifier">delete_model_in_query</span>(<span class="ruby-identifier">query</span>.<span class="ruby-identifier">select</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">aq</span><span class="ruby-operator">|</span> <span class="ruby-identifier">aq</span>[<span class="ruby-identifier">:model</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">actual_node</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">&amp;&amp;</span>  <span class="ruby-identifier">aq</span>[<span class="ruby-identifier">:wide</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">actual_node</span>[<span class="ruby-value">1</span>] }[<span class="ruby-value">0</span>][<span class="ruby-identifier">:join</span>], <span class="ruby-identifier">route</span>)
+54:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000027"></a><b>each_model_with_route</b>(query, model = &quot;&quot;) {|actual_q, route rescue raise route| ...}
+  </div>
+  <div class="description">
+  <p>
+Gives a block of |node, route| for given query.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000027_source')" id="l_M000027_source">show source</a> ]</p>
+  <div id="M000027_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 26</span>
+26:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each_model_with_route</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">model</span> = <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+27:     <span class="ruby-identifier">query</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">actual_q</span><span class="ruby-operator">|</span>
+28:         <span class="ruby-identifier">route</span> = (<span class="ruby-identifier">model</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;__&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">model</span>.<span class="ruby-identifier">blank?</span>) <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>
+29:         <span class="ruby-identifier">route</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;#{actual_q[:model]}_#{actual_q[:wide]}&quot;</span>
+30:         <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">actual_q</span>, <span class="ruby-identifier">route</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-identifier">raise</span> <span class="ruby-identifier">route</span>
+31:         <span class="ruby-identifier">each_model_with_route</span>(<span class="ruby-identifier">actual_q</span>[<span class="ruby-identifier">:join</span>], <span class="ruby-identifier">route</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">actual_q</span>[<span class="ruby-identifier">:join</span>]
+32:     <span class="ruby-keyword kw">end</span>    
+33:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000028"></a><b>get_conditions</b>(query)
+  </div>
+  <div class="description">
+  <p>
+Returns an Array with all the conditions of the query with its indexes:
+[condition, position, route]
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000028_source')" id="l_M000028_source">show source</a> ]</p>
+  <div id="M000028_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 37</span>
+37:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_conditions</span>(<span class="ruby-identifier">query</span>)
+38:     <span class="ruby-identifier">conditions</span> = []
+39:     <span class="ruby-identifier">each_model_with_route</span>(<span class="ruby-identifier">query</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">node</span>, <span class="ruby-identifier">route</span><span class="ruby-operator">|</span>
+40:       <span class="ruby-identifier">node</span>[<span class="ruby-identifier">:conditions</span>].<span class="ruby-identifier">each_with_index</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">c</span>, <span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-identifier">conditions</span> <span class="ruby-operator">&lt;&lt;</span> {<span class="ruby-identifier">:cond</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">c</span>, <span class="ruby-identifier">:position</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">i</span>, <span class="ruby-identifier">:route</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">route</span>}} <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">node</span>[<span class="ruby-identifier">:conditions</span>].<span class="ruby-identifier">empty?</span>
+41:     <span class="ruby-keyword kw">end</span>
+42:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conditions</span>
+43:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000031"></a><b>get_fields_for_select</b>(query, columns, key = &quot;t_&quot;)
+  </div>
+  <div class="description">
+  <p>
+Returns a string to use for create the select fields of the sql query
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000031_source')" id="l_M000031_source">show source</a> ]</p>
+  <div id="M000031_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 82</span>
+82:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_fields_for_select</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">columns</span>, <span class="ruby-identifier">key</span> = <span class="ruby-value str">&quot;t_&quot;</span>)
+83:     <span class="ruby-identifier">fields</span> = []
+84:     <span class="ruby-identifier">logger</span>.<span class="ruby-identifier">debug</span> <span class="ruby-identifier">query</span>.<span class="ruby-identifier">to_json</span>
+85:     
+86:     <span class="ruby-identifier">query</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">query_n</span>, <span class="ruby-identifier">q_index</span><span class="ruby-operator">|</span>
+87:       <span class="ruby-identifier">key_tmp</span> = <span class="ruby-identifier">key</span>
+88:       <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;__&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;t_&quot;</span>
+89:       <span class="ruby-identifier">key_tmp</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;#{query_n[:model]}_#{query_n[:wide]}&quot;</span>
+90:     <span class="ruby-comment cmt">#logger.debug &quot;query_n --&gt; #{query_n.to_json}&quot;</span>
+91:       <span class="ruby-identifier">query_n</span>[<span class="ruby-identifier">:select</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">field</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+92:         <span class="ruby-identifier">fields</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;#{key_tmp}.#{field} as #{key_tmp}___#{field}&quot;</span>.<span class="ruby-identifier">to_sym</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>
+93:       <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">query_n</span>[<span class="ruby-identifier">:select</span>].<span class="ruby-identifier">empty?</span>
+94:       <span class="ruby-identifier">fields</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">get_fields_for_select</span>(<span class="ruby-identifier">query_n</span>[<span class="ruby-identifier">:join</span>], <span class="ruby-identifier">columns</span>, <span class="ruby-identifier">key_tmp</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">query_n</span>[<span class="ruby-identifier">:join</span>].<span class="ruby-identifier">empty?</span>
+95:     <span class="ruby-keyword kw">end</span>
+96: 
+97:     <span class="ruby-identifier">fields</span>.<span class="ruby-identifier">flatten</span>
+98:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000025"></a><b>get_route</b>(key)
+  </div>
+  <div class="description">
+  <p>
+Returns the route of given key in query hash. [[model_1, wide_1], &#8230;,
+[model_n, wide_n]]
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000025_source')" id="l_M000025_source">show source</a> ]</p>
+  <div id="M000025_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 12</span>
+12:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_route</span>(<span class="ruby-identifier">key</span>)
+13:     <span class="ruby-identifier">route</span> = <span class="ruby-identifier">key</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;__&quot;</span>).<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> [<span class="ruby-identifier">e</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;_&quot;</span>)[<span class="ruby-value">0</span>], <span class="ruby-identifier">e</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;_&quot;</span>)[<span class="ruby-value">1</span>].<span class="ruby-identifier">to_i</span>] }
+14:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">route</span>
+15:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000030"></a><b>get_sql_for_query</b>(actual_query, columns)
+  </div>
+  <div class="description">
+  <p>
+Returns the SQL string corresponding to the query struct in actual_query
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000030_source')" id="l_M000030_source">show source</a> ]</p>
+  <div id="M000030_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 59</span>
+59:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_sql_for_query</span>(<span class="ruby-identifier">actual_query</span>, <span class="ruby-identifier">columns</span>)
+60: 
+61:     <span class="ruby-keyword kw">return</span> <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">actual_query</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">actual_query</span>.<span class="ruby-identifier">empty?</span>
+62: 
+63:     <span class="ruby-identifier">fields</span> = <span class="ruby-identifier">get_fields_for_select</span>(<span class="ruby-identifier">actual_query</span>, <span class="ruby-identifier">columns</span>)
+64:     <span class="ruby-identifier">st</span> = <span class="ruby-constant">Select</span>[<span class="ruby-identifier">fields</span>]
+65:     
+66:     <span class="ruby-identifier">tables</span> = []
+67:     <span class="ruby-comment cmt">#actual_query.each_with_index do |query, q_index|</span>
+68:       <span class="ruby-identifier">key</span> = <span class="ruby-node">&quot;t_#{actual_query[0][:model]}_#{actual_query[0][:wide]}&quot;</span>
+69:       <span class="ruby-identifier">tables</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">actual_query</span>[<span class="ruby-value">0</span>][<span class="ruby-identifier">:model</span>].<span class="ruby-identifier">tableize</span>.<span class="ruby-identifier">to_sym</span>.<span class="ruby-identifier">as</span>(<span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_sym</span>)   
+70:       <span class="ruby-identifier">columns</span>[<span class="ruby-identifier">actual_query</span>[<span class="ruby-value">0</span>][<span class="ruby-identifier">:model</span>]].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">field</span><span class="ruby-operator">|</span>
+71:         <span class="ruby-identifier">fields</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;#{key}.#{field[0]} as #{key}___#{field[0]}&quot;</span>.<span class="ruby-identifier">to_sym</span>
+72:       <span class="ruby-keyword kw">end</span>
+73:     <span class="ruby-comment cmt">#end</span>
+74: 
+75:     <span class="ruby-identifier">st</span>.<span class="ruby-identifier">from</span>[<span class="ruby-identifier">tables</span>]
+76:     <span class="ruby-identifier">add_joins_to_sql_for_query</span>(<span class="ruby-identifier">actual_query</span>[<span class="ruby-value">0</span>], <span class="ruby-identifier">key</span>, <span class="ruby-identifier">st</span>)
+77:     <span class="ruby-identifier">add_where_to_sql_for_query</span>(<span class="ruby-identifier">actual_query</span>[<span class="ruby-value">0</span>], <span class="ruby-identifier">key</span>, <span class="ruby-identifier">st</span>, <span class="ruby-keyword kw">true</span>)
+78:     <span class="ruby-identifier">st</span>.<span class="ruby-identifier">to_sql</span>
+79:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000038"></a><b>model_condition_html</b>(ac)
+  </div>
+  <div class="description">
+  <p>
+Returns a HTML formated string with the
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000038_source')" id="l_M000038_source">show source</a> ]</p>
+  <div id="M000038_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 226</span>
+226:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">model_condition_html</span>(<span class="ruby-identifier">ac</span>)
+227:     <span class="ruby-identifier">str</span> = (<span class="ruby-node">&quot;&lt;b&gt;#{ac[:cond_type]}&lt;/b&gt; &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">ac</span>[<span class="ruby-identifier">:cond_type</span>]) <span class="ruby-operator">||</span> <span class="ruby-value str">&quot;&quot;</span>
+228:     <span class="ruby-identifier">str</span> <span class="ruby-operator">+=</span> <span class="ruby-node">&quot;#{ac[:column]} #{ac[:op]} #{ac[:value]}&quot;</span>
+229:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">str</span>
+230:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000037"></a><b>model_name</b>(model_route)
+  </div>
+  <div class="description">
+  <p>
+Returns a string with the name of a model given its route.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000037_source')" id="l_M000037_source">show source</a> ]</p>
+  <div id="M000037_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 220</span>
+220:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">model_name</span>(<span class="ruby-identifier">model_route</span>)
+221:     <span class="ruby-comment cmt">#model_route.collect {|mr| mr.split(&quot;_&quot;)[0]}.join(&quot;.&quot;)</span>
+222:     <span class="ruby-identifier">model_route</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;.&quot;</span>)
+223:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000026"></a><b>search_model_in_query</b>(query, route)
+  </div>
+  <div class="description">
+  <p>
+Returns the node with the model in the query hash for given key.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000026_source')" id="l_M000026_source">show source</a> ]</p>
+  <div id="M000026_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/helpers/meta_querier_helper.rb, line 18</span>
+18:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">search_model_in_query</span>(<span class="ruby-identifier">query</span>, <span class="ruby-identifier">route</span>)
+19:     <span class="ruby-identifier">route</span> <span class="ruby-operator">||=</span> []
+20:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">query</span>.<span class="ruby-identifier">select</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">aq</span><span class="ruby-operator">|</span> <span class="ruby-identifier">aq</span>[<span class="ruby-identifier">:model</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">route</span>[<span class="ruby-value">0</span>][<span class="ruby-value">0</span>] <span class="ruby-operator">&amp;&amp;</span>  <span class="ruby-identifier">aq</span>[<span class="ruby-identifier">:wide</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">route</span>[<span class="ruby-value">0</span>][<span class="ruby-value">1</span>]}[<span class="ruby-value">0</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">route</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+21:     <span class="ruby-identifier">actual_node</span> = <span class="ruby-identifier">route</span>.<span class="ruby-identifier">shift</span>  
+22:     <span class="ruby-identifier">search_model_in_query</span>(<span class="ruby-identifier">query</span>.<span class="ruby-identifier">select</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">aq</span><span class="ruby-operator">|</span> <span class="ruby-identifier">aq</span>[<span class="ruby-identifier">:model</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">actual_node</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">&amp;&amp;</span>  <span class="ruby-identifier">aq</span>[<span class="ruby-identifier">:wide</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">actual_node</span>[<span class="ruby-value">1</span>] }[<span class="ruby-value">0</span>][<span class="ruby-identifier">:join</span>], <span class="ruby-identifier">route</span>)
+23:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>
+
+    </body>
+</html>

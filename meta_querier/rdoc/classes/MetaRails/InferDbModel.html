@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>Module: MetaRails::InferDbModel</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+
+    <script language="JavaScript" type="text/javascript">
+    // <![CDATA[
+
+        function toggleSource( id )
+        {
+          var elem
+          var link
+
+          if( document.getElementById )
+          {
+            elem = document.getElementById( id )
+            link = document.getElementById( "l_" + id )
+          }
+          else if ( document.all )
+          {
+            elem = eval( "document.all." + id )
+            link = eval( "document.all.l_" + id )
+          }
+          else
+            return false;
+
+          if( elem.style.display == "block" )
+          {
+            elem.style.display = "none"
+            link.innerHTML = "show source"
+          }
+          else
+          {
+            elem.style.display = "block"
+            link.innerHTML = "hide source"
+          }
+        }
+
+        function openCode( url )
+        {
+          window.open( url, "SOURCE_CODE", "width=400,height=400,scrollbars=yes" )
+        }
+      // ]]>
+    </script>
+  </head>
+
+  <body>
+  <table width="100%" border='0' cellpadding='0' cellspacing='0' class='banner'><tr>
+  <td class="file-title"><span class="file-title-prefix">Module</span><br />MetaRails::InferDbModel</td>
+  <td align="right">
+    <table cellspacing=0 cellpadding=2>
+      <tr valign="top">
+        <td>In:</td>
+        <td>
+<a href="../../files/lib/infer_db_model_rb.html">lib/infer_db_model.rb</a>
+        </td>
+      </tr>
+         </table>
+        </td>
+        </tr>
+      </table>
+ <!-- banner header -->
+
+  <div id="bodyContent">
+      <div id="content">
+
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="#M000047">get_activerecord_associations</a></li>
+  <li><a href="#M000046">get_activerecord_attributes</a></li>
+  <li><a href="#M000045">get_activerecord_classes</a></li>
+  <li><a href="#M000044">get_table_names</a></li>
+  <li><a href="#M000043">klass_struct</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div class="method">
+  <div class="title">
+    <a name="M000047"></a><b>get_activerecord_associations</b>(ar_class_name)
+  </div>
+  <div class="description">
+  <p>
+For given class name checks for its associated models (belongs_to,
+has_many, habtm, has_one) Returns a hash with keys equal to the relation
+types that exist for the given class, and with values equal to arrays of
+related classes with this related type for the given class.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000047_source')" id="l_M000047_source">show source</a> ]</p>
+  <div id="M000047_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/infer_db_model.rb, line 92</span>
+92:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_activerecord_associations</span>(<span class="ruby-identifier">ar_class_name</span>)
+93:         <span class="ruby-identifier">associations</span> = {}
+94:         <span class="ruby-identifier">ar_class_name</span>.<span class="ruby-identifier">constantize</span>.<span class="ruby-identifier">reflections</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">a_name</span>, <span class="ruby-identifier">a_values</span><span class="ruby-operator">|</span>
+95:           <span class="ruby-identifier">associations</span>[<span class="ruby-identifier">a_name</span>] = <span class="ruby-identifier">a_values</span>.<span class="ruby-identifier">macro</span>.<span class="ruby-identifier">to_s</span>
+96:         <span class="ruby-keyword kw">end</span>
+97:         <span class="ruby-identifier">associations</span>
+98:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000046"></a><b>get_activerecord_attributes</b>(ar_class_name, ar_db_no_relevant_columns = [])
+  </div>
+  <div class="description">
+  <p>
+For given class name checks for its columns (without
+ar_db_no_relevant_columns) Returns a hash with keys equal to a column name
+an values equal to each column type.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000046_source')" id="l_M000046_source">show source</a> ]</p>
+  <div id="M000046_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/infer_db_model.rb, line 82</span>
+82:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_activerecord_attributes</span>(<span class="ruby-identifier">ar_class_name</span>, <span class="ruby-identifier">ar_db_no_relevant_columns</span> = [])
+83:         <span class="ruby-identifier">columns</span> = {}
+84:         <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">connection</span>.<span class="ruby-identifier">columns</span>(<span class="ruby-identifier">ar_class_name</span>.<span class="ruby-identifier">tableize</span>).<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> 
+85:             <span class="ruby-identifier">columns</span>[<span class="ruby-identifier">c</span>.<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">c</span>.<span class="ruby-identifier">type</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">ar_db_no_relevant_columns</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">c</span>.<span class="ruby-identifier">name</span>)  }
+86:         <span class="ruby-identifier">columns</span>
+87:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000045"></a><b>get_activerecord_classes</b>(table_names)
+  </div>
+  <div class="description">
+  <p>
+Checks for each table name if it&#8216;s defined an ActiveRecord model
+class related to it. Returns an array with a class string for each valid
+table name (has an associated model).
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000045_source')" id="l_M000045_source">show source</a> ]</p>
+  <div id="M000045_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/infer_db_model.rb, line 69</span>
+69:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_activerecord_classes</span>(<span class="ruby-identifier">table_names</span>)
+70:         <span class="ruby-identifier">activerecord_classes_names</span> = []
+71:         <span class="ruby-identifier">table_names</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">table_name</span><span class="ruby-operator">|</span>
+72:           <span class="ruby-identifier">table_name</span> = <span class="ruby-identifier">table_name</span>.<span class="ruby-identifier">classify</span>
+73:           <span class="ruby-keyword kw">begin</span> <span class="ruby-comment cmt"># if table_name couldn't be a constant .constantize will throw a exception.</span>
+74:             <span class="ruby-identifier">activerecord_classes_names</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">table_name</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">table_name</span>.<span class="ruby-identifier">constantize</span>
+75:           <span class="ruby-keyword kw">rescue</span>; <span class="ruby-keyword kw">end</span>
+76:         <span class="ruby-keyword kw">end</span>
+77:         <span class="ruby-identifier">activerecord_classes_names</span>
+78:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000044"></a><b>get_table_names</b>(ar_db_reserved_words)
+  </div>
+  <div class="description">
+  <p>
+Returns an array with all the table names (without the defined in
+ar_db_reserved_words) using ActiveRecord methods.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000044_source')" id="l_M000044_source">show source</a> ]</p>
+  <div id="M000044_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/infer_db_model.rb, line 63</span>
+63:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get_table_names</span>(<span class="ruby-identifier">ar_db_reserved_words</span>) 
+64:        <span class="ruby-identifier">table_names_hash</span> = <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">connection</span>.<span class="ruby-identifier">tables</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">ar_db_reserved_words</span>
+65:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="method">
+  <div class="title">
+    <a name="M000043"></a><b>klass_struct</b>(excluded_tables = [], excluded_columns = [])
+  </div>
+  <div class="description">
+  <p>
+Returns the <a href="InferDbModel.html#M000043">klass_struct</a> structure
+with all the schema data of the db.
+</p>
+<pre>
+   { class_name_1 =&gt; { &quot;class_attr&quot; =&gt; { attr_name_1 =&gt; attr_type_1, ..., attr_name_n =&gt; attr_type_n },
+                       &quot;class_ass&quot; =&gt; [ {rel_type_a =&gt; rel_target_1}, {rel_type_a =&gt; rel_target_2},
+                                         ..., {rel_type_b =&gt; rel_target_n} ] },
+      ...,
+      class_name_n =&gt; { &quot;class_attr&quot; =&gt; { attr_name_1 =&gt; attr_type_1, ..., attr_name_n =&gt; attr_type_n },
+                       &quot;class_ass&quot; =&gt; [ {rel_type_a =&gt; rel_target_1}, {rel_type_a =&gt; rel_target_2},
+                                         ..., {rel_type_b =&gt; rel_target_n} ] },
+    }
+</pre>
+<p>
+Example:
+</p>
+<pre>
+    { &quot;Artist&quot; =&gt; { &quot;class_attr&quot; =&gt; { &quot;name&quot; =&gt; :string, &quot;born_date&quot; =&gt; :date },
+                     &quot;class_ass&quot; =&gt; { &quot;has_many&quot; =&gt; &quot;published_albums&quot; },
+      &quot;PublishedAlbums&quot; =&gt; { &quot;class_attr&quot; =&gt; { &quot;title&quot; =&gt; :string, &quot;date&quot; =&gt; :date },
+                     &quot;class_ass&quot; =&gt; { &quot;belongs_to&quot; =&gt; &quot;artist&quot; }
+    }
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000043_source')" id="l_M000043_source">show source</a> ]</p>
+  <div id="M000043_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/infer_db_model.rb, line 27</span>
+27:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">klass_struct</span>(<span class="ruby-identifier">excluded_tables</span> = [], <span class="ruby-identifier">excluded_columns</span> = [])
+28:         
+29:         <span class="ruby-identifier">ar_db_no_relevant_columns</span> = [<span class="ruby-value str">&quot;id&quot;</span>] <span class="ruby-operator">+</span> []
+30:         
+31:         <span class="ruby-comment cmt"># Don't include internal rails tables</span>
+32:         <span class="ruby-identifier">ar_db_reserved_words</span> = [<span class="ruby-value str">&quot;schema_info&quot;</span>, <span class="ruby-value str">&quot;engine_schema_info&quot;</span>]
+33:         <span class="ruby-comment cmt"># Don't include desired excluded tables</span>
+34:         <span class="ruby-identifier">ar_db_reserved_words</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">excluded_tables</span>
+35:         <span class="ruby-comment cmt"># Don't include sitealizer plugin tables</span>
+36:         <span class="ruby-identifier">ar_db_reserved_words</span> <span class="ruby-operator">+=</span> [<span class="ruby-value str">&quot;sitealizer&quot;</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">RAILS_ROOT</span>, <span class="ruby-value str">&quot;vendor/plugins/sitealizer&quot;</span>))
+37:         <span class="ruby-comment cmt"># Don't include metaquerier query management tables</span>
+38:         <span class="ruby-identifier">ar_db_reserved_words</span> <span class="ruby-operator">+=</span> [<span class="ruby-constant">MetaQuerierQuery</span>.<span class="ruby-identifier">table_name</span>, <span class="ruby-constant">MetaQuerierQueryCondition</span>.<span class="ruby-identifier">table_name</span>]
+39:         
+40:         <span class="ruby-identifier">klasses</span> = {}
+41:         
+42:         <span class="ruby-comment cmt"># Get model names</span>
+43:         <span class="ruby-identifier">tables</span> = <span class="ruby-identifier">get_table_names</span>(<span class="ruby-identifier">ar_db_reserved_words</span>)
+44:         <span class="ruby-identifier">activerecord_classes</span> = <span class="ruby-identifier">get_activerecord_classes</span>(<span class="ruby-identifier">tables</span>)
+45:       
+46:         <span class="ruby-comment cmt"># Get model attributes</span>
+47:         <span class="ruby-identifier">activerecord_columns</span> = {}
+48:         <span class="ruby-identifier">activerecord_classes</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">ar_class_name</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ar_db_no_relevant_columns</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">ar_class_name</span>.<span class="ruby-identifier">underscore</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;_id&quot;</span>}
+49:         <span class="ruby-identifier">activerecord_classes</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">ar_class_name</span><span class="ruby-operator">|</span> <span class="ruby-identifier">activerecord_columns</span>[<span class="ruby-identifier">ar_class_name</span>] = <span class="ruby-identifier">get_activerecord_attributes</span>(<span class="ruby-identifier">ar_class_name</span>, <span class="ruby-identifier">ar_db_no_relevant_columns</span>)}
+50:       
+51:         <span class="ruby-comment cmt"># Get model associations</span>
+52:         <span class="ruby-identifier">activerecord_associations</span> = {}
+53:         <span class="ruby-identifier">activerecord_classes</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">ar_class_name</span><span class="ruby-operator">|</span> <span class="ruby-identifier">activerecord_associations</span>[<span class="ruby-identifier">ar_class_name</span>] = <span class="ruby-identifier">get_activerecord_associations</span>(<span class="ruby-identifier">ar_class_name</span>)}
+54:         <span class="ruby-identifier">activerecord_classes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">klass_name</span><span class="ruby-operator">|</span>
+55:           <span class="ruby-identifier">klasses</span>[<span class="ruby-identifier">klass_name</span>] = { <span class="ruby-value str">&quot;class_attr&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">activerecord_columns</span>[<span class="ruby-identifier">klass_name</span>] }
+56:           <span class="ruby-identifier">klasses</span>[<span class="ruby-identifier">klass_name</span>][<span class="ruby-value str">&quot;class_ass&quot;</span>] = <span class="ruby-identifier">activerecord_associations</span>[<span class="ruby-identifier">klass_name</span>].<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">rel_value</span>, <span class="ruby-identifier">rel_type</span><span class="ruby-operator">|</span> {<span class="ruby-identifier">rel_type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">rel_value</span>.<span class="ruby-identifier">to_s</span>}}
+57:         <span class="ruby-keyword kw">end</span>
+58:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">klasses</span>
+59:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>
+
+    </body>
+</html>

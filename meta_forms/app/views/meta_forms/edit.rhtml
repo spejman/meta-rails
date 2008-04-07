@@ -1,0 +1,36 @@
+<%= render :partial => "menu" %>
+
+<h2>Form <%= "(profile: #{@form.profile || "All"})" if @form%> </h2>
+
+<% form_tag @form_form_url do %>
+  <% if @avaliable_profiles && !@avaliable_profiles.empty? %>
+
+    <% if @new_form%>
+      Profile:<br/>
+    <%= select_tag "form[profile]", options_for_select( [["ALL"]*2] + @avaliable_profiles.collect{|pr| [pr]*2 }, session[:profile] ) %>
+    <br/><br/>
+    <% end -%>
+  <% end -%>
+  <%= hidden_field_tag :form_id, @form.id if @form %>
+  Form Name:<br/>
+  <%= text_field :form, :name %><br/>
+  Form Description:<br/>
+  <%= text_area :form, :description, :cols => 30, :rows => 5 %><br/>
+  
+  <%= submit_tag @form_form_submit_text %>
+<% end %>
+
+<% if @form %>
+  <h2>Models</h2>
+  <% unless @form.initial_table %>
+    Initial Model:
+    <% form_tag url_for(:action => "add_form_table") do %>
+      <%= hidden_field_tag :form_id, @form.id if @form %>
+      <%= select :form_table, :table_name, @activerecord_classes.sort %>          
+      <%= submit_tag "Choose beginning model" %>
+    <% end %>
+  <% else %>
+      <%= render :partial => "form_table", :locals => {:form_table => @form.initial_table} %>
+  <% end %>
+<% end %>
+

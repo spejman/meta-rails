@@ -1,0 +1,34 @@
+
+
+<% unless default_obj %>
+  <% field_id = "new_objects[#{table_index}][#{form_table.table_name}][#{attr.attr_name}]"%>
+  <% last_call_value = last_call_params[:new_objects][table_index.to_s][form_table.table_name][attr.attr_name] unless last_call_params.nil?%>
+  <% if attr.hidden? || form_table.hidden?%>
+  <%= hidden_field_tag field_id, attr.default_value   %> 
+  <% else %>  
+    <% if attr.field_type == "data_category" %>
+      <% dc = DataCategory.find attr.attr_name.to_i -%>      
+      <b><%= (attr.name unless (attr.name.nil? || attr.name.empty?)) || dc.name %>:</b>
+      <%= data_category_field_tag field_id, DataCategory.find(attr.attr_name.to_i), (last_call_value || attr.default_value || attr.attr_name.to_sym), !attr.compulsory %>
+    <% else %>
+      <b><%= (attr.name unless (attr.name.nil? || attr.name.empty?)) || attr.attr_name %>:</b>
+      <%= text_field_tag field_id, ( last_call_value || attr.default_value || attr.attr_name.to_sym ) %>
+    <% end %>
+  <br />
+  <% end %>
+<% else %>
+  <% if !attr.hidden? && !form_table.hidden? %>
+    
+    <% if attr.field_type == "data_category" %>
+      <% dc = DataCategory.find attr.attr_name.to_i -%>      
+  <b><%= (attr.name unless (attr.name.nil? || attr.name.empty?)) || dc.name %>:</b>
+      <%= default_obj.feats_hash[dc.name] %><br />
+    <% else %>
+        <b><%= (attr.name unless (attr.name.nil? || attr.name.empty?)) || attr.attr_name %>:</b>
+        <%= default_obj.send(attr.attr_name.to_sym) %><br />
+    <% end %>
+  <% end %>
+<% end %>
+  
+  
+

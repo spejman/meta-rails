@@ -1,0 +1,125 @@
+/*
+Colors:
+    - dark blue: 005CB8
+    - middle blue: 378CDF C5DBF7 B9DCFF AFD0F5
+    - soft blue: E6F2FF
+    - dark green: 1F7F00
+    - middle green: 7FcF00
+    - soft green: DAFFCD
+    - dark grey ~ black: 3D3D3D
+*/
+
+.meta-querier {
+	padding-left: 5%;
+	padding-right: 5%;
+	color: #333;
+	font-family: Verdana, sans-serif;
+	font-size: 12px;
+	background-color: #E6F2FF;
+	border: solid 1px #C5DBF7;
+/*    overflow: hidden; */
+	width: 90%;	
+}
+.meta-querier h2 {
+	font: normal 17px verdana, sans-serif;
+	color: #333;
+}
+
+.meta-querier ul li {
+	list-style-type:none;
+	margin-right: 10px;
+	color:#858585;
+	
+	/*border-bottom:1px solid #3D3D3D;*/
+	width: 90%;
+
+/*	background-color: #eee; #ff8;*/
+}
+ul.meta-querier-menu li {
+	float: left;
+}
+
+.meta-querier ul {
+    margin-bottom: 10px;
+}
+
+.meta-querier a {
+	text-decoration: none;
+	color: #06c;
+}
+.meta-querier a:hover {
+	text-decoration: underline;
+}
+
+.meta-querier-model {
+    margin-top: 12px;
+    margin-bottom: 6px;
+    margin-left: 10px;
+    margin-right: 2px;
+    padding: 0 0 0 0;
+    /* padding-left: 5px;
+        padding-right: 5px; */
+/*    border-top: 1px solid #7FcF00;
+    border-bottom: 1px solid #7FcF00;
+    border-left: 1px solid #7FcF00;*/
+    border: 1px solid #005CB8;
+}
+
+#notification {
+	position: fixed;
+	margin-left: 0px;
+        left: 0px;
+        bottom: 0;
+	padding: 0;
+	height: 20px;
+	margin: 0;
+	width: 100%;
+	background-color: #FFFF99;
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.3em;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	padding-top: 25px;
+        padding-bottom: 5px;
+}
+
+#meta_querier-menu {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.hidden_element{
+display:none;
+}
+
+.model_name {
+    font-weight: bold;
+    background-color: #AFD0F5;
+    padding: 5 5 5 15;
+    border: 1px solid #005CB8;
+}
+
+.section, .subsection {
+    margin-left: 30px;
+}
+
+.section_header {
+    font-weight: bold;
+    padding: 5 5 5 25;
+    border-bottom: 1px solid #005CB8;
+    margin-bottom: 15px;
+    margin-left: -15px;
+}
+
+.subsection_header {
+    font-style: italic;
+    padding: 5 5 5 25;
+    border-bottom: 1px dotted #005CB8;
+    margin-left: -15px;
+    margin-bottom: 15px;
+}
+
+.action-icon {
+    cursor: pointer;
+}

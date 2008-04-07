@@ -1,0 +1,8 @@
+<br/>
+Parametrizable? <%= check_box_tag "condition[parametrizable]", true, false, {:onclick => "$('parametrizable-cond-#{params[:model_id]}').toggle();"} %>
+<div id="parametrizable-cond-<%= params[:model_id] %>" style="display: none;margin-left: 15px;">
+  Parameter description:<br/>
+  <%= text_area_tag "condition[parameter][description]", nil, :cols => 30, :rows => 5 %>
+</div>
+<br/>
+<%= submit_tag "Add condition" %>

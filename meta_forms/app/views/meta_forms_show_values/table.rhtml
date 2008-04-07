@@ -1,0 +1,21 @@
+<table>
+  <tr>
+    <th></th>
+    <th><%= (@values.first.attribute_names - ["id"]).join("</th>\n<th>")%></th>
+    <th><%= @klass_data_categories.collect {|dc| dc.name}.join("</th>\n<th>")%></th>
+  </tr>
+<% @values.each do |value| -%>
+<tr>
+  <td><%= link_to "select", params[:submit_to].merge({:selected_id => value.id}) %></td>
+  <% (@values.first.attribute_names - ["id"]).each do |att_name| -%>    
+    <td><%= value.attributes[att_name] %></td>
+  <% end -%> 
+  <% dc_hash = {}; @klass_data_categories.each {|dc| dc_hash[dc.id] = dc.name } -%>
+  <% value_feats = value.feats_hash(dc_hash) -%>
+  <% @klass_data_categories.each  do |dc| -%>    
+    <td><%= value_feats[dc.name] %></td>
+  <% end -%>  
+</tr>
+<% end -%>  
+</table>
+<%= will_paginate @values, :params => {:submit_to => params[:submit_to]}, :update => params[:update] %>
