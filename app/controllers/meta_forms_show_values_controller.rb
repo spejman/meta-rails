@@ -1,7 +1,7 @@
 
 class MetaFormsShowValuesController < ApplicationController
 
-  self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_forms/app/views/"
+  self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/views/"
   
   def index
     @klass_name = params[:id].classify

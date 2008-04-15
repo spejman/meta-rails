@@ -12,7 +12,7 @@ class MetaBulkDataController < ApplicationController
   before_filter :load_avariable_profiles
   before_filter :load_db_data
   
-  self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_bulk_data/app/views/"
+  self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/views/"
   layout select_layout("meta_bulk_data")
   
   def index

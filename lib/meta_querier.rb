@@ -3,8 +3,6 @@
 # License::   GPL License
 # More Information:: http://meta-rails.rubyforge.org
 
-
-require File.join RAILS_ROOT, "vendor", "plugins", "meta_rails_common", "lib", "meta_rails_common.rb"
 # MetaQuerier
 require "sqldsl-1.4.2/sqldsl.rb"
 require "meta_querier_rav"

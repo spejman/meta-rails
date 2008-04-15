@@ -9,7 +9,7 @@
 require "digest/md5"
 require "fileutils"
 require "meta_querier"
-require "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/helpers/meta_querier_helper.rb"
+require "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/helpers/meta_querier_helper.rb"
 
 require "meta_rails_common"
 include MetaRails
@@ -30,7 +30,7 @@ class MetaQuerierControllersCommon < ApplicationController
   include MetaQuerierHook
   helper "data_categories_browser"
   
-  self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_querier/app/views/"
+  self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/views/"
   
   layout select_layout("meta_query"), :except => ["run_query_txt", "run_query_excel"]
 

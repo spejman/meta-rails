@@ -24,7 +24,7 @@ module MetaQuerier
     # take for generate the diagram.
     def initialize(options = {})
       @options  = options #DEFAULT_OPTIONS.merge(options)
-      template = File.read(File.dirname(__FILE__) + '/../mq_diagram.dot.erb')
+      template = File.read(File.dirname(__FILE__) + '/../files/mq_diagram.dot.erb')
   
       @dot = ERB.new(template).result(binding)
     end

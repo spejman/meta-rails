@@ -11,7 +11,7 @@
 require "digest/md5"
 require "fileutils"
 require "meta_forms"
-require "#{RAILS_ROOT}/vendor/plugins/meta_forms/app/helpers/meta_forms_helper.rb"
+require "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/helpers/meta_forms_helper.rb"
 
 require "meta_rails_common"
 include MetaRails
@@ -28,7 +28,7 @@ include MetaRails::InferDbModel
 class MetaFormsController < ApplicationController
   helper "data_categories_browser"
   
-  self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_forms/app/views/"
+  self.template_root = "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/views/"
   
   layout select_layout("meta_forms")
 

@@ -6,7 +6,7 @@ module MetaRails
   def select_layout(plugin_override_template = nil)
     layout_dir = File.join RAILS_ROOT, "app", "views", "layouts"
     if template_root.include? "vendor/plugins"
-      default_layout_dir = File.join "../"*5, "app", "views", "layouts"
+      default_layout_dir = File.join "../"*4, "app", "views", "layouts"
     else
       default_layout_dir = template_root
     end
@@ -15,7 +15,7 @@ module MetaRails
     return File.join(default_layout_dir, plugin_override_template) if plugin_override_template \
       && File.exists?(File.join(layout_dir, "#{plugin_override_template}.rhtml"))
 
-    return File.join(default_layout_dir, "meta_rails") if File.exists? File.join(layout_dir, "meta_rails.rhtml")
+    #return File.join(default_layout_dir, "meta_rails") if File.exists? File.join(layout_dir, "meta_rails.rhtml")
 
     return "application"
   end
