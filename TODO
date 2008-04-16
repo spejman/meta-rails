@@ -18,7 +18,6 @@ Meta Scaffold
 Meta Querier
 -------------
  * Fix error de seguridad en meta_querier_helper.rb: 109, 111, 115 (eval conditions).
- * Exportar: HTML, csv, excel, txt(tabs).
  * Hacer la query clicando en la imagen del modelo (mediante usemaps devueltos por graphviz).
  * Guardar queries: permitir a un usuario tener sus queries habituales.
  * Test
