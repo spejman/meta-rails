@@ -1,6 +1,5 @@
 Meta Scaffold
 -------------
- * Guardar el estado de meta_scaffold actual (esquema de bd).
  * Permitir que se puedan construir bd incrementales:
  	- Comprobar estado actual de la aplicación.
  	- Comparar con el nuevo estado deseado.
