@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), "infer_db_model.rb")
+require 'memcached'
 
 module MetaRails
   

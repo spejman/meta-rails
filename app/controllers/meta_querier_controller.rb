@@ -19,7 +19,8 @@ class MetaQuerierController < MetaQuerierControllersCommon
   before_filter :load_db_data, :only => [:edit]
 # ACTIONS
   def index
-    redirect_to :action => "list"
+    list
+    render :action => "list"
   end
 
   def list

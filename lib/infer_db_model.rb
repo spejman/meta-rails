@@ -25,6 +25,11 @@ module MetaRails
       #     }
       
       def klass_struct(excluded_tables = [], excluded_columns = [])
+        begin
+          cache = Memcached.new("127.0.0.1:11211")
+          return cache.get("klass_struct")
+        rescue
+        end
         
         ar_db_no_relevant_columns = ["id"] + []
         
@@ -57,6 +62,7 @@ module MetaRails
           klasses[klass_name] = { "class_attr" => activerecord_columns[klass_name] }
           klasses[klass_name]["class_ass"] = activerecord_associations[klass_name].collect {|rel_value, rel_type| {rel_type => rel_value.to_s}}
         end
+        cache.set("klass_struct", klasses)
         return klasses
       end
       
