@@ -20,8 +20,7 @@ Meta Querier
  * Hacer la query clicando en la imagen del modelo (mediante usemaps devueltos por graphviz).
  * Guardar queries: permitir a un usuario tener sus queries habituales.
  * Test
- * Documentación:
-    - meta_querier/README
+ * Documentación
 
 Meta WebService
 -------------
