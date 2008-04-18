@@ -1,9 +1,7 @@
-require "infer_db_model"
-include MetaRails::InferDbModel
-require "meta_scaffold_controllers"
+require "meta_scaffold"
 
 class MetaScaffoldBaseController < ApplicationController
-  include MetaRails::MetaScaffoldControllers
+  include MetaRails::MetaScaffold::ControllerMethods
   
   layout "meta_scaffold"
   
