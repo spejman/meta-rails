@@ -3,7 +3,7 @@
 
 require "active_support"
 require "md5"
-require "sqldsl-1.4.2/sqldsl.rb"
+require File.join(File.dirname(__FILE__), "sqldsl-1.4.2/sqldsl")
 
 module MetaQuery
   DEFAULT_JOIN_TYPE = "left outer"
@@ -14,4 +14,6 @@ module MetaQuery
 end
 
 # Load meta query components
-%w(query model field condition).each {|lib| require "meta_query/#{lib}.rb"}
+%w(query model field condition).each do |lib|
+  require File.join(File.dirname(__FILE__), "meta_query/#{lib}.rb")
+end

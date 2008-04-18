@@ -6,6 +6,7 @@
 # MetaQuerier libs
 require "meta_querier/sqldsl-1.4.2/sqldsl"
 require "meta_querier/rails_application_visualizer"
+require "meta_querier/meta_query"
 #require "meta_querier/meta_querier_base_controller"
 
 # Load models

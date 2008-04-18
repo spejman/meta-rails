@@ -18,7 +18,7 @@ class RelationsUnsolvable < MetaRailsError; end
 
 module MetaRails
   
-  
+  module MetaBulkData
   module XmlDataToDb
 
     PLURAL_SINGULAR_UNKNOWN_PREFIX = "METARAILS_UNKNOWN_PS_"
@@ -248,6 +248,7 @@ module MetaRails
     end
 
     
+  end
   end
 
 end

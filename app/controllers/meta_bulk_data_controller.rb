@@ -1,13 +1,8 @@
-require "meta_rails_common"
-include MetaRails
-require "infer_db_model"
-include MetaRails::InferDbModel
-require "xml_data_to_db"
-include MetaRails::XmlDataToDb
-
+require "meta_rails"
+require "meta_bulk_data"
 
 class MetaBulkDataController < ApplicationController
-  
+  include MetaRails::MetaBulkData::XmlDataToDb
   
   before_filter :load_avariable_profiles
   before_filter :load_db_data
@@ -44,7 +39,7 @@ class MetaBulkDataController < ApplicationController
     else
       session[:profile] = "ALL"
       flash[:notice] = "Profile #{params[:profile]} doesn't exist using default profile #{session[:profile]}" if params[:profile]
-      @klasses_struct = klass_struct
+      @klasses_struct = MetaRails::InferDbModel::klass_struct
     end
 
     @activerecord_classes = @klasses_struct.keys

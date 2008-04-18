@@ -20,11 +20,11 @@ class MetaQuerierControllerTest < Test::Unit::TestCase
   end
 
   def test_klass_struct_generation
-    assert klass_struct.size < ActiveRecord::Base.connection.tables.size, "More struct models than database tables"
+    assert MetaRails::InferDbModel::klass_struct.size < ActiveRecord::Base.connection.tables.size, "More struct models than database tables"
   end
 
   def test_query_all_models
-    klass_struct.each do |model_name, model_details|
+    MetaRails::InferDbModel::klass_struct.each do |model_name, model_details|
       test_session = {}
       xhr :get, :clear_query, nil, test_session
       assert_response :success

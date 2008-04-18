@@ -2,8 +2,6 @@ require 'active_support'
 require "fileutils"
 require "meta_scaffold"
 
-include MetaRails::InferDbModel
-
 META_SCAFFOLD_GENERATOR_HOOK_FILE = File.join File.dirname(__FILE__), (("../"*5) + "lib/meta_scaffold_generator_hook.rb")
 require META_SCAFFOLD_GENERATOR_HOOK_FILE if File.exists? META_SCAFFOLD_GENERATOR_HOOK_FILE
 
@@ -60,9 +58,9 @@ class MetaScaffoldGenerator < Rails::Generator::Base
       #       ... }
       #
       if @hasto_create_from_db
-        classes = klass_struct
+        classes = MetaRails::InferDbModel::klass_struct
       elsif @incremental
-        db_klasses = klass_struct
+        db_klasses = MetaRails::InferDbModel::klass_struct
         new_klasses = YAML.load(File.open(@file_name)) if @file_name[-4..-1] == ".yml"
         new_kclasses = dtd_to_mscff_yaml(@file_name) if @file_name[-4..-1] == ".dtd"          
         classes = changes_to_apply(db_klasses, new_klasses)

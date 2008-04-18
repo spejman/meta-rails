@@ -36,7 +36,7 @@ class MetaQuerierBaseController < ApplicationController
   
   # See inject_hook_code for more information about this around filter.
   around_filter do |controller, action_block|
-    MetaQuerierControllersCommon.inject_hook_code(controller, action_block)
+    MetaQuerierBaseController.inject_hook_code(controller, action_block)
   end if File.exists? META_QUERIER_HOOK_FILE
   
   # ActAsAuthenticated hook. If ActAsAuthenticated is installed as a plugin
@@ -77,7 +77,7 @@ class MetaQuerierBaseController < ApplicationController
     else
       session[:profile] = "ALL"
       flash[:notice] = "Profile #{params[:profile]} doesn't exist using default profile #{session[:profile]}" if params[:profile]
-      @klasses_struct = klass_struct
+      @klasses_struct = MetaRails::InferDbModel::klass_struct
     end
 
     @activerecord_classes = @klasses_struct.keys

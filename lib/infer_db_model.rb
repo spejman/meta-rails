@@ -24,14 +24,14 @@ module MetaRails
       #                      "class_ass" => { "belongs_to" => "artist" }
       #     }
       
-      def klass_struct(excluded_tables = [], excluded_columns = [])
+      def self.klass_struct(excluded_tables = [], excluded_columns = [])
         begin
           if defined? Memcached
             cache = Memcached.new(MEMCACHED_SERVER)
             return cache.get("klass_struct")
           end
         rescue
-          logger.info "Memcached access to klass_struct failed."
+          logger.info "Memcached access to klass_struct failed." if defined? logger
         end
         
         ar_db_no_relevant_columns = ["id"] + []
@@ -71,13 +71,13 @@ module MetaRails
       
       # Returns an array with all the table names (without the defined in ar_db_reserved_words) using
       # ActiveRecord methods.
-      def get_table_names(ar_db_reserved_words) 
+      def self.get_table_names(ar_db_reserved_words) 
        table_names_hash = ActiveRecord::Base.connection.tables - ar_db_reserved_words
       end
       
       # Checks for each table name if it's defined an ActiveRecord model class related to it.
       # Returns an array with a class string for each valid table name (has an associated model).
-      def get_activerecord_classes(table_names)
+      def self.get_activerecord_classes(table_names)
         activerecord_classes_names = []
         table_names.each do |table_name|
           table_name = table_name.classify
@@ -90,7 +90,7 @@ module MetaRails
       
       # For given class name checks for its columns (without ar_db_no_relevant_columns)
       # Returns a hash with keys equal to a column name an values equal to each column type.
-      def get_activerecord_attributes(ar_class_name, ar_db_no_relevant_columns = [])
+      def self.get_activerecord_attributes(ar_class_name, ar_db_no_relevant_columns = [])
         columns = {}
         ActiveRecord::Base.connection.columns(ar_class_name.tableize).each {|c| 
             columns[c.name] = c.type unless ar_db_no_relevant_columns.include?(c.name)  }
@@ -100,7 +100,7 @@ module MetaRails
       # For given class name checks for its associated models (belongs_to, has_many, habtm, has_one)
       # Returns a hash with keys equal to the relation types that exist for the given class, and with
       # values equal to arrays of related classes with this related type for the given class.
-      def get_activerecord_associations(ar_class_name)
+      def self.get_activerecord_associations(ar_class_name)
         associations = {}
         ar_class_name.constantize.reflections.each do |a_name, a_values|
           associations[a_name] = a_values.macro.to_s

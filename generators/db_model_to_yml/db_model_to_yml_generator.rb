@@ -2,9 +2,6 @@ require 'active_support'
 require 'yaml'
 require "meta_scaffold"
 
-include MetaRails::InferDbModel
-
-
 class DbModelToYmlGenerator < Rails::Generator::Base
   attr_accessor :file_name, :scaffold_method
   
@@ -21,7 +18,7 @@ class DbModelToYmlGenerator < Rails::Generator::Base
       #       ... }
       #
 
-      klasses = klass_struct
+      klasses = MetaRails::InferDbModel::klass_struct
       # Adding needed relations for building migrations and models
       #classes = add_relations_to_klasses(classes)
       

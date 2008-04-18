@@ -13,12 +13,10 @@ require "fileutils"
 require "meta_forms"
 require "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/helpers/meta_forms_helper.rb"
 
-require "meta_rails_common"
-include MetaRails
-
+require "meta_rails"
 
 include MetaFormsHelper
-include MetaRails::InferDbModel
+
 
 # Ruby on Rails Controller that loads itself at /meta_forms url
 # of the application.
@@ -74,7 +72,7 @@ class MetaFormsController < ApplicationController
     else
       session[:profile] = "ALL"
       flash[:notice] = "Profile #{params[:profile]} doesn't exist using default profile #{session[:profile]}" if params[:profile]
-      @klasses_struct = klass_struct
+      @klasses_struct = MetaRails::InferDbModel::klass_struct
     end
     
     return if profile == self.current_profile && !force_reload_klasses

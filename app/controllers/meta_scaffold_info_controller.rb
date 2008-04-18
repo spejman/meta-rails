@@ -1,12 +1,11 @@
-require "infer_db_model"
-include MetaRails::InferDbModel
-require "meta_scaffold_controllers"
-include MetaRails::MetaScaffoldControllers
-require "xml_data_to_db"
-include MetaRails::XmlDataToDb
+require "meta_scaffold/controller_methods"
+require "meta_bulk_data"
+
 
 class MetaScaffoldInfoController < ApplicationController
-
+  include MetaRails::MetaScaffold::ControllerMethods
+  include MetaRails::MetaBulkDataXmlDataToDb  
+  
   def index
     actualize_profile_selected
     flash[:notice] = params[:message] if params[:message]

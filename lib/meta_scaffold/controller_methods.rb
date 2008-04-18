@@ -1,10 +1,9 @@
-require "metarails"
+require "meta_rails"
 require "singleton"
 
 module MetaRails
   module MetaScaffold
     module ControllerMethods
-      include MetaRails::InferDbModel
       
       def set_profile
         MetaRails::MetaScaffold::Singleton.current_profile = session[:profile]
@@ -27,7 +26,7 @@ module MetaRails
         else
           session[:profile] = "ALL"
           flash[:notice] = "Profile #{params[:profile]} doesn't exist using default profile #{session[:profile]}"
-          klasses_struct = klass_struct
+          klasses_struct = MetaRails::InferDbModel::klass_struct
         end
         @klasses_struct = klasses_struct
       end
