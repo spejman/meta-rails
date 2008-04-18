@@ -1,4 +1,4 @@
-require "meta_scaffold"
+require "../meta_scaffold"
 
 class MetaScaffoldBaseController < ApplicationController
   include MetaRails::MetaScaffold::ControllerMethods

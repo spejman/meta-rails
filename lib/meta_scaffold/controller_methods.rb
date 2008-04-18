@@ -1,3 +1,5 @@
+require "metarails"
+require "singleton"
 
 module MetaRails
   module MetaScaffold
@@ -5,11 +7,11 @@ module MetaRails
       include MetaRails::InferDbModel
       
       def set_profile
-        MetarailsSingleton.current_profile = session[:profile]
+        MetaRails::MetaScaffold::Singleton.current_profile = session[:profile]
       end
     
       def clear_profile
-        MetarailsSingleton.current_profile = nil
+        MetaRails::MetaScaffold::Singleton.current_profile = nil
       end
   
 

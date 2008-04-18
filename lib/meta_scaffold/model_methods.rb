@@ -1,11 +1,13 @@
+require "singleton"
+
 module MetaRails
   module MetaScaffold
     module ModelMethods
     
       def to_label
         avaliable_profiles = Dir["#{RAILS_ROOT}/db/metarails/*.yml"].collect{|pr| File.basename(pr)[0..-5]}
-        if avaliable_profiles.include? MetarailsSingleton.current_profile
-          klasses_struct = YAML.load(File.open("#{RAILS_ROOT}/db/metarails/#{MetarailsSingleton.current_profile}.yml").read)
+        if avaliable_profiles.include? MetaRails::MetaScaffold::Singleton.current_profile
+          klasses_struct = YAML.load(File.open("#{RAILS_ROOT}/db/metarails/#{MetaRails::MetaScaffold::Singleton.current_profile}.yml").read)
         else
           klasses_struct = klass_struct
         end
