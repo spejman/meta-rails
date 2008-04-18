@@ -1,7 +1,6 @@
 require 'active_support'
 require "fileutils"
-require 'dtd_to_mscff_yaml.rb'
-require 'check_consistency.rb'
+require "meta_scaffold"
 
 RAILS_RESERVED_ATTR = %w{ created_on updated_on}
 
