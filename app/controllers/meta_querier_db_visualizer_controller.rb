@@ -7,9 +7,9 @@
 # Copyright:: Copyright (c) 2007 Sergio Espeja
 # License::   GPL License
 # More Information:: http://meta-rails.rubyforge.org
-require "meta_querier"
+require "meta_querier/meta_querier_base_controller"
 
-class MetaQuerierDbVisualizerController < MetaQuerierControllersCommon
+class MetaQuerierDbVisualizerController < MetaQuerierBaseController
   DEFAULT_EXTENSION = "png"
   
   before_filter :load_db_data

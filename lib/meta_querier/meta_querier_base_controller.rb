@@ -10,7 +10,7 @@ require "digest/md5"
 require "fileutils"
 require "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/helpers/meta_querier_helper.rb"
 
-require "meta_rails_common"
+require "meta_rails"
 include MetaRails
 
 include MetaQuerierHelper
@@ -25,7 +25,7 @@ if File.exists? META_QUERIER_HOOK_FILE
   include MetaQuerierHook
 end
 
-class MetaQuerierControllersCommon < ApplicationController
+class MetaQuerierBaseController < ApplicationController
   include MetaQuerierHook
   helper "data_categories_browser"
   

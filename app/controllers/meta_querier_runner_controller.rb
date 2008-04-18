@@ -7,14 +7,14 @@
 # Copyright:: Copyright (c) 2007 Sergio Espeja
 # License::   GPL License
 # More Information:: http://meta-rails.rubyforge.org
-require "meta_querier"
+require "meta_querier/meta_querier_base_controller"
 
 # Ruby on Rails Controller that loads itself at /meta_querier url
 # of the application.
 # 
 # Provides tools for doing advanced queries to the tables of the application.
 
-class MetaQuerierRunnerController < MetaQuerierControllersCommon
+class MetaQuerierRunnerController < MetaQuerierBaseController
   def run
     MetaQuery::Query.new # This is needed in order to unserialize @query.query, I don't know why...
     @query = MetaQuerierQuery.find params[:id]
