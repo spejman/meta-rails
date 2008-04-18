@@ -1,6 +1,7 @@
-# MetaScaffold
-#require "infer_models"
-#require "infer_scaffold"
+require "meta_scaffold/dtd_to_mscff_yaml"
+require "meta_scaffold/check_consistency"
+require "meta_scaffold/incremental_model"
+
 
 module MetaRails
   module MetaScaffoldModelBaseMethods

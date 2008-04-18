@@ -1,10 +1,6 @@
 require 'active_support'
 require "fileutils"
-require File.join(File.dirname(__FILE__), "/../../lib/dtd_to_mscff_yaml.rb")
-require File.join RAILS_ROOT, "vendor", "plugins", "meta_rails_common", "lib", "meta_rails_common.rb"
-
-require 'check_consistency.rb'
-require "incremental_model"
+require "meta_scaffold"
 
 include MetaRails::InferDbModel
 

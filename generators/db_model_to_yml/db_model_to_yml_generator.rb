@@ -1,8 +1,7 @@
 require 'active_support'
 require 'yaml'
-require File.join(File.dirname(__FILE__), "/../../lib/dtd_to_mscff_yaml.rb")
-require 'check_consistency.rb'
-require "infer_db_model"
+require "meta_scaffold"
+
 include MetaRails::InferDbModel
 
 
