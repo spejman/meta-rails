@@ -26,9 +26,12 @@ module MetaRails
       
       def klass_struct(excluded_tables = [], excluded_columns = [])
         begin
-          cache = Memcached.new("127.0.0.1:11211")
-          return cache.get("klass_struct")
+          if defined? Memcached
+            cache = Memcached.new(MEMCACHED_SERVER)
+            return cache.get("klass_struct")
+          end
         rescue
+          logger.info "Memcached access to klass_struct failed."
         end
         
         ar_db_no_relevant_columns = ["id"] + []

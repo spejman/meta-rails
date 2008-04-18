@@ -2,12 +2,19 @@
 # Copyright:: Copyright (c) 2007 Sergio Espeja
 # License::   GPL License
 # More Information:: http://meta-rails.rubyforge.org
-require "meta_rails_common"
+require "configuration"
+
+# Required or optional libraries
+require "memcached" if MetaRails::Configuration::MEMCACHED
+
+# Meta rails components
+require "meta_rails"
 require "meta_querier"
 require "meta_bulk_data"
 require "meta_forms"
 require "meta_scaffold"
 
+# Add meta rails controllers to the controller path.
 directory = "#{RAILS_ROOT}/vendor/plugins/meta_rails"
 controller_path = File.join(directory, 'app', 'controllers')
 
@@ -19,6 +26,7 @@ else
 end
 config.controller_paths << controller_path
 
+# Register needed Mime Types for meta rails.
 Mime::Type.register "image/png", :png unless defined? Mime::PNG
 Mime::Type.register "application/pdf", :pdf unless defined? Mime::PDF
 Mime::SET << Mime::CSV 
