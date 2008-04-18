@@ -3,14 +3,14 @@
 # License::   GPL License
 # More Information:: http://meta-rails.rubyforge.org
 
-# MetaQuerier
-require "sqldsl-1.4.2/sqldsl.rb"
-require "meta_querier_rav"
-
+# MetaQuerier libs
+require "meta_querier/sqldsl-1.4.2/sqldsl"
+require "meta_querier/rails_application_visualizer"
+require "meta_querier/meta_querier_controllers_common"
 
 # Load models
-require File.dirname(__FILE__) + "/../app/models/meta_querier_query.rb"
-require File.dirname(__FILE__) + "/../app/models/meta_querier_query_condition.rb"
+require File.dirname(__FILE__) + "/../app/models/meta_querier_query"
+require File.dirname(__FILE__) + "/../app/models/meta_querier_query_condition"
 
 # Check if MetaQuerier model tables exist in the DB
 META_QUERIER_TABLES = MetaQuerierQuery.table_exists? && MetaQuerierQueryCondition.table_exists?

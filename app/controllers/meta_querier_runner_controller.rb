@@ -7,7 +7,7 @@
 # Copyright:: Copyright (c) 2007 Sergio Espeja
 # License::   GPL License
 # More Information:: http://meta-rails.rubyforge.org
-require "meta_querier_controllers_common"
+require "meta_querier"
 
 # Ruby on Rails Controller that loads itself at /meta_querier url
 # of the application.

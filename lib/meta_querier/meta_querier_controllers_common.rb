@@ -8,7 +8,6 @@
 
 require "digest/md5"
 require "fileutils"
-require "meta_querier"
 require "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/helpers/meta_querier_helper.rb"
 
 require "meta_rails_common"

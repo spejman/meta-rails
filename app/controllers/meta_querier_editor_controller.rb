@@ -7,7 +7,7 @@
 # Copyright:: Copyright (c) 2007 Sergio Espeja
 # License::   GPL License
 # More Information:: http://meta-rails.rubyforge.org
-require "meta_querier_controllers_common"
+require "meta_querier"
 
 class MetaQuerierEditorController < MetaQuerierControllersCommon
   before_filter :load_db_data, :only => [:add_join]

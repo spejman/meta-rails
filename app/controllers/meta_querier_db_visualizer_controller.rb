@@ -7,7 +7,7 @@
 # Copyright:: Copyright (c) 2007 Sergio Espeja
 # License::   GPL License
 # More Information:: http://meta-rails.rubyforge.org
-require "meta_querier_controllers_common"
+require "meta_querier"
 
 class MetaQuerierDbVisualizerController < MetaQuerierControllersCommon
   DEFAULT_EXTENSION = "png"
@@ -34,7 +34,7 @@ class MetaQuerierDbVisualizerController < MetaQuerierControllersCommon
     image_path = "#{RAILS_ROOT}/public#{image_filename}"
     # Create the image only if not exists
     unless File.exists? image_path
-      rav = MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @model_names, :model_columns => @activerecord_columns,
+      rav = MetaRails::MetaQuerier::RailsApplicationVisualizer.new({ :model_names => @model_names, :model_columns => @activerecord_columns,
                                                           :model_associations => @activerecord_associations,
                                                           :actual_model => params[:model] })    
       rav.output image_path
