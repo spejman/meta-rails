@@ -21,6 +21,9 @@ you can see at the next section.
 There is a google group for MetaRails questions, bugs and other issues: 
 http://groups.google.com/group/meta-rails
 
+There is a Lighthouse project for traking the errors and features:
+http://beecomes.lighthouseapp.com/projects/10009-meta-rails/overview
+
 =Architecture=
  * Meta Rails common
  * Meta Querier
