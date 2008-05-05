@@ -65,7 +65,7 @@ module MetaRails
           klasses[klass_name] = { "class_attr" => activerecord_columns[klass_name] }
           klasses[klass_name]["class_ass"] = activerecord_associations[klass_name].collect {|rel_value, rel_type| {rel_type => rel_value.to_s}}
         end
-        cache.set("klass_struct", klasses)
+        cache.set("klass_struct", klasses) if defined? Memcached && defined? cache
         return klasses
       end
       
