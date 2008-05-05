@@ -1,4 +1,6 @@
 require "meta_rails"
+include MetaRails
+
 require "meta_bulk_data"
 
 class MetaBulkDataController < ApplicationController

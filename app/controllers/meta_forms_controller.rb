@@ -14,6 +14,7 @@ require "meta_forms"
 require "#{RAILS_ROOT}/vendor/plugins/meta_rails/app/helpers/meta_forms_helper.rb"
 
 require "meta_rails"
+include MetaRails
 
 include MetaFormsHelper
 
